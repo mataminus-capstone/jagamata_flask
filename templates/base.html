@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}Jagamata - Platform Kesehatan Mata{% endblock %}
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      * {
+        font-family: "Inter", sans-serif;
+      }
+
+      .chatbot-box {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 50;
+      }
+
+      .chatbot-widget {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .chatbot-widget.collapsed {
+        width: 64px;
+        height: 64px;
+      }
+
+      .chatbot-widget.expanded {
+        width: 400px;
+        max-height: 600px;
+      }
+
+      @media (max-width: 768px) {
+        .chatbot-box {
+          bottom: 16px;
+          right: 16px;
+        }
+
+        .chatbot-widget.expanded {
+          width: calc(100vw - 32px);
+          max-width: 380px;
+        }
+      }
+
+      .chatbot-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .chatbot-content.visible {
+        max-height: 550px;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .nav-link {
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .btn-gradient {
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+        transition: all 0.3s ease;
+      }
+
+      .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+      }
+
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav
+      class="glass-effect border-b border-gray-200 sticky top-0 z-40 shadow-sm"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo & Brand -->
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg btn-gradient"
+            >
+              J
+            </div>
+            <div>
+              <div class="text-xl font-bold gradient-text">Jagamata</div>
+              <div class="text-xs text-gray-500 font-medium">
+                Kesehatan Mata Terpadu
+              </div>
+            </div>
+          </div>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center gap-8">
+            <a
+              href="/"
+              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              >Home</a
+            >
+            <a
+              href="/#about"
+              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              >Tentang</a
+            >
+            <a
+              href="/#services"
+              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              >Layanan</a
+            >
+            <a
+              href="/#faq"
+              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              >FAQ</a
+            >
+
+            {% if current_user.is_authenticated %}
+            <a
+              href="{{ url_for('article.dashboard') }}"
+              class="px-5 py-2.5 rounded-xl btn-gradient text-white font-semibold shadow-lg"
+            >
+              Dashboard
+            </a>
+            <a
+              href="{{ url_for('auth.logout') }}"
+              class="px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition shadow-lg"
+            >
+              Logout
+            </a>
+            {% else %}
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="px-5 py-2.5 rounded-xl border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold transition"
+            >
+              Masuk
+            </a>
+            <a
+              href="{{ url_for('auth.register') }}"
+              class="px-5 py-2.5 rounded-xl btn-gradient text-white font-semibold shadow-lg"
+            >
+              Daftar
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button
+            id="mobile-menu-btn"
+            class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
+          >
+            <svg
+              class="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden border-t border-gray-200 bg-white"
+      >
+        <div class="px-4 py-4 space-y-2">
+          <a
+            href="/"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >Home</a
+          >
+          <a
+            href="/#about"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >Tentang</a
+          >
+          <a
+            href="/#services"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >Layanan</a
+          >
+          <a
+            href="/#faq"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >FAQ</a
+          >
+
+          {% if current_user.is_authenticated %}
+          <a
+            href="{{ url_for('article.dashboard') }}"
+            class="block px-4 py-3 rounded-lg btn-gradient text-white font-semibold text-center"
+          >
+            Dashboard
+          </a>
+          <a
+            href="{{ url_for('auth.logout') }}"
+            class="block px-4 py-3 rounded-lg bg-red-500 text-white font-semibold text-center"
+          >
+            Logout
+          </a>
+          {% else %}
+          <a
+            href="{{ url_for('auth.login') }}"
+            class="block px-4 py-3 rounded-lg border-2 border-sky-500 text-sky-600 font-semibold text-center"
+          >
+            Masuk
+          </a>
+          <a
+            href="{{ url_for('auth.register') }}"
+            class="block px-4 py-3 rounded-lg btn-gradient text-white font-semibold text-center"
+          >
+            Daftar
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        {% for category, message in messages %}
+        <div
+          class="mb-4 p-4 rounded-xl shadow-lg animate-fade-in {% if category == 'error' %}bg-red-50 border-l-4 border-red-500 text-red-800{% else %}bg-green-50 border-l-4 border-green-500 text-green-800{% endif %}"
+        >
+          <div class="flex items-center gap-3">
+            <i
+              class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %} text-lg"
+            ></i>
+            <span class="font-medium">{{ message }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-box">
+      <div
+        id="chatbot-widget"
+        class="chatbot-widget collapsed rounded-2xl bg-white overflow-hidden"
+      >
+        <!-- Collapsed State - Chat Button -->
+        <button
+          id="chatbot-toggle"
+          class="w-full h-full flex items-center justify-center btn-gradient text-white hover:scale-105 transition"
+        >
+          <i class="fas fa-comments text-2xl"></i>
+        </button>
+
+        <!-- Expanded State - Chat Interface -->
+        <div id="chatbot-content" class="chatbot-content bg-white">
+          <!-- Chat Header -->
+          <div
+            class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-4 flex justify-between items-center"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-robot text-lg"></i>
+              </div>
+              <div>
+                <div class="font-semibold">Asisten Jagamata</div>
+                <div class="text-xs text-white/80">
+                  Selalu siap membantu Anda
+                </div>
+              </div>
+            </div>
+            <button
+              id="chatbot-close"
+              class="hover:bg-white/20 p-2 rounded-lg transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <!-- Chat Messages -->
+          <div id="chat-messages" class="h-80 overflow-y-auto p-4 bg-gray-50">
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-3">
+              <div class="flex gap-3">
+                <div
+                  class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div class="text-sm text-gray-700">
+                  <p class="font-medium mb-1">Halo! 👋</p>
+                  <p>
+                    Saya asisten virtual Jagamata. Ada yang bisa saya bantu?
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input -->
+          <div class="p-4 border-t border-gray-200 bg-white">
+            <form id="chat-form" class="flex gap-2">
+              <input
+                type="text"
+                id="chat-input"
+                placeholder="Ketik pesan Anda..."
+                class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition"
+              />
+              <button
+                type="submit"
+                class="px-5 py-3 btn-gradient text-white rounded-xl font-medium shadow-lg"
+              >
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Mobile Menu Toggle
+      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      mobileMenuBtn?.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+
+      // Chatbot Toggle
+      const chatbotWidget = document.getElementById("chatbot-widget");
+      const chatbotToggle = document.getElementById("chatbot-toggle");
+      const chatbotClose = document.getElementById("chatbot-close");
+      const chatbotContent = document.getElementById("chatbot-content");
+
+      chatbotToggle?.addEventListener("click", () => {
+        chatbotWidget.classList.remove("collapsed");
+        chatbotWidget.classList.add("expanded");
+        setTimeout(() => chatbotContent.classList.add("visible"), 100);
+      });
+
+      chatbotClose?.addEventListener("click", () => {
+        chatbotContent.classList.remove("visible");
+        setTimeout(() => {
+          chatbotWidget.classList.remove("expanded");
+          chatbotWidget.classList.add("collapsed");
+        }, 300);
+      });
+
+      // Chat Form Handler
+      const chatForm = document.getElementById("chat-form");
+      const chatInput = document.getElementById("chat-input");
+      const chatMessages = document.getElementById("chat-messages");
+
+      chatForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+
+        if (!message) return;
+
+        // Add user message
+        const userMsg = document.createElement("div");
+        userMsg.className = "flex justify-end mb-3";
+        userMsg.innerHTML = `
+          <div class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-3 rounded-xl max-w-xs shadow-sm">
+            <p class="text-sm">${message}</p>
+          </div>
+        `;
+        chatMessages.appendChild(userMsg);
+        chatInput.value = "";
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Simulate bot response
+        setTimeout(() => {
+          const botMsg = document.createElement("div");
+          botMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
+          botMsg.innerHTML = `
+            <div class="flex gap-3">
+              <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-robot text-white text-sm"></i>
+              </div>
+              <div class="text-sm text-gray-700">
+                <p>Terima kasih atas pesan Anda. Tim kami akan segera merespons.</p>
+              </div>
+            </div>
+          `;
+          chatMessages.appendChild(botMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
