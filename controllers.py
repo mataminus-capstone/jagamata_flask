@@ -2,6 +2,9 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user, login_required
 from models import db, User, Article, bcrypt
 from datetime import datetime
+# from services.chatbot_service import chatbot_service
+from flask import jsonify, request
+
 
 # ============ AUTH CONTROLLERS ============
 
@@ -179,3 +182,36 @@ def delete_article_controller(article_id):
     
     flash('Konten berhasil dihapus!', 'success')
     return redirect(url_for('article.dashboard'))
+
+
+# def chatbot_controller():
+#     """Endpoint chatbot untuk AJAX request"""
+#     try:
+#         data = request.get_json()
+#         message = data.get('message', '').strip()
+        
+#         if not message:
+#             return jsonify({
+#                 'success': False,
+#                 'response': 'Pesan tidak boleh kosong.'
+#             }), 400
+        
+#         # Prediksi intent
+#         intent, confidence = chatbot_service.predict_intent(message)
+        
+#         # Generate response
+#         response = chatbot_service.get_response(intent, confidence)
+        
+#         return jsonify({
+#             'success': True,
+#             'response': response,
+#             'intent': intent,
+#             'confidence': float(confidence)  # Convert to float for JSON serialization
+#         })
+        
+#     except Exception as e:
+#         print(f"Chatbot error: {str(e)}")
+#         return jsonify({
+#             'success': False,
+#             'response': 'Maaf, terjadi kesalahan pada server.'
+#         }), 500

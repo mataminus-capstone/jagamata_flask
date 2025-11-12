@@ -58,3 +58,8 @@ def edit(article_id):
 @login_required
 def delete(article_id):
     return delete_article_controller(article_id)
+
+# ============ CHATBOT ROUTES ============
+# @home_bp.route('/chatbot', methods=['POST'])
+# def chatbot():
+#     return chatbot_controller()

@@ -6,3 +6,10 @@ Flask-SQLAlchemy==3.1.1
 PyMySQL==1.1.0
 cryptography==41.0.7
 Werkzeug==3.0.1
+
+# baru
+# tensorflow==2.16.1  # GANTI versi
+# tokenizers==0.13.3
+# transformers==4.33.3
+# numpy==1.26.4
+# scikit-learn==1.5.2
