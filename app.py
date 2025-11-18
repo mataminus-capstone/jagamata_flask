@@ -3,15 +3,18 @@ os.environ['TF_USE_LEGACY_KERAS'] = '1'
 
 from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, current_user
+from flask_cors import CORS
 from config import config
 from models import db, bcrypt, User
-from routes import auth_bp, article_bp, admin_bp, home_bp
+from routes import auth_bp, article_bp, admin_bp, home_bp, api_bp
 from chatbot_model import chatbot
 
 def create_app(config_name='development'):
     app = Flask(__name__)
     
     app.config.from_object(config[config_name])
+    
+    CORS(app, origins=["*"], methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "Authorization"])
     
     db.init_app(app)
     bcrypt.init_app(app)
@@ -30,6 +33,7 @@ def create_app(config_name='development'):
     app.register_blueprint(auth_bp)
     app.register_blueprint(article_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(api_bp)
     
     chatbot.init_app(app)
     

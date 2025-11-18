@@ -6,6 +6,7 @@ Flask-SQLAlchemy
 PyMySQL
 cryptography
 Werkzeug
+flask-cors
 
 # baru
 tensorflow

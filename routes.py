@@ -6,6 +6,9 @@ from controllers import (
     create_article_controller, edit_article_controller, delete_article_controller,
     home_controller, admin_dashboard_controller, chatbot_controller
 )
+from api_controllers import (
+    api_register, api_login, api_articles, api_article_detail, api_chatbot
+)
 
 home_bp = Blueprint('home', __name__)
 
@@ -65,3 +68,25 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 def dashboard():
     return admin_dashboard_controller()
+
+api_bp = Blueprint('api', __name__, url_prefix='/api')
+
+@api_bp.route('/auth/register', methods=['POST'])
+def api_register_route():
+    return api_register()
+
+@api_bp.route('/auth/login', methods=['POST'])
+def api_login_route():
+    return api_login()
+
+@api_bp.route('/articles', methods=['GET'])
+def api_articles_route():
+    return api_articles()
+
+@api_bp.route('/articles/<int:article_id>', methods=['GET'])
+def api_article_detail_route(article_id):
+    return api_article_detail(article_id)
+
+@api_bp.route('/chatbot', methods=['POST'])
+def api_chatbot_route():
+    return api_chatbot()
