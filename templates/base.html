@@ -161,14 +161,20 @@
               class="nav-link text-gray-700 hover:text-sky-600 font-medium"
               >FAQ</a
             >
-
             {% if current_user.is_authenticated %}
             <a
-              href="{{ url_for('article.dashboard') }}"
+              href="{{ url_for('article.articles') }}"
+              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              >Articles</a
+            >
+            {% if current_user.is_admin() %}
+            <a
+              href="{{ url_for('admin.dashboard') }}"
               class="px-5 py-2.5 rounded-xl btn-gradient text-white font-semibold shadow-lg"
             >
               Dashboard
             </a>
+            {% endif %}
             <a
               href="{{ url_for('auth.logout') }}"
               class="px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition shadow-lg"
@@ -239,14 +245,20 @@
             class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
             >FAQ</a
           >
-
           {% if current_user.is_authenticated %}
           <a
-            href="{{ url_for('article.dashboard') }}"
+            href="{{ url_for('article.articles') }}"
+            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            >Articles</a
+          >
+          {% if current_user.is_admin() %}
+          <a
+            href="{{ url_for('admin.dashboard') }}"
             class="block px-4 py-3 rounded-lg btn-gradient text-white font-semibold text-center"
           >
             Dashboard
           </a>
+          {% endif %}
           <a
             href="{{ url_for('auth.logout') }}"
             class="block px-4 py-3 rounded-lg bg-red-500 text-white font-semibold text-center"
@@ -382,23 +394,23 @@
       // Mobile Menu Toggle
       const mobileMenuBtn = document.getElementById("mobile-menu-btn");
       const mobileMenu = document.getElementById("mobile-menu");
-
+    
       mobileMenuBtn?.addEventListener("click", () => {
         mobileMenu.classList.toggle("hidden");
       });
-
+    
       // Chatbot Toggle
       const chatbotWidget = document.getElementById("chatbot-widget");
       const chatbotToggle = document.getElementById("chatbot-toggle");
       const chatbotClose = document.getElementById("chatbot-close");
       const chatbotContent = document.getElementById("chatbot-content");
-
+    
       chatbotToggle?.addEventListener("click", () => {
         chatbotWidget.classList.remove("collapsed");
         chatbotWidget.classList.add("expanded");
         setTimeout(() => chatbotContent.classList.add("visible"), 100);
       });
-
+    
       chatbotClose?.addEventListener("click", () => {
         chatbotContent.classList.remove("visible");
         setTimeout(() => {
@@ -406,18 +418,18 @@
           chatbotWidget.classList.add("collapsed");
         }, 300);
       });
-
+    
       // Chat Form Handler
       const chatForm = document.getElementById("chat-form");
       const chatInput = document.getElementById("chat-input");
       const chatMessages = document.getElementById("chat-messages");
-
+    
       chatForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const message = chatInput.value.trim();
-
+    
         if (!message) return;
-
+    
         // Add user message
         const userMsg = document.createElement("div");
         userMsg.className = "flex justify-end mb-3";
@@ -429,24 +441,79 @@
         chatMessages.appendChild(userMsg);
         chatInput.value = "";
         chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // Simulate bot response
-        setTimeout(() => {
-          const botMsg = document.createElement("div");
-          botMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
-          botMsg.innerHTML = `
-            <div class="flex gap-3">
-              <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-                <i class="fas fa-robot text-white text-sm"></i>
+    
+        // Show loading indicator
+        const loadingMsg = document.createElement("div");
+        loadingMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
+        loadingMsg.innerHTML = `
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-robot text-white text-sm"></i>
+            </div>
+            <div class="text-sm text-gray-700">
+              <p>Sedang mengetik<span class="animate-pulse">...</span></p>
+            </div>
+          </div>
+        `;
+        chatMessages.appendChild(loadingMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+        try {
+          // Send request to Flask endpoint
+          const response = await fetch('/chatbot', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message })
+          });
+    
+          // Remove loading message
+          chatMessages.removeChild(loadingMsg);
+    
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Add bot response
+            const botMsg = document.createElement("div");
+            botMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
+            botMsg.innerHTML = `
+              <div class="flex gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div class="text-sm text-gray-700">
+                  <p>${data.response}</p>
+                </div>
               </div>
-              <div class="text-sm text-gray-700">
-                <p>Terima kasih atas pesan Anda. Tim kami akan segera merespons.</p>
+            `;
+            chatMessages.appendChild(botMsg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          } else {
+            throw new Error('Failed to get response');
+          }
+        } catch (error) {
+          // Remove loading message
+          if (loadingMsg.parentNode) {
+            chatMessages.removeChild(loadingMsg);
+          }
+          
+          // Show error message
+          const errorMsg = document.createElement("div");
+          errorMsg.className = "bg-red-50 p-4 rounded-xl shadow-sm mb-3";
+          errorMsg.innerHTML = `
+            <div class="flex gap-3">
+              <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-exclamation-circle text-white text-sm"></i>
+              </div>
+              <div class="text-sm text-red-700">
+                <p>Maaf, terjadi kesalahan. Silakan coba lagi.</p>
               </div>
             </div>
           `;
-          chatMessages.appendChild(botMsg);
+          chatMessages.appendChild(errorMsg);
           chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 1000);
+        }
       });
     </script>
   </body>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Jagamata</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+        * { font-family: "Inter", sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link:hover { background: rgba(14, 165, 233, 0.1); border-left: 4px solid #0ea5e9; }
+        .nav-link.active { background: rgba(14, 165, 233, 0.15); border-left: 4px solid #0ea5e9; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed left-0 top-0 h-screen w-64 gradient-bg text-white transform -translate-x-full md:translate-x-0 transition-transform z-40 overflow-y-auto shadow-2xl">
+            <div class="p-6 border-b border-white/10 sticky top-0 gradient-bg">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">J</div>
+                    <div>
+                        <div class="text-lg font-bold">Jagamata</div>
+                        <div class="text-xs text-gray-400">Admin</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-2">
+                <a href="{{ url_for('admin.dashboard') }}" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100">
+                    <i class="fas fa-chart-bar w-5 text-sky-400"></i>Dashboard
+                </a>
+                <a href="{{ url_for('article.create') }}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100">
+                    <i class="fas fa-plus-circle w-5 text-green-400"></i>Buat Artikel
+                </a>
+                <a href="{{ url_for('article.articles') }}" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100">
+                    <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 gradient-bg">
+                <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 font-semibold text-red-300 transition">
+                    <i class="fas fa-sign-out-alt w-5"></i>Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-64 overflow-y-auto">
+            <div class="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-200">
+                <div class="px-6 py-4 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
+                        <p class="text-sm text-gray-600">Kelola konten platform</p>
+                    </div>
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-bars text-xl text-gray-700"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-8">
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-sky-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-file-alt text-sky-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Artikel</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.total_articles }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-users text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Pengguna</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.total_users }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-pen-fancy text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Artikel Saya</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ stats.user_articles }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Articles Table -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Daftar Artikel</h2>
+                            <p class="text-sm text-gray-600">Kelola semua konten</p>
+                        </div>
+                        <a href="{{ url_for('article.create') }}" class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg">
+                            <i class="fas fa-plus mr-2"></i>Buat Baru
+                        </a>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Judul</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Author</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Tanggal</th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                {% for article in articles.items %}
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4">
+                                        <div class="font-semibold text-gray-900">{{ article.title }}</div>
+                                        <div class="text-sm text-gray-600 line-clamp-1">{{ article.content[:60] }}...</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ article.author.username }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ article.created_at.strftime('%d %b %Y') }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex justify-center gap-2">
+                                            <a href="{{ url_for('article.detail', article_id=article.id) }}" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm transition">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('article.edit', article_id=article.id) }}" class="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm transition">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('article.delete', article_id=article.id) }}" style="display: inline;" onsubmit="return confirm('Yakin hapus?')">
+                                                <button type="submit" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if articles.pages > 1 %}
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                        <div class="text-sm text-gray-600">{{ articles.page }} / {{ articles.pages }}</div>
+                        <div class="flex gap-2">
+                            {% if articles.has_prev %}
+                            <a href="{{ url_for('admin.dashboard', page=articles.prev_num) }}" class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition">
+                                Sebelumnya
+                            </a>
+                            {% endif %}
+                            {% if articles.has_next %}
+                            <a href="{{ url_for('admin.dashboard', page=articles.next_num) }}" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition">
+                                Selanjutnya
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        mobileMenuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768 && !sidebar.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+    </script>
+</body>
+</html>
