@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import re
+import google.generativeai as genai
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import current_app
@@ -13,12 +14,13 @@ class ChatbotModel:
         self.dataset_df = None
         self.vectorizer = None
         self.tfidf_matrix = None
+        self.gemini_configured = False
         
         if app:
             self.init_app(app)
     
     def init_app(self, app):
-        """Load semantic search model from PKL files"""
+        """Load semantic search model from PKL files and configure Gemini"""
         try:
             base_dir = os.path.dirname(os.path.abspath(__file__))
             models_dir = os.path.join(base_dir, 'models')
@@ -44,6 +46,14 @@ class ChatbotModel:
                 self.tfidf_matrix = pickle.load(f)
             app.logger.info("✓ TF-IDF matrix loaded")
             
+            gemini_api_key = os.getenv('GEMINI_API_KEY')
+            if gemini_api_key:
+                genai.configure(api_key=gemini_api_key)
+                self.gemini_configured = True
+                app.logger.info("✓ Gemini API configured")
+            else:
+                app.logger.warning("⚠ Gemini API key tidak ditemukan, generate response akan dilewati")
+            
             self.is_loaded = True
             app.logger.info("✅ Semantic search ready!")
             
@@ -54,7 +64,6 @@ class ChatbotModel:
             self.is_loaded = False
     
     def clean_text(self, text):
-        """Clean text for matching"""
         if pd.isna(text):
             return ""
         text = str(text).lower()
@@ -63,8 +72,49 @@ class ChatbotModel:
         text = re.sub(r'\s+', ' ', text).strip()
         return text
     
+    def generate_with_gemini(self, user_message, semantic_response, doctor_name):
+        try:
+            if not self.gemini_configured:
+                current_app.logger.warning("Gemini not configured, returning semantic response")
+                return semantic_response
+            
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            
+            prompt = f"""Anda adalah chatbot medis mata yang membantu user. 
+
+anda adalah chatbot untuk aplikasi konsultasi kesehatan mata bernama JagaMata.  
+            
+User bertanya: "{user_message}"
+
+Berikut adalah jawaban dari {doctor_name}:
+"{semantic_response}"
+
+Jika user hanya mengirim sapaan atau pertanyaan umum, balas dengan sopan dan ramah tanpa konteks medis.
+Atau jika sudah keluar dari konteks medis mata, katakan "Maaf, saya hanya bisa membantu masalah terkait kesehatan mata."
+
+dan tidak usah tulis nama dokter lagi.
+hapus isi jawaban semacam "**Jawaban dari dr.....:** ", dan langsung berikan jawaban yang jelas dan informatif.
+
+Tolong enhance/improve jawaban tersebut dengan:
+1. Jelas dan mudah dipahami
+2. Tambahkan konteks medis jika diperlukan
+3. Berikan saran praktis
+4. Gunakan bahasa Indonesia yang baik
+5. Jangan terlalu panjang (maksimal 3-4 paragraf)
+
+Generated Response:"""
+            
+            response = model.generate_content(prompt)
+            generated_text = response.text if response.text else semantic_response
+            
+            current_app.logger.info("✓ Gemini response generated successfully")
+            return generated_text
+            
+        except Exception as e:
+            current_app.logger.error(f"Gemini generation error: {str(e)}")
+            return semantic_response
+    
     def predict(self, text, max_length=128):
-        """Find most similar question and return doctor's answer"""
         if not self.is_loaded:
             return {
                 'error': 'Model not loaded',
@@ -90,10 +140,12 @@ class ChatbotModel:
             doctor_answer = self.dataset_df.iloc[best_idx]['answer_content']
             doctor_name = self.dataset_df.iloc[best_idx]['doctor_name']
             
-            # Format response
-            response = f"**Jawaban dari {doctor_name}:**\n\n{doctor_answer}"
+            current_app.logger.info(f"Semantic match dengan confidence: {best_score:.2f}")
             
-            current_app.logger.info(f"Match dengan confidence: {best_score:.2f}")
+            enhanced_response = self.generate_with_gemini(text, doctor_answer, doctor_name)
+            
+            # Format response
+            response = enhanced_response
             
             return {
                 'response': response,

@@ -17,3 +17,5 @@ scikit-learn
 
 transformers
 tokenizers
+
+google-generativeai
