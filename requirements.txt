@@ -19,3 +19,7 @@ transformers
 tokenizers
 
 google-generativeai
+
+# Auth dependencies
+requests
+sib-api-v3-sdk

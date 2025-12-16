@@ -8,6 +8,7 @@ from config import config
 from models import db, bcrypt, User
 from routes import auth_bp, article_bp, admin_bp, home_bp, api_bp
 from chatbot_model import chatbot
+from auth_service import google_oauth, email_service
 
 def create_app(config_name='development'):
     app = Flask(__name__)
@@ -18,6 +19,9 @@ def create_app(config_name='development'):
     
     db.init_app(app)
     bcrypt.init_app(app)
+    
+    google_oauth.init_app(app)
+    email_service.init_app(app)
     
     login_manager = LoginManager()
     login_manager.init_app(app)

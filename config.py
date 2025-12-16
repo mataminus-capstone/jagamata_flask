@@ -9,6 +9,17 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
     GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://127.0.0.1:5000/auth/callback')
+    
+    BREVO_API_KEY = os.getenv('BREVO_API_KEY')
+    BREVO_SMTP_HOST = 'smtp-relay.brevo.com'
+    BREVO_SMTP_PORT = 587
+    BREVO_SENDER_EMAIL = os.getenv('BREVO_SENDER_EMAIL', 'noreply@bekey.my.id')
+    BREVO_SENDER_NAME = os.getenv('BREVO_SENDER_NAME', 'jagamata')
+    
 
 class DevelopmentConfig(Config):
     """Development configuration"""

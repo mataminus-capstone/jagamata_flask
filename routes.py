@@ -4,7 +4,9 @@ from controllers import (
     register_controller, login_controller, logout_controller,
     articles_controller, article_detail_controller,
     create_article_controller, edit_article_controller, delete_article_controller,
-    home_controller, admin_dashboard_controller, chatbot_controller
+    home_controller, admin_dashboard_controller, chatbot_controller,
+    oauth_login_controller, oauth_callback_controller, verify_email_controller,
+    forgot_password_controller, reset_password_controller
 )
 from api_controllers import (
     api_register, api_login, api_articles, api_article_detail, api_chatbot
@@ -34,6 +36,26 @@ def login():
 @login_required
 def logout():
     return logout_controller()
+
+@auth_bp.route('/oauth/google', methods=['GET'])
+def oauth_login():
+    return oauth_login_controller()
+
+@auth_bp.route('/callback', methods=['GET'])
+def oauth_callback():
+    return oauth_callback_controller()
+
+@auth_bp.route('/verify/<token>', methods=['GET'])
+def verify_email(token):
+    return verify_email_controller(token)
+
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    return forgot_password_controller()
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    return reset_password_controller(token)
 
 article_bp = Blueprint('article', __name__, url_prefix='/articles')
 
