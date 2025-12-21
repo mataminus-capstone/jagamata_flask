@@ -1,0 +1,15 @@
+meta {
+  name: chatbot health
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://127.0.0.1:5000/api/chatbot/health
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

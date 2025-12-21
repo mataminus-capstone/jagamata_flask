@@ -33,6 +33,7 @@ class GoogleOAuth:
         }
         
         oauth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}"
+        print("OAUTH URL:", oauth_url)
         return oauth_url
     
     def exchange_code_for_token(self, code):

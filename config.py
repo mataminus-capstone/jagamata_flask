@@ -12,13 +12,13 @@ class Config:
     
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://127.0.0.1:5000/auth/callback')
+    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
     
     BREVO_API_KEY = os.getenv('BREVO_API_KEY')
     BREVO_SMTP_HOST = 'smtp-relay.brevo.com'
     BREVO_SMTP_PORT = 587
-    BREVO_SENDER_EMAIL = os.getenv('BREVO_SENDER_EMAIL', 'noreply@bekey.my.id')
-    BREVO_SENDER_NAME = os.getenv('BREVO_SENDER_NAME', 'jagamata')
+    BREVO_SENDER_EMAIL = os.getenv('BREVO_SENDER_EMAIL')
+    BREVO_SENDER_NAME = os.getenv('BREVO_SENDER_NAME')
     
 
 class DevelopmentConfig(Config):

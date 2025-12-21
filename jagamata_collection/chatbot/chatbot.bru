@@ -1,0 +1,22 @@
+meta {
+  name: chatbot
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://127.0.0.1:5000/api/chatbot
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "message":"mata saya merah dan perih"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

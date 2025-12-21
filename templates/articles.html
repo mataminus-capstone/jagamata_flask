@@ -38,7 +38,7 @@
             <i class="fas fa-calendar text-sky-500"></i>
             <span>{{ article.created_at.strftime('%d %b %Y') }}</span>
           </div>
-          <a href="{{ url_for('article.detail', article_id=article.id) }}" class="block w-full bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white px-4 py-3 rounded-xl text-center font-semibold transition shadow-lg">
+          <a href="{{ url_for('web.article_detail', article_id=article.id) }}" class="block w-full bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white px-4 py-3 rounded-xl text-center font-semibold transition shadow-lg">
             <i class="fas fa-book-open mr-2"></i>Baca Selengkapnya
           </a>
         </div>
@@ -49,7 +49,7 @@
     {% if articles.pages > 1 %}
     <div class="flex justify-center items-center gap-2 mt-12">
       {% if articles.has_prev %}
-      <a href="{{ url_for('article.articles', page=articles.prev_num) }}" class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition">
+      <a href="{{ url_for('web.articles', page=articles.prev_num) }}" class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition">
         <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
       </a>
       {% endif %}
@@ -57,7 +57,7 @@
         {{ articles.page }} / {{ articles.pages }}
       </span>
       {% if articles.has_next %}
-      <a href="{{ url_for('article.articles', page=articles.next_num) }}" class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition">
+      <a href="{{ url_for('web.articles', page=articles.next_num) }}" class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition">
         Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
       </a>
       {% endif %}

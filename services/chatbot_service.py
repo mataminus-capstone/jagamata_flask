@@ -23,7 +23,8 @@ class ChatbotModel:
         """Load semantic search model from PKL files and configure Gemini"""
         try:
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            models_dir = os.path.join(base_dir, 'models')
+            # Go up one level to reach models folder
+            models_dir = os.path.join(os.path.dirname(base_dir), 'models')
             
             app.logger.info("Loading semantic search model...")
             
@@ -165,28 +166,3 @@ Generated Response:"""
 
 # Global instance
 chatbot = ChatbotModel()
-
-# Test
-if __name__ == "__main__":
-    import logging
-    from flask import Flask
-    
-    app = Flask(__name__)
-    app.logger.setLevel(logging.INFO)
-    
-    chatbot.init_app(app)
-    
-    if chatbot.is_loaded:
-        print("✅ TEST BERHASIL: Model siap digunakan")
-        print("\nContoh pertanyaan:")
-        print("1. mata saya sakit")
-        print("2. mata merah bengkak")
-        print("3. penglihatan kabur")
-        
-        # Test
-        result = chatbot.predict("mata saya sakit")
-        print(f"\n{'='*60}")
-        print(f"JAWABAN:\n{result['response']}")
-        print(f"{'='*60}")
-    else:
-        print("❌ TEST GAGAL: Model tidak bisa diload")

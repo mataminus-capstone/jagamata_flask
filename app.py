@@ -1,58 +1,75 @@
 import os
 os.environ['TF_USE_LEGACY_KERAS'] = '1'
 
-from flask import Flask, render_template, redirect, url_for
-from flask_login import LoginManager, current_user
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
+from flask_login import LoginManager
 from config import config
 from models import db, bcrypt, User
-from routes import auth_bp, article_bp, admin_bp, home_bp, api_bp
-from chatbot_model import chatbot
-from auth_service import google_oauth, email_service
+from services.chatbot_service import chatbot
+from services.auth_service import google_oauth, email_service
+
+login_manager = LoginManager()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 def create_app(config_name='development'):
     app = Flask(__name__)
     
     app.config.from_object(config[config_name])
     
-    CORS(app, origins=["*"], methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "Authorization"])
+    CORS(app, origins=["*"], methods=["GET", "POST", "PUT", "DELETE", "PATCH"], allow_headers=["Content-Type", "Authorization"])
     
+    # Initialize extensions
     db.init_app(app)
     bcrypt.init_app(app)
-    
     google_oauth.init_app(app)
     email_service.init_app(app)
-    
-    login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Silakan login terlebih dahulu!'
-    login_manager.login_message_category = 'info'
+    login_manager.login_view = 'web.login'
     
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    # Register API blueprints
+    from routes.auth_routes import auth_bp
+    from routes.chatbot_routes import chatbot_bp
+    from routes.article_routes import article_bp
     
-    app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(chatbot_bp)
     app.register_blueprint(article_bp)
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(api_bp)
     
+    from routes.web_routes import web_bp
+    app.register_blueprint(web_bp)
+    
+    # Initialize chatbot
     chatbot.init_app(app)
-    
-    @app.context_processor
-    def inject_user():
-        return {'current_user': current_user}
     
     @app.errorhandler(404)
     def not_found(e):
-        return render_template('errors/404.html'), 404
+        return jsonify({
+            'success': False,
+            'message': 'Resource not found',
+            'error': 'Not Found'
+        }), 404
     
     @app.errorhandler(500)
     def server_error(e):
-        return render_template('errors/500.html'), 500
+        return jsonify({
+            'success': False,
+            'message': 'Internal server error',
+            'error': 'Server Error'
+        }), 500
     
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        return jsonify({
+            'success': False,
+            'message': 'Method not allowed',
+            'error': 'Method Not Allowed'
+        }), 405
+    
+    # Create database tables
     with app.app_context():
         db.create_all()
     
