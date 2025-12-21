@@ -438,18 +438,24 @@
 
     <script>
       // Toast Notification System
-      function showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
         toast.className = `toast ${type}`;
-        
-        const icon = type === 'success' ? 'fa-check-circle' : 
-                     type === 'error' ? 'fa-exclamation-circle' : 
-                     'fa-info-circle';
-        const iconColor = type === 'success' ? 'text-green-500' : 
-                          type === 'error' ? 'text-red-500' : 
-                          'text-sky-500';
-        
+
+        const icon =
+          type === "success"
+            ? "fa-check-circle"
+            : type === "error"
+            ? "fa-exclamation-circle"
+            : "fa-info-circle";
+        const iconColor =
+          type === "success"
+            ? "text-green-500"
+            : type === "error"
+            ? "text-red-500"
+            : "text-sky-500";
+
         toast.innerHTML = `
           <i class="fas ${icon} ${iconColor} text-xl"></i>
           <span class="flex-1 text-gray-800 font-medium">${message}</span>
@@ -457,12 +463,12 @@
             <i class="fas fa-times"></i>
           </button>
         `;
-        
+
         container.appendChild(toast);
-        
+
         // Auto dismiss after 5 seconds
         setTimeout(() => {
-          toast.classList.add('hiding');
+          toast.classList.add("hiding");
           setTimeout(() => toast.remove(), 300);
         }, 5000);
       }
@@ -470,23 +476,23 @@
       // Mobile Menu Toggle
       const mobileMenuBtn = document.getElementById("mobile-menu-btn");
       const mobileMenu = document.getElementById("mobile-menu");
-    
+
       mobileMenuBtn?.addEventListener("click", () => {
         mobileMenu.classList.toggle("hidden");
       });
-    
+
       // Chatbot Toggle
       const chatbotWidget = document.getElementById("chatbot-widget");
       const chatbotToggle = document.getElementById("chatbot-toggle");
       const chatbotClose = document.getElementById("chatbot-close");
       const chatbotContent = document.getElementById("chatbot-content");
-    
+
       chatbotToggle?.addEventListener("click", () => {
         chatbotWidget.classList.remove("collapsed");
         chatbotWidget.classList.add("expanded");
         setTimeout(() => chatbotContent.classList.add("visible"), 100);
       });
-    
+
       chatbotClose?.addEventListener("click", () => {
         chatbotContent.classList.remove("visible");
         setTimeout(() => {
@@ -494,18 +500,18 @@
           chatbotWidget.classList.add("collapsed");
         }, 300);
       });
-    
+
       // Chat Form Handler
       const chatForm = document.getElementById("chat-form");
       const chatInput = document.getElementById("chat-input");
       const chatMessages = document.getElementById("chat-messages");
-    
+
       chatForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const message = chatInput.value.trim();
-    
+
         if (!message) return;
-    
+
         // Add user message
         const userMsg = document.createElement("div");
         userMsg.className = "flex justify-end mb-3";
@@ -517,7 +523,7 @@
         chatMessages.appendChild(userMsg);
         chatInput.value = "";
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
         // Show loading indicator
         const loadingMsg = document.createElement("div");
         loadingMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
@@ -533,21 +539,21 @@
         `;
         chatMessages.appendChild(loadingMsg);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
         try {
-          const response = await fetch('/api/chatbot', {
-            method: 'POST',
+          const response = await fetch("/api/chatbot", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({ message: message })
+            body: JSON.stringify({ message: message }),
           });
-    
+
           chatMessages.removeChild(loadingMsg);
-    
+
           if (response.ok) {
             const data = await response.json();
-            
+
             const botMsg = document.createElement("div");
             botMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
             botMsg.innerHTML = `
@@ -563,13 +569,13 @@
             chatMessages.appendChild(botMsg);
             chatMessages.scrollTop = chatMessages.scrollHeight;
           } else {
-            throw new Error('Failed to get response');
+            throw new Error("Failed to get response");
           }
         } catch (error) {
           if (loadingMsg.parentNode) {
             chatMessages.removeChild(loadingMsg);
           }
-          
+
           const errorMsg = document.createElement("div");
           errorMsg.className = "bg-red-50 p-4 rounded-xl shadow-sm mb-3";
           errorMsg.innerHTML = `
@@ -589,8 +595,8 @@
     </script>
 
     <!-- Moved flash messages outside of script tag to prevent Jinja2 syntax errors -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
     <script id="flash-data" type="application/json">
       {{ messages | tojson }}
     </script>
@@ -604,9 +610,6 @@
         showToast(message, category);
       });
     </script>
-    {% endif %}
-    {% endwith %}
-
-
+    {% endif %} {% endwith %}
   </body>
 </html>

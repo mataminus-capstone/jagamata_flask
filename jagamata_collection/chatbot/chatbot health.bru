@@ -5,11 +5,12 @@ meta {
 }
 
 get {
-  url: http://127.0.0.1:5000/api/chatbot/health
+  url: http://127.0.0.1:5000/api/chatbot/status
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

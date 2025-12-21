@@ -7,7 +7,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       <!-- Left Content -->
       <div class="space-y-8">
-        <div class="inline-block px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold">
+        <div
+          class="inline-block px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold"
+        >
           <i class="fas fa-star mr-2"></i>Platform Kesehatan Mata Terpercaya
         </div>
 
@@ -18,12 +20,13 @@
         </h1>
 
         <p class="text-xl text-gray-600 leading-relaxed">
-          Platform kesehatan terpadu dengan layanan deteksi penyakit mata menggunakan AI, treatment profesional, akupresur, dan chatbot 24/7.
+          Platform kesehatan terpadu dengan layanan deteksi penyakit mata
+          menggunakan AI, treatment profesional, akupresur, dan chatbot 24/7.
         </p>
 
         <div class="flex flex-wrap gap-4">
-          {% if current_user.is_authenticated %}
-          {% if current_user.is_admin() %}
+          {% if current_user.is_authenticated %} {% if current_user.is_admin()
+          %}
           <a
             href="{{ url_for('web.dashboard') }}"
             class="px-8 py-4 btn-gradient text-white rounded-xl font-bold shadow-lg inline-flex items-center gap-2"
@@ -39,8 +42,7 @@
             <i class="fas fa-newspaper"></i>
             Baca Artikel
           </a>
-          {% endif %}
-          {% else %}
+          {% endif %} {% else %}
           <a
             href="{{ url_for('web.register') }}"
             class="px-8 py-4 btn-gradient text-white rounded-xl font-bold shadow-lg inline-flex items-center gap-2"
@@ -78,11 +80,17 @@
       <!-- Right Image -->
       <div class="hidden lg:flex justify-center">
         <div class="relative">
-          <div class="absolute inset-0 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-3xl transform rotate-6 opacity-20"></div>
-          <div class="relative bg-gradient-to-br from-sky-500 to-cyan-600 rounded-3xl p-12 shadow-2xl">
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-3xl transform rotate-6 opacity-20"
+          ></div>
+          <div
+            class="relative bg-gradient-to-br from-sky-500 to-cyan-600 rounded-3xl p-12 shadow-2xl"
+          >
             <i class="fas fa-eye text-white text-9xl"></i>
           </div>
-          <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-white rounded-2xl shadow-xl flex items-center justify-center">
+          <div
+            class="absolute -bottom-6 -right-6 w-32 h-32 bg-white rounded-2xl shadow-xl flex items-center justify-center"
+          >
             <div class="text-center">
               <div class="text-2xl font-bold gradient-text">AI</div>
               <div class="text-xs text-gray-600">Powered</div>
@@ -177,10 +185,13 @@
       <div class="space-y-6">
         <h2 class="text-4xl font-bold text-gray-900">Tentang Jagamata</h2>
         <p class="text-lg text-gray-600 leading-relaxed">
-          Jagamata adalah platform kesehatan mata terpadu yang menggabungkan teknologi AI modern dengan pendekatan medis profesional.
+          Jagamata adalah platform kesehatan mata terpadu yang menggabungkan
+          teknologi AI modern dengan pendekatan medis profesional.
         </p>
         <p class="text-lg text-gray-600 leading-relaxed">
-          Kami berkomitmen untuk memberikan layanan terbaik dalam menjaga kesehatan mata Anda dengan dukungan teknologi terkini dan tenaga medis berpengalaman.
+          Kami berkomitmen untuk memberikan layanan terbaik dalam menjaga
+          kesehatan mata Anda dengan dukungan teknologi terkini dan tenaga medis
+          berpengalaman.
         </p>
         <div class="flex gap-4 pt-4">
           <div class="flex items-center gap-3">
@@ -237,7 +248,8 @@
           Bagaimana cara menggunakan layanan deteksi AI?
         </h3>
         <p class="text-gray-600 pl-9">
-          Cukup daftar akun, upload foto mata Anda, dan sistem AI kami akan menganalisis dalam hitungan detik.
+          Cukup daftar akun, upload foto mata Anda, dan sistem AI kami akan
+          menganalisis dalam hitungan detik.
         </p>
       </div>
 
@@ -247,7 +259,8 @@
           Apakah layanan ini aman dan terpercaya?
         </h3>
         <p class="text-gray-600 pl-9">
-          Ya, kami menggunakan enkripsi data dan bekerja sama dengan dokter mata berlisensi.
+          Ya, kami menggunakan enkripsi data dan bekerja sama dengan dokter mata
+          berlisensi.
         </p>
       </div>
 
@@ -257,7 +270,8 @@
           Berapa biaya layanan?
         </h3>
         <p class="text-gray-600 pl-9">
-          Pendaftaran gratis! Biaya konsultasi dan treatment bervariasi sesuai kebutuhan.
+          Pendaftaran gratis! Biaya konsultasi dan treatment bervariasi sesuai
+          kebutuhan.
         </p>
       </div>
 
@@ -267,7 +281,8 @@
           Apakah tersedia layanan darurat?
         </h3>
         <p class="text-gray-600 pl-9">
-          Ya, chatbot kami tersedia 24/7 untuk konsultasi awal dan arahan darurat.
+          Ya, chatbot kami tersedia 24/7 untuk konsultasi awal dan arahan
+          darurat.
         </p>
       </div>
     </div>
@@ -275,7 +290,9 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-sky-500 to-cyan-500 text-white rounded-t-3xl">
+<section
+  class="py-20 bg-gradient-to-r from-sky-500 to-cyan-500 text-white rounded-t-3xl"
+>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-4xl font-bold mb-6">Siap Menjaga Kesehatan Mata Anda?</h2>
     <p class="text-xl mb-10 text-white/90">

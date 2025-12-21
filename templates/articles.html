@@ -1,18 +1,22 @@
-{% extends "base.html" %}
-
-{% block title %}Artikel - Jagamata{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Artikel - Jagamata{% endblock %} {%
+block content %}
 <!-- Hero Section -->
-<section class="relative overflow-hidden -mt-12 pt-16 pb-12 bg-gradient-to-br from-gray-50 to-blue-50 rounded-b-3xl">
+<section
+  class="relative overflow-hidden -mt-12 pt-16 pb-12 bg-gradient-to-br from-gray-50 to-blue-50 rounded-b-3xl"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="space-y-4">
-      <div class="inline-block px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold">
+      <div
+        class="inline-block px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold"
+      >
         <i class="fas fa-book-open mr-2"></i>Pusat Pengetahuan
       </div>
-      <h1 class="text-5xl md:text-5xl font-bold text-gray-900">Artikel Kesehatan Mata</h1>
+      <h1 class="text-5xl md:text-5xl font-bold text-gray-900">
+        Artikel Kesehatan Mata
+      </h1>
       <p class="text-xl text-gray-600 max-w-2xl">
-        Baca tips, panduan, dan informasi terkini tentang kesehatan mata dari para ahli
+        Baca tips, panduan, dan informasi terkini tentang kesehatan mata dari
+        para ahli
       </p>
     </div>
   </div>
@@ -24,21 +28,34 @@
     {% if articles.items %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for article in articles.items %}
-      <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition">
-        <div class="h-40 bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center">
+      <div
+        class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition"
+      >
+        <div
+          class="h-40 bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center"
+        >
           <i class="fas fa-newspaper text-white text-5xl"></i>
         </div>
         <div class="p-6 space-y-4">
-          <h3 class="text-xl font-bold text-gray-900 line-clamp-2">{{ article.title }}</h3>
-          <p class="text-gray-600 text-sm line-clamp-3">{{ article.content }}</p>
-          <div class="flex items-center gap-2 text-sm text-gray-500 border-t border-gray-100 pt-3">
+          <h3 class="text-xl font-bold text-gray-900 line-clamp-2">
+            {{ article.title }}
+          </h3>
+          <p class="text-gray-600 text-sm line-clamp-3">
+            {{ article.content }}
+          </p>
+          <div
+            class="flex items-center gap-2 text-sm text-gray-500 border-t border-gray-100 pt-3"
+          >
             <i class="fas fa-user text-sky-500"></i>
             <span>{{ article.author.username }}</span>
             <span class="mx-1">•</span>
             <i class="fas fa-calendar text-sky-500"></i>
             <span>{{ article.created_at.strftime('%d %b %Y') }}</span>
           </div>
-          <a href="{{ url_for('web.article_detail', article_id=article.id) }}" class="block w-full bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white px-4 py-3 rounded-xl text-center font-semibold transition shadow-lg">
+          <a
+            href="{{ url_for('web.article_detail', article_id=article.id) }}"
+            class="block w-full bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white px-4 py-3 rounded-xl text-center font-semibold transition shadow-lg"
+          >
             <i class="fas fa-book-open mr-2"></i>Baca Selengkapnya
           </a>
         </div>
@@ -49,23 +66,32 @@
     {% if articles.pages > 1 %}
     <div class="flex justify-center items-center gap-2 mt-12">
       {% if articles.has_prev %}
-      <a href="{{ url_for('web.articles', page=articles.prev_num) }}" class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition">
+      <a
+        href="{{ url_for('web.articles', page=articles.prev_num) }}"
+        class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition"
+      >
         <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
       </a>
       {% endif %}
-      <span class="px-6 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 text-white rounded-xl font-semibold shadow-lg">
+      <span
+        class="px-6 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 text-white rounded-xl font-semibold shadow-lg"
+      >
         {{ articles.page }} / {{ articles.pages }}
       </span>
       {% if articles.has_next %}
-      <a href="{{ url_for('web.articles', page=articles.next_num) }}" class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition">
+      <a
+        href="{{ url_for('web.articles', page=articles.next_num) }}"
+        class="px-4 py-2 bg-white border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition"
+      >
         Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
       </a>
       {% endif %}
     </div>
-    {% endif %}
-    {% else %}
+    {% endif %} {% else %}
     <div class="text-center py-20">
-      <div class="w-32 h-32 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div
+        class="w-32 h-32 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto mb-6"
+      >
         <i class="fas fa-inbox text-gray-400 text-5xl"></i>
       </div>
       <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Artikel</h3>
