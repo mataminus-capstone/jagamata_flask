@@ -1,19 +1,18 @@
 meta {
-  name: login
+  name: user copy
   type: http
   seq: 2
 }
 
-post {
-  url: http://localhost:5000/api/auth/login
+get {
+  url: http://127.0.0.1:5000/api/users
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "username":"admin",
-    "password":"admin123"
+    "role": "user"
   }
 }
 

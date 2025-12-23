@@ -1,0 +1,22 @@
+meta {
+  name: user
+  type: http
+  seq: 1
+}
+
+put {
+  url: http://127.0.0.1:5000/api/users/4/role
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "role": "user"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

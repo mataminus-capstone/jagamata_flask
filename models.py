@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), nullable=False, default='user')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
-    oauth_provider = db.Column(db.String(50), nullable=True)  # 'google', 'supabase', etc.
+    oauth_provider = db.Column(db.String(50), nullable=True)
     oauth_id = db.Column(db.String(255), nullable=True)  # Provider's user ID
     
     email_verified = db.Column(db.Boolean, default=False)

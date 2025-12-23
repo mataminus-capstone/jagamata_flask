@@ -5,15 +5,22 @@ meta {
 }
 
 post {
-  url: http://localhost:5000/api/auth/login
+  url: https://api.resend.com/emails
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: your_token
 }
 
 body:json {
   {
-    "username":"john",
-    "password":"password123"
+    "from": "Jagamata <noreply@ahmatfauzi.my.id>",
+    "to": ["cihuyy@gmail.com"],
+    "subject": "Hello World",
+    "html": "<h1>Hello World</h1>",
+    "text": "Hello World"  
   }
 }
 

@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User, Article
 from functools import wraps
+from services.auth_service import email_service
 
 web_bp = Blueprint('web', __name__)
 
@@ -34,10 +35,10 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and user.check_password(password):
-            # pengecekan sudah verifikasi / belum
-            # if not user.email_verified:
-            #     flash('Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.', 'error')
-            #     return render_template('login.html')
+            # TODOS : VERIFIKASI SMTP
+            if not user.email_verified:
+                flash('Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.', 'error')
+                return render_template('login.html')
             
             login_user(user)
             flash('Login successful!', 'success')
@@ -48,6 +49,40 @@ def login():
             flash('Invalid username or password', 'error')
     
     return render_template('login.html')
+
+# @web_bp.route('/register', methods=['GET', 'POST'])
+# def register():
+#     """Register page"""
+#     if current_user.is_authenticated:
+#         return redirect(url_for('web.index'))
+    
+#     if request.method == 'POST':
+#         username = request.form.get('username')
+#         email = request.form.get('email')
+#         password = request.form.get('password')
+#         confirm_password = request.form.get('confirm_password')
+        
+#         if password != confirm_password:
+#             flash('Passwords do not match', 'error')
+#             return render_template('register.html')
+        
+#         if User.query.filter_by(username=username).first():
+#             flash('Username already exists', 'error')
+#             return render_template('register.html')
+        
+#         if User.query.filter_by(email=email).first():
+#             flash('Email already registered', 'error')
+#             return render_template('register.html')
+        
+#         user = User(username=username, email=email)
+#         user.set_password(password)
+#         db.session.add(user)
+#         db.session.commit()
+        
+#         flash('Registration successful! Please login.', 'success')
+#         return redirect(url_for('web.login'))
+    
+#     return render_template('register.html')
 
 @web_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -73,12 +108,24 @@ def register():
             flash('Email already registered', 'error')
             return render_template('register.html')
         
+        # Create user
         user = User(username=username, email=email)
         user.set_password(password)
         db.session.add(user)
+        db.session.commit()  # save to get user.id
+        
+        # Generate verification token & send email
+        from services.auth_service import email_service
+        token = user.generate_verification_token()
         db.session.commit()
         
-        flash('Registration successful! Please login.', 'success')
+        try:
+            verification_url = f"{request.host_url}api/auth/verify-email/{token}"
+            email_service.send_verification_email(user, verification_url)
+        except Exception as e:
+            current_app.logger.warning(f"Email verification failed: {str(e)}")
+        
+        flash('Registration successful! Please check your email to verify your account.', 'success')
         return redirect(url_for('web.login'))
     
     return render_template('register.html')
@@ -96,33 +143,29 @@ def logout():
 @admin_required
 def dashboard():
     """Admin dashboard"""
-    page = request.args.get('page', 1, type=int)
-    articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    recent_articles = Article.query.order_by(Article.created_at.desc()).limit(5).all()
     
     stats = {
         'total_articles': Article.query.count(),
         'total_users': User.query.count(),
-        'user_articles': Article.query.filter_by(author_id=current_user.id).count()
+        'user_articles': Article.query.filter_by(author_id=current_user.id).count(),
+        'verified_count': User.query.filter_by(email_verified=True).count(),
+        'admin_count': User.query.filter_by(role='admin').count(),
+        'moderator_count': User.query.filter_by(role='moderator').count(),
+        'user_count': User.query.filter_by(role='user').count()
     }
     
-    return render_template('dashboard.html', articles=articles, stats=stats)
+    return render_template('dashboard.html', recent_articles=recent_articles, stats=stats)
 
-@web_bp.route('/articles')
-def articles():
-    """Articles list page"""
-    page = request.args.get('page', 1, type=int)
-    articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=9, error_out=False)
-    return render_template('articles.html', articles=articles)
-
-@web_bp.route('/article/<int:article_id>')
-def article_detail(article_id):
-    """Article detail page"""
-    article = Article.query.get_or_404(article_id)
-    return render_template('detail.html', article=article)
+@web_bp.route('/manage-users')
+@login_required
+@admin_required
+def manage_users():
+    """Manage users page"""
+    return render_template('manage_users.html')
 
 @web_bp.route('/article/create', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def create_article():
     """Create article page"""
     if request.method == 'POST':
@@ -137,6 +180,21 @@ def create_article():
         return redirect(url_for('web.article_detail', article_id=article.id))
     
     return render_template('create.html')
+
+@web_bp.route('/articles')
+@login_required
+@admin_required
+def articles():
+    """Manage articles page - admin only"""
+    page = request.args.get('page', 1, type=int)
+    articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    return render_template('manage_articles.html', articles=articles)
+
+@web_bp.route('/article/<int:article_id>')
+def article_detail(article_id):
+    """Article detail page"""
+    article = Article.query.get_or_404(article_id)
+    return render_template('detail.html', article=article)
 
 @web_bp.route('/article/<int:article_id>/edit', methods=['GET', 'POST'])
 @login_required
