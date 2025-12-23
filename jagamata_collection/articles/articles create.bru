@@ -1,0 +1,32 @@
+meta {
+  name: articles create
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://127.0.0.1:5000/api/articles
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: .eJwlzj0OgzAMBtC7eO6Q4MQ_XAblM7HaFcpU9e5F6v6G96Etj3k-aX0f13zQ9tpppURTXcysBw9fdKbX1iHJUmVXcfdWcxTJBg7WYuIGiKNiHxFj6FQ0h_ebRhSA0dmkeSLDZxm1MBwqNjgaA9XsZiHpaoXuyHXO479h-v4Ar4Mvcw.aUgkgQ.okBXMfCnm79zp6Gd0wrdNvQGOxg
+}
+
+body:json {
+  {
+    "author_id":"3", // manual, belum jwt
+    "title":"test1",
+    "content":"cihuyy11"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

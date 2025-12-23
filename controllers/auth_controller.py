@@ -105,6 +105,17 @@ class AuthController:
             user = User.query.filter_by(username=username).first()
             
             if user and user.check_password(password):
+                if not user.email_verified:
+                    return jsonify({
+                        'success': False,
+                        'message': 'Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.',
+                        'data': {
+                            'user_id': user.id,
+                            'email': user.email,
+                            'needs_verification': True
+                        }
+                    }), 403
+                
                 return jsonify({
                     'success': True,
                     'message': f'Login berhasil! Selamat datang {user.username}',

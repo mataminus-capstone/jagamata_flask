@@ -14,11 +14,9 @@ class Config:
     GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
     GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
     
-    BREVO_API_KEY = os.getenv('BREVO_API_KEY')
-    BREVO_SMTP_HOST = 'smtp-relay.brevo.com'
-    BREVO_SMTP_PORT = 587
-    BREVO_SENDER_EMAIL = os.getenv('BREVO_SENDER_EMAIL')
-    BREVO_SENDER_NAME = os.getenv('BREVO_SENDER_NAME')
+    RESEND_API_KEY = os.getenv('RESEND_API_KEY')
+    RESEND_SENDER_EMAIL = os.getenv('RESEND_SENDER_EMAIL')
+    RESEND_SENDER_NAME = os.getenv('RESEND_SENDER_NAME', 'Jagamata')
     
 
 class DevelopmentConfig(Config):

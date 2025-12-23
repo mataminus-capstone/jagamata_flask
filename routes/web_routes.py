@@ -34,11 +34,16 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and user.check_password(password):
+            # pengecekan sudah verifikasi / belum
+            # if not user.email_verified:
+            #     flash('Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.', 'error')
+            #     return render_template('login.html')
+            
             login_user(user)
             flash('Login successful!', 'success')
             if user.is_admin():
-                return redirect(url_for('web.dashboard'))
-            return redirect(url_for('web.articles'))
+                return redirect(url_for('web.index'))
+            return redirect(url_for('web.index'))
         else:
             flash('Invalid username or password', 'error')
     

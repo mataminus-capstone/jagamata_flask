@@ -1,18 +1,19 @@
 meta {
-  name: chatbot
+  name: login copy
   type: http
-  seq: 1
+  seq: 3
 }
 
 post {
-  url: http://127.0.0.1:5000/api/chatbot
+  url: http://localhost:5000/api/auth/login
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "message":"mata saya sakit"
+    "username":"john",
+    "password":"password123"
   }
 }
 

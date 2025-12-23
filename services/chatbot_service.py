@@ -95,13 +95,14 @@ Atau jika sudah keluar dari konteks medis mata, katakan "Maaf, saya hanya bisa m
 
 dan tidak usah tulis nama dokter lagi.
 hapus isi jawaban semacam "**Jawaban dari dr.....:** ", dan langsung berikan jawaban yang jelas dan informatif.
+hapus juga penyebutan nama orang, 
 
 Tolong enhance/improve jawaban tersebut dengan:
 1. Jelas dan mudah dipahami
 2. Tambahkan konteks medis jika diperlukan
 3. Berikan saran praktis
 4. Gunakan bahasa Indonesia yang baik
-5. Jangan terlalu panjang (maksimal 3-4 paragraf)
+5. Jangan terlalu panjang (maksimal 3-4 kalimat saja)
 
 Generated Response:"""
             
