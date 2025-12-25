@@ -56,7 +56,7 @@ class ChatbotModel:
                 app.logger.warning("⚠ Gemini API key tidak ditemukan, generate response akan dilewati")
             
             self.is_loaded = True
-            app.logger.info("✅ Semantic search ready!")
+            app.logger.info("✓ Semantic search ready!")
             
         except Exception as e:
             app.logger.error(f"✗ Error: {str(e)}")
