@@ -336,6 +336,60 @@ class AuthController:
                     'message': 'Kode otorisasi tidak ditemukan.'
                 }), 400
             
+            return AuthController._process_oauth_callback(code)
+            
+        except Exception as e:
+            current_app.logger.error(f"OAuth callback error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'message': 'Terjadi kesalahan saat OAuth callback.'
+            }), 500
+    
+    @staticmethod
+    def oauth_mobile_callback():
+        """Handle OAuth callback for mobile apps
+        
+        Mobile apps use this endpoint with authorization code to get JWT token directly
+        without browser redirects. Request body should contain:
+        - code: Authorization code from Google
+        """
+        try:
+            data = request.get_json(force=True, silent=True)
+            
+            if not data:
+                return jsonify({
+                    'success': False,
+                    'message': 'Invalid JSON format'
+                }), 400
+            
+            code = data.get('code')
+            
+            if not code:
+                return jsonify({
+                    'success': False,
+                    'message': 'Kode otorisasi tidak ditemukan.'
+                }), 400
+            
+            return AuthController._process_oauth_callback(code)
+            
+        except Exception as e:
+            current_app.logger.error(f"OAuth mobile callback error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'message': 'Terjadi kesalahan saat OAuth mobile callback.'
+            }), 500
+    
+    @staticmethod
+    def _process_oauth_callback(code):
+        """Shared OAuth callback processing logic for web and mobile
+        
+        Args:
+            code: Authorization code from Google OAuth
+            
+        Returns:
+            JSON response with user data and JWT token
+        """
+        try:
             # Exchange code for token
             token_data = google_oauth.exchange_code_for_token(code)
             
@@ -357,6 +411,7 @@ class AuthController:
             # Get or create user
             oauth_id = user_data.get('id')
             email = user_data.get('email')
+            name = user_data.get('name')
             
             user = User.query.filter_by(oauth_id=oauth_id).first()
             
@@ -401,15 +456,16 @@ class AuthController:
                     'role': user.role,
                     'email_verified': user.email_verified,
                     'oauth_provider': user.oauth_provider,
+                    'created_at': user.created_at.isoformat(),
                     'token': jwt_token
                 }
             }), 200
             
         except Exception as e:
-            current_app.logger.error(f"OAuth callback error: {str(e)}")
+            current_app.logger.error(f"Process OAuth callback error: {str(e)}")
             return jsonify({
                 'success': False,
-                'message': 'Terjadi kesalahan saat OAuth callback.'
+                'message': 'Terjadi kesalahan saat memproses OAuth.'
             }), 500
     
     @staticmethod

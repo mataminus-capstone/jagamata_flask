@@ -38,6 +38,15 @@ def oauth_callback():
     """Handle Google OAuth callback"""
     return AuthController.oauth_callback()
 
+@auth_bp.route('/oauth/mobile/callback', methods=['POST'])
+def oauth_mobile_callback():
+    """Handle Google OAuth callback for mobile apps
+    
+    Mobile apps call this endpoint with the authorization code to exchange for JWT token
+    Request body: { "code": "auth_code_from_google" }
+    """
+    return AuthController.oauth_mobile_callback()
+
 @auth_bp.route('/me', methods=['GET'])
 def get_current_user():
     """Get current user info (requires auth token)"""

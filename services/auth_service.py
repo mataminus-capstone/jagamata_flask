@@ -16,6 +16,8 @@ class GoogleOAuth:
         self.client_id = None
         self.client_secret = None
         self.redirect_uri = None
+        self.mobile_client_id = None
+        self.mobile_client_secret = None
         if app:
             self.init_app(app)
     
@@ -23,6 +25,8 @@ class GoogleOAuth:
         self.client_id = app.config['GOOGLE_CLIENT_ID']
         self.client_secret = app.config['GOOGLE_CLIENT_SECRET']
         self.redirect_uri = app.config['GOOGLE_REDIRECT_URI']
+        self.mobile_client_id = app.config['GOOGLE_MOBILE_CLIENT_ID']
+        self.mobile_client_secret = app.config['GOOGLE_MOBILE_CLIENT_SECRET']
     
     def get_google_oauth_url(self):
         params = {

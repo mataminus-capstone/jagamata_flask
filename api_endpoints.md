@@ -7,8 +7,12 @@
 - `GET /api/auth/verify-email/<token>` - Verify email
 - `POST /api/auth/forgot-password` - Request password reset
 - `POST /api/auth/reset-password/<token>` - Reset password
-- `GET /api/auth/oauth/google` - Google OAuth login
-- `GET /api/auth/oauth/callback` - OAuth callback
+- `GET /api/auth/oauth/google` - Google OAuth login (returns OAuth URL)
+- `GET /api/auth/oauth/callback` - OAuth callback for web apps (redirect-based)
+- `POST /api/auth/oauth/mobile/callback` - OAuth callback for mobile apps (JSON-based)
+  - Request: `{ "code": "auth_code_from_google" }`
+  - Response: JWT token and user data
+- `GET /api/auth/me` - Get current user info (requires JWT token)
 - `POST /api/auth/logout` - Logout user
 
 ### Chatbot (`/api/chatbot`)
@@ -18,8 +22,14 @@
 
 ### Articles (`/api/articles`)
 
-- `GET /api/articles/` - Get all articles (with pagination)
-- `GET /api/articles/<id>` - Get article by ID
-- `POST /api/articles/` - Create article (admin only)
-- `PUT /api/articles/<id>` - Update article (admin only)
-- `DELETE /api/articles/<id>` - Delete article (admin only)
+- `GET /api/articles/` - Get all articles (public, with pagination)
+- `GET /api/article/<id>` - Get article by ID (public)
+- `GET /api/dashboard/articles` - Get all articles for admin dashboard (admin only, requires JWT)
+- `POST /api/articles/` - Create article (admin only, requires JWT)
+- `PUT /api/articles/<id>` - Update article (admin only, requires JWT, must be author or admin)
+- `DELETE /api/articles/<id>` - Delete article (admin only, requires JWT, must be author or admin)
+
+### User (`/api/user`)
+
+- `GET /api/user/profile` - Get user profile (requires JWT token)
+- `PUT /api/user/profile` - Update user profile (requires JWT token)
