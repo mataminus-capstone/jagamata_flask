@@ -1,8 +1,28 @@
 from flask import request, jsonify, current_app
 from models import db, Article, User
 from datetime import datetime
+from services.jwt_service import JWTService
+
 
 class ArticleController:
+    
+    @staticmethod
+    def _get_current_user_from_token():
+        """Helper: Extract and verify current user from JWT token"""
+        token = JWTService.extract_token_from_headers(request.headers)
+        
+        if not token:
+            return None, None
+        
+        payload = JWTService.verify_token(token)
+        
+        if not payload:
+            return None, None
+        
+        user_id = payload.get('user_id')
+        user = User.query.get(user_id)
+        
+        return user, payload.get('role')
     
     @staticmethod
     def get_articles():
@@ -90,6 +110,20 @@ class ArticleController:
     def create_article():
         """Create new article (admin only)"""
         try:
+            user, user_role = ArticleController._get_current_user_from_token()
+            
+            if not user:
+                return jsonify({
+                    'success': False,
+                    'message': 'Token tidak valid. Silakan login terlebih dahulu.'
+                }), 401
+            
+            if not user.is_admin():
+                return jsonify({
+                    'success': False,
+                    'message': 'Hanya admin yang bisa membuat artikel!'
+                }), 403
+            
             data = request.get_json(force=True, silent=True)
             
             if not data:
@@ -100,7 +134,6 @@ class ArticleController:
             
             title = data.get('title', '').strip()
             content = data.get('content', '').strip()
-            author_id = data.get('author_id')  # TODO: Get from JWT token
             
             if not title or not content:
                 return jsonify({
@@ -108,28 +141,8 @@ class ArticleController:
                     'message': 'Judul dan konten harus diisi!'
                 }), 400
             
-            if not author_id:
-                return jsonify({
-                    'success': False,
-                    'message': 'author_id diperlukan (sementara). Implementasikan JWT untuk production.'
-                }), 400
-            
-            # Verify user exists and is admin
-            user = User.query.get(author_id)
-            if not user:
-                return jsonify({
-                    'success': False,
-                    'message': 'User tidak ditemukan.'
-                }), 404
-            
-            if not user.is_admin():
-                return jsonify({
-                    'success': False,
-                    'message': 'Hanya admin yang bisa membuat artikel!'
-                }), 403
-            
             # Create article
-            article = Article(title=title, content=content, author_id=author_id)
+            article = Article(title=title, content=content, author_id=user.id)
             db.session.add(article)
             db.session.commit()
             
@@ -157,7 +170,7 @@ class ArticleController:
     
     @staticmethod
     def update_article(article_id):
-        """Update article (admin only)"""
+        """Update article (admin and author only)"""
         try:
             article = Article.query.get(article_id)
             
@@ -167,6 +180,21 @@ class ArticleController:
                     'message': 'Artikel tidak ditemukan.'
                 }), 404
             
+            user, user_role = ArticleController._get_current_user_from_token()
+            
+            if not user:
+                return jsonify({
+                    'success': False,
+                    'message': 'Token tidak valid. Silakan login terlebih dahulu.'
+                }), 401
+            
+            # Check if user is admin and author of the article
+            if not user.is_admin() or article.author_id != user.id:
+                return jsonify({
+                    'success': False,
+                    'message': 'Anda tidak punya akses untuk edit artikel ini!'
+                }), 403
+            
             data = request.get_json(force=True, silent=True)
             
             if not data:
@@ -174,16 +202,6 @@ class ArticleController:
                     'success': False,
                     'message': 'Invalid JSON format'
                 }), 400
-            
-            # TODO: Verify user is admin and is the author
-            user_id = data.get('user_id')  # Get from JWT token in production
-            if user_id:
-                user = User.query.get(user_id)
-                if not user or not user.is_admin() or article.author_id != user_id:
-                    return jsonify({
-                        'success': False,
-                        'message': 'Anda tidak punya akses untuk edit artikel ini!'
-                    }), 403
             
             # Update fields
             if 'title' in data:
@@ -219,7 +237,7 @@ class ArticleController:
     
     @staticmethod
     def delete_article(article_id):
-        """Delete article (admin only)"""
+        """Delete article (admin and author only)"""
         try:
             article = Article.query.get(article_id)
             
@@ -229,17 +247,20 @@ class ArticleController:
                     'message': 'Artikel tidak ditemukan.'
                 }), 404
             
-            # TODO: Verify user is admin and is the author
-            data = request.get_json(force=True, silent=True) or {}
-            user_id = data.get('user_id')  # Get from JWT token in production
+            user, user_role = ArticleController._get_current_user_from_token()
             
-            if user_id:
-                user = User.query.get(user_id)
-                if not user or not user.is_admin() or article.author_id != user_id:
-                    return jsonify({
-                        'success': False,
-                        'message': 'Anda tidak punya akses untuk hapus artikel ini!'
-                    }), 403
+            if not user:
+                return jsonify({
+                    'success': False,
+                    'message': 'Token tidak valid. Silakan login terlebih dahulu.'
+                }), 401
+            
+            # Check if user is admin and author of the article
+            if not user.is_admin() or article.author_id != user.id:
+                return jsonify({
+                    'success': False,
+                    'message': 'Anda tidak punya akses untuk hapus artikel ini!'
+                }), 403
             
             db.session.delete(article)
             db.session.commit()

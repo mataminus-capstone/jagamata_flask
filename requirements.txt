@@ -7,8 +7,8 @@ PyMySQL
 cryptography
 Werkzeug
 flask-cors
+PyJWT
 
-# baru
 tensorflow
 keras
 numpy

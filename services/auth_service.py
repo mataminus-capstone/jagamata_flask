@@ -7,6 +7,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from urllib.parse import urlencode
+from services.jwt_service import JWTService
+
 
 class GoogleOAuth:
     
@@ -329,7 +331,7 @@ class ResendEmailService:
                     <p class="footer-divider">—</p>
                     <p>
                         <strong>Jagamata</strong><br>
-                        Layanan Inovatif untuk Kesehatan Mental<br>
+                        Layanan Inovatif untuk Kesehatan Mata<br>
                         <a href="#" style="color: #667eea; text-decoration: none;">www.jagamata.com</a>
                     </p>
                     <div class="security-badge">🔒 Email terenkripsi dan aman</div>
@@ -530,7 +532,7 @@ class ResendEmailService:
                     <p class="footer-divider">—</p>
                     <p>
                         <strong>Jagamata</strong><br>
-                        Layanan Inovatif untuk Kesehatan Mental<br>
+                        Layanan Inovatif untuk Kesehatan Mata<br>
                         <a href="#" style="color: #f5576c; text-decoration: none;">www.jagamata.com</a>
                     </p>
                     <div class="security-badge">🔐 Email terenkripsi dan aman</div>
@@ -704,7 +706,7 @@ class ResendEmailService:
                             <div class="feature-icon">💬</div>
                             <div class="feature-text">
                                 <strong>Chat dengan AI</strong>
-                                Dapatkan dukungan kesehatan mental 24/7 dari asisten AI kami yang cerdas.
+                                Dapatkan dukungan kesehatan mata 24/7 dari asisten AI kami yang cerdas.
                             </div>
                         </div>
                         
@@ -712,7 +714,7 @@ class ResendEmailService:
                             <div class="feature-icon">📚</div>
                             <div class="feature-text">
                                 <strong>Artikel & Panduan</strong>
-                                Akses ke ribuan artikel informatif tentang kesehatan mental.
+                                Akses ke ribuan artikel informatif tentang kesehatan mata.
                             </div>
                         </div>
                         
@@ -720,13 +722,13 @@ class ResendEmailService:
                             <div class="feature-icon">🎯</div>
                             <div class="feature-text">
                                 <strong>Rencana Personal</strong>
-                                Buat rencana kesehatan mental yang disesuaikan dengan kebutuhan Anda.
+                                Buat rencana kesehatan mata yang disesuaikan dengan kebutuhan Anda.
                             </div>
                         </div>
                     </div>
                     
                     <div class="button-container">
-                        <a href="https://jagamata.com/dashboard" class="button">Mulai Sekarang</a>
+                        <a href="https://jagamata.com" class="button">Mulai Sekarang</a>
                     </div>
                 </div>
                 
@@ -737,7 +739,7 @@ class ResendEmailService:
                     <p class="footer-divider">—</p>
                     <p>
                         <strong>Jagamata</strong><br>
-                        Layanan Inovatif untuk Kesehatan Mental<br>
+                        Layanan Inovatif untuk Kesehatan Mata<br>
                         <a href="#" style="color: #38f9d7; text-decoration: none;">www.jagamata.com</a>
                     </p>
                     <div class="social-links">
@@ -757,11 +759,11 @@ class ResendEmailService:
         Akun Anda sudah siap digunakan! Email Anda telah berhasil diverifikasi.
         
         Anda sekarang memiliki akses ke semua fitur Jagamata:
-        - Chat dengan AI untuk dukungan kesehatan mental
+        - Chat dengan AI untuk dukungan kesehatan mata
         - Akses ke ribuan artikel informatif
-        - Buat rencana kesehatan mental personal
+        - Buat rencana kesehatan mata personal
         
-        Mulai sekarang: https://jagamata.com/dashboard
+        Mulai sekarang: https://jagamata.com
         
         Terima kasih telah bergabung dengan kami!
         
@@ -774,3 +776,4 @@ class ResendEmailService:
 # Initialize services
 google_oauth = GoogleOAuth()
 email_service = ResendEmailService()
+jwt_service = JWTService()

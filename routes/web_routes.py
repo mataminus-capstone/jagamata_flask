@@ -26,7 +26,7 @@ def login():
     if current_user.is_authenticated:
         if current_user.is_admin():
             return redirect(url_for('web.dashboard'))
-        return redirect(url_for('web.articles'))
+        return redirect(url_for('web.index'))
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -35,7 +35,6 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and user.check_password(password):
-            # TODOS : VERIFIKASI SMTP
             if not user.email_verified:
                 flash('Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.', 'error')
                 return render_template('login.html')
@@ -43,46 +42,12 @@ def login():
             login_user(user)
             flash('Login successful!', 'success')
             if user.is_admin():
-                return redirect(url_for('web.index'))
+                return redirect(url_for('web.dashboard'))
             return redirect(url_for('web.index'))
         else:
             flash('Invalid username or password', 'error')
     
     return render_template('login.html')
-
-# @web_bp.route('/register', methods=['GET', 'POST'])
-# def register():
-#     """Register page"""
-#     if current_user.is_authenticated:
-#         return redirect(url_for('web.index'))
-    
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         email = request.form.get('email')
-#         password = request.form.get('password')
-#         confirm_password = request.form.get('confirm_password')
-        
-#         if password != confirm_password:
-#             flash('Passwords do not match', 'error')
-#             return render_template('register.html')
-        
-#         if User.query.filter_by(username=username).first():
-#             flash('Username already exists', 'error')
-#             return render_template('register.html')
-        
-#         if User.query.filter_by(email=email).first():
-#             flash('Email already registered', 'error')
-#             return render_template('register.html')
-        
-#         user = User(username=username, email=email)
-#         user.set_password(password)
-#         db.session.add(user)
-#         db.session.commit()
-        
-#         flash('Registration successful! Please login.', 'success')
-#         return redirect(url_for('web.login'))
-    
-#     return render_template('register.html')
 
 @web_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -164,10 +129,21 @@ def manage_users():
     """Manage users page"""
     return render_template('manage_users.html')
 
-@web_bp.route('/article/create', methods=['GET', 'POST'])
+
+@web_bp.route('/dashboard/articles', methods=['GET'])
 @login_required
+@admin_required
+def dashboard_articles():
+    """Admin dashboard articles management page"""
+    page = request.args.get('page', 1, type=int)
+    articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    return render_template('manage_articles.html', articles=articles)
+
+@web_bp.route('/dashboard/articles/create', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def create_article():
-    """Create article page"""
+    """Create article page (admin only)"""
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
@@ -181,26 +157,11 @@ def create_article():
     
     return render_template('create.html')
 
-@web_bp.route('/articles')
-@login_required
-@admin_required
-def articles():
-    """Manage articles page - admin only"""
-    page = request.args.get('page', 1, type=int)
-    articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
-    return render_template('manage_articles.html', articles=articles)
-
-@web_bp.route('/article/<int:article_id>')
-def article_detail(article_id):
-    """Article detail page"""
-    article = Article.query.get_or_404(article_id)
-    return render_template('detail.html', article=article)
-
-@web_bp.route('/article/<int:article_id>/edit', methods=['GET', 'POST'])
+@web_bp.route('/dashboard/articles/<int:article_id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_article(article_id):
-    """Edit article page"""
+    """Edit article page (admin and author only)"""
     article = Article.query.get_or_404(article_id)
     
     if article.author_id != current_user.id:
@@ -217,11 +178,11 @@ def edit_article(article_id):
     
     return render_template('edit.html', article=article)
 
-@web_bp.route('/article/<int:article_id>/delete', methods=['POST'])
+@web_bp.route('/dashboard/articles/<int:article_id>/delete', methods=['POST'])
 @login_required
 @admin_required
 def delete_article(article_id):
-    """Delete article"""
+    """Delete article (admin and author only)"""
     article = Article.query.get_or_404(article_id)
     
     if article.author_id != current_user.id:
@@ -232,7 +193,21 @@ def delete_article(article_id):
     db.session.commit()
     
     flash('Article deleted successfully!', 'success')
-    return redirect(url_for('web.dashboard'))
+    return redirect(url_for('web.dashboard_articles'))
+
+
+@web_bp.route('/articles')
+def articles():
+    """Browse all articles page (public - for all users)"""
+    page = request.args.get('page', 1, type=int)
+    articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    return render_template('articles_public.html', articles=articles)
+
+@web_bp.route('/article/<int:article_id>')
+def article_detail(article_id):
+    """Article detail page (public - read only for all users)"""
+    article = Article.query.get_or_404(article_id)
+    return render_template('detail.html', article=article)
 
 @web_bp.route('/chatbot', methods=['POST'])
 def chatbot_web():
@@ -341,7 +316,7 @@ def oauth_callback():
         
         if user.is_admin():
             return redirect(url_for('web.dashboard'))
-        return redirect(url_for('web.articles'))
+        return redirect(url_for('web.index'))
         
     except Exception as e:
         flash('OAuth error occurred', 'error')

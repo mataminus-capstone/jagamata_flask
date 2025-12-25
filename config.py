@@ -18,6 +18,8 @@ class Config:
     RESEND_SENDER_EMAIL = os.getenv('RESEND_SENDER_EMAIL')
     RESEND_SENDER_NAME = os.getenv('RESEND_SENDER_NAME', 'Jagamata')
     
+    JWT_EXPIRATION_HOURS = os.getenv('JWT_EXPIRATION_HOURS', 24)
+    
 
 class DevelopmentConfig(Config):
     """Development configuration"""

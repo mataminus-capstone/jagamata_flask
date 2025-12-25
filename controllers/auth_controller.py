@@ -2,6 +2,7 @@ from flask import request, jsonify, current_app, redirect
 from models import db, User
 from services.auth_service import google_oauth, email_service
 from datetime import datetime
+from services.jwt_service import JWTService
 
 class AuthController:
     
@@ -105,17 +106,19 @@ class AuthController:
             user = User.query.filter_by(username=username).first()
             
             if user and user.check_password(password):
-                # TODO: VERIVIED SMTP
-                # if not user.email_verified:
-                #     return jsonify({
-                #         'success': False,
-                #         'message': 'Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.',
-                #         'data': {
-                #             'user_id': user.id,
-                #             'email': user.email,
-                #             'needs_verification': True
-                #         }
-                #     }), 403
+                
+                if not user.email_verified:
+                    return jsonify({
+                        'success': False,
+                        'message': 'Email belum diverifikasi. Silakan cek email Anda untuk link verifikasi.',
+                        'data': {
+                            'user_id': user.id,
+                            'email': user.email,
+                            'needs_verification': True
+                        }
+                    }), 403
+                
+                jwt_token = JWTService.generate_token(user.id, user.role)
                 
                 return jsonify({
                     'success': True,
@@ -126,7 +129,8 @@ class AuthController:
                         'email': user.email,
                         'role': user.role,
                         'email_verified': user.email_verified,
-                        'created_at': user.created_at.isoformat()
+                        'created_at': user.created_at.isoformat(),
+                        'token': jwt_token
                     }
                 }), 200
             
@@ -385,6 +389,8 @@ class AuthController:
             
             db.session.commit()
             
+            jwt_token = JWTService.generate_token(user.id, user.role)
+            
             return jsonify({
                 'success': True,
                 'message': f'Login berhasil! Selamat datang {user.username}',
@@ -394,7 +400,8 @@ class AuthController:
                     'email': user.email,
                     'role': user.role,
                     'email_verified': user.email_verified,
-                    'oauth_provider': user.oauth_provider
+                    'oauth_provider': user.oauth_provider,
+                    'token': jwt_token
                 }
             }), 200
             
@@ -407,12 +414,51 @@ class AuthController:
     
     @staticmethod
     def get_current_user():
-        """Get current user info (requires auth token in future)"""
-        # TODO: Implement JWT token validation
-        return jsonify({
-            'success': False,
-            'message': 'Not implemented yet. Requires JWT authentication.'
-        }), 501
+        """Get current user info from JWT token"""
+        try:
+            token = JWTService.extract_token_from_headers(request.headers)
+            
+            if not token:
+                return jsonify({
+                    'success': False,
+                    'message': 'Token tidak ditemukan. Gunakan header Authorization: Bearer <token>'
+                }), 401
+            
+            payload = JWTService.verify_token(token)
+            
+            if not payload:
+                return jsonify({
+                    'success': False,
+                    'message': 'Token tidak valid atau sudah kadaluarsa.'
+                }), 401
+            
+            user_id = payload.get('user_id')
+            user = User.query.get(user_id)
+            
+            if not user:
+                return jsonify({
+                    'success': False,
+                    'message': 'User tidak ditemukan.'
+                }), 404
+            
+            return jsonify({
+                'success': True,
+                'data': {
+                    'user_id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': user.role,
+                    'email_verified': user.email_verified,
+                    'created_at': user.created_at.isoformat()
+                }
+            }), 200
+            
+        except Exception as e:
+            current_app.logger.error(f"Get current user error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'message': 'Terjadi kesalahan saat mengambil data user.'
+            }), 500
     
     @staticmethod
     def logout():
