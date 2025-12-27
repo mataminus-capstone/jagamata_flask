@@ -2,3 +2,6 @@
 [ ] integrasi model untuk deteksi potensi penyakit mata
 [ ] integrasi model untuk akupresur
 [x] smpt
+[x] oaut
+[ ] tambah gambar di artikel
+[ ] integrasi cloudinary
