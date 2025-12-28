@@ -8,7 +8,6 @@ cryptography
 Werkzeug
 flask-cors
 PyJWT
-gunicorn
 
 tensorflow
 keras

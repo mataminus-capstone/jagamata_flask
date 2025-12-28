@@ -336,7 +336,7 @@ class AuthController:
                     'message': 'Kode otorisasi tidak ditemukan.'
                 }), 400
             
-            return AuthController._process_oauth_callback(code)
+            return AuthController._process_oauth_callback(code, is_mobile=False)
             
         except Exception as e:
             current_app.logger.error(f"OAuth callback error: {str(e)}")
@@ -370,7 +370,7 @@ class AuthController:
                     'message': 'Kode otorisasi tidak ditemukan.'
                 }), 400
             
-            return AuthController._process_oauth_callback(code)
+            return AuthController._process_oauth_callback(code, is_mobile=True)
             
         except Exception as e:
             current_app.logger.error(f"OAuth mobile callback error: {str(e)}")
@@ -380,18 +380,18 @@ class AuthController:
             }), 500
     
     @staticmethod
-    def _process_oauth_callback(code):
+    def _process_oauth_callback(code, is_mobile=False):
         """Shared OAuth callback processing logic for web and mobile
         
         Args:
             code: Authorization code from Google OAuth
+            is_mobile: Boolean flag to indicate mobile OAuth flow
             
         Returns:
             JSON response with user data and JWT token
         """
         try:
-            # Exchange code for token
-            token_data = google_oauth.exchange_code_for_token(code)
+            token_data = google_oauth.exchange_code_for_token(code, is_mobile=is_mobile)
             
             if not token_data or 'access_token' not in token_data:
                 return jsonify({

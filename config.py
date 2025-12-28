@@ -17,7 +17,6 @@ class Config:
     
     # Mobile OAuth (Android & iOS)
     GOOGLE_MOBILE_CLIENT_ID = os.getenv('GOOGLE_MOBILE_CLIENT_ID')
-    GOOGLE_MOBILE_CLIENT_SECRET = os.getenv('GOOGLE_MOBILE_CLIENT_SECRET')
     
     RESEND_API_KEY = os.getenv('RESEND_API_KEY')
     RESEND_SENDER_EMAIL = os.getenv('RESEND_SENDER_EMAIL')

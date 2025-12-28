@@ -17,7 +17,6 @@ class GoogleOAuth:
         self.client_secret = None
         self.redirect_uri = None
         self.mobile_client_id = None
-        self.mobile_client_secret = None
         if app:
             self.init_app(app)
     
@@ -26,7 +25,6 @@ class GoogleOAuth:
         self.client_secret = app.config['GOOGLE_CLIENT_SECRET']
         self.redirect_uri = app.config['GOOGLE_REDIRECT_URI']
         self.mobile_client_id = app.config['GOOGLE_MOBILE_CLIENT_ID']
-        self.mobile_client_secret = app.config['GOOGLE_MOBILE_CLIENT_SECRET']
     
     def get_google_oauth_url(self):
         params = {
@@ -42,15 +40,25 @@ class GoogleOAuth:
         print("OAUTH URL:", oauth_url)
         return oauth_url
     
-    def exchange_code_for_token(self, code):
+    def exchange_code_for_token(self, code, is_mobile=False):
         token_url = 'https://oauth2.googleapis.com/token'
-        data = {
-            'code': code,
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'redirect_uri': self.redirect_uri,
-            'grant_type': 'authorization_code'
-        }
+        
+        if is_mobile:
+            # Mobile OAuth: Only client_id (no secret needed)
+            data = {
+                'code': code,
+                'client_id': self.mobile_client_id,
+                'grant_type': 'authorization_code'
+            }
+        else:
+            # Web OAuth: Use client_id and client_secret
+            data = {
+                'code': code,
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'redirect_uri': self.redirect_uri,
+                'grant_type': 'authorization_code'
+            }
         
         try:
             response = requests.post(token_url, data=data)
