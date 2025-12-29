@@ -29,10 +29,10 @@ def login():
         return redirect(url_for('web.index'))
     
     if request.method == 'POST':
-        username = request.form.get('username')
+        email = request.form.get('email')
         password = request.form.get('password')
         
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         
         if user and user.check_password(password):
             if not user.email_verified:
@@ -45,7 +45,7 @@ def login():
                 return redirect(url_for('web.dashboard'))
             return redirect(url_for('web.index'))
         else:
-            flash('Invalid username or password', 'error')
+            flash('Invalid email or password', 'error')
     
     return render_template('login.html')
 
@@ -63,10 +63,6 @@ def register():
         
         if password != confirm_password:
             flash('Passwords do not match', 'error')
-            return render_template('register.html')
-        
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists', 'error')
             return render_template('register.html')
         
         if User.query.filter_by(email=email).first():

@@ -16,7 +16,8 @@ Dokumentasi lengkap untuk integrasi Android/iOS client dengan backend API Jagama
 
 ### Base URL
 ```
-Development: http://localhost:5000
+Production: https://jagamata.leapcell.app
+Development: http://localhost:8080
 ```
 
 ### Headers (untuk semua authenticated requests)
@@ -100,6 +101,8 @@ POST /api/auth/oauth/mobile/callback
 
 ### 2. Register dengan Email & Password
 
+**⚠️ UPDATED: Username tidak lagi harus unique!**
+
 **Endpoint:**
 ```
 POST /api/auth/register
@@ -132,13 +135,13 @@ POST /api/auth/register
 ```json
 {
   "success": false,
-  "message": "Username sudah terdaftar!" // atau error validation lainnya
+  "message": "Email sudah terdaftar!" // atau error validation lainnya
 }
 ```
 
 **Validasi:**
-- Username: required, unique
-- Email: required, unique, valid format
+- Username: required, **dapat duplikat** (semua orang bisa punya username yang sama)
+- Email: required, **unique**, valid format
 - Password: minimum 6 character
 
 **Flow:**
@@ -150,6 +153,8 @@ POST /api/auth/register
 
 ### 3. Login dengan Email & Password
 
+**⚠️ UPDATED: Login menggunakan EMAIL, bukan USERNAME!**
+
 **Endpoint:**
 ```
 POST /api/auth/login
@@ -158,7 +163,7 @@ POST /api/auth/login
 **Request Body:**
 ```json
 {
-  "username": "john_doe",
+  "email": "john@example.com",
   "password": "SecurePass123"
 }
 ```
@@ -184,7 +189,7 @@ POST /api/auth/login
 ```json
 {
   "success": false,
-  "message": "Username atau password salah!"
+  "message": "Email atau password salah!"
 }
 ```
 
@@ -614,8 +619,8 @@ GET /api/chatbot/status
 ```json
 {
   "id": "int",
-  "username": "string (unique)",
-  "email": "string (unique, valid email)",
+  "username": "string (CAN BE DUPLICATE - semua orang bisa punya username yang sama)",
+  "email": "string (UNIQUE - harus unik)",
   "password_hash": "string (bcrypt hash, nullable untuk OAuth users)",
   "role": "enum (user, moderator, admin)",
   "created_at": "ISO 8601 datetime",
@@ -766,12 +771,21 @@ Semua error response mengikuti format ini:
 ```json
 {
   "success": false,
-  "message": "Username, email, dan password harus diisi!"
+  "message": "Email dan password harus diisi!"
 }
 ```
 **Solusi:** Lihat validasi requirements di dokumentasi endpoint
 
-#### 5. Unauthorized Access (403)
+#### 5. Token Tidak Ditemukan (401) - UPDATED
+```json
+{
+  "success": false,
+  "message": "Token tidak ditemukan. Silakan login kembali!"
+}
+```
+**Solusi:** Pastikan JWT token tersimpan di localStorage setelah login dan dikirim di header Authorization
+
+#### 6. Unauthorized Access (403)
 ```json
 {
   "success": false,
@@ -780,7 +794,7 @@ Semua error response mengikuti format ini:
 ```
 **Solusi:** Pastikan user punya role/permission yang tepat
 
-#### 6. Resource Not Found (404)
+#### 7. Resource Not Found (404)
 ```json
 {
   "success": false,
@@ -807,8 +821,9 @@ try {
         // Handle 400-599
         switch (response.code()) {
             case 401:
-                // Token invalid, ask user to login
+                // Token invalid/not found, ask user to login
                 navigateToLogin();
+                clearStoredToken();
                 break;
             case 403:
                 // Forbidden, show error message
@@ -841,7 +856,9 @@ URLSession.shared.dataTask(with: request) { data, response, error in
     if (200...299).contains(httpResponse.statusCode) {
         // Handle success
     } else if httpResponse.statusCode == 401 {
-        // Token invalid, navigate to login
+        // Token invalid/not found, navigate to login
+        clearStoredToken()
+        navigateToLogin()
     } else if httpResponse.statusCode == 403 {
         // Show forbidden message
     } else {
@@ -861,13 +878,14 @@ URLSession.shared.dataTask(with: request) { data, response, error in
    - Name: `Jagamata API`
    - Add variables:
      ```
-     base_url: http://localhost:5000
+     base_url: https://jagamata.leapcell.app
      token: (akan diisi setelah login)
      ```
 
 2. **Create Base Variables:**
    ```
-   {{base_url}} = http://localhost:5000
+   {{base_url}} = https://jagamata.leapcell.app (production)
+   {{base_url}} = http://localhost:5000 (development)
    {{token}} = (JWT token dari login response)
    ```
 
@@ -908,7 +926,7 @@ Body (raw):
 
 ---
 
-**1.2 Login User**
+**1.2 Login User - UPDATED (Email-based)**
 ```
 Method: POST
 URL: {{base_url}}/api/auth/login
@@ -917,7 +935,7 @@ Headers:
 
 Body (raw):
 {
-  "username": "testuser123",
+  "email": "test@example.com",
   "password": "Password123"
 }
 ```
@@ -942,6 +960,7 @@ Body (raw):
 **Save token ke environment:**
 - Response → "token" → copy value
 - Environments → Jagamata API → token → paste value
+- Token akan otomatis tersimpan di localStorage di frontend
 
 ---
 
@@ -1047,11 +1066,11 @@ Headers:
   "success": true,
   "data": {
     "id": 1,
-    "title": "Artikel Title",
-    "content": "Content...",
+    "title": "Cara Menjaga Kesehatan",
+    "content": "Lorem ipsum...",
     "author": {
       "id": 1,
-      "username": "admin"
+      "username": "doctor_admin"
     },
     "created_at": "2025-01-15T10:30:00",
     "updated_at": "2025-01-15T11:00:00"
@@ -1063,7 +1082,35 @@ Headers:
 
 #### 3. Chatbot
 
-**3.1 Check Chatbot Status**
+**3.1 Send Message to Chatbot**
+```
+Method: POST
+URL: {{base_url}}/api/chatbot
+Headers:
+  Content-Type: application/json
+
+Body (raw):
+{
+  "message": "Saya sakit kepala"
+}
+```
+
+**Expected Response (200):**
+```json
+{
+  "success": true,
+  "message": "Berhasil mendapatkan respons.",
+  "data": {
+    "response": "Sakit kepala bisa disebabkan oleh...",
+    "doctor": "Dr. AI Assistant",
+    "confidence": 0.92
+  }
+}
+```
+
+---
+
+**3.2 Get Chatbot Status**
 ```
 Method: GET
 URL: {{base_url}}/api/chatbot/status
@@ -1086,129 +1133,52 @@ Headers:
 
 ---
 
-**3.2 Send Message to Chatbot**
-```
-Method: POST
-URL: {{base_url}}/api/chatbot
-Headers:
-  Content-Type: application/json
+## Troubleshooting
 
-Body (raw):
-{
-  "message": "Saya sakit kepala, apa yang harus saya lakukan?"
-}
-```
+### Masalah Umum
 
-**Expected Response (200):**
-```json
-{
-  "success": true,
-  "message": "Berhasil mendapatkan respons.",
-  "data": {
-    "response": "Sakit kepala bisa disebabkan oleh... [long response]",
-    "doctor": "Dr. AI Assistant",
-    "confidence": 0.95
-  }
-}
-```
+#### 1. Token Tidak Ditemukan saat Create Article
+**Penyebab:** Token tidak tersimpan di localStorage atau tidak dikirim di header Authorization
+**Solusi:** 
+- Pastikan login berhasil dan token tersimpan di localStorage
+- Cek browser DevTools → Application → LocalStorage → key "jwt_token"
+- Pastikan artikel creation request mengirim token di header Authorization: Bearer {token}
 
----
+#### 2. Login Error "Email atau password salah"
+**Penyebab:** Email atau password yang dimasukkan tidak sesuai
+**Solusi:**
+- Pastikan menggunakan EMAIL, bukan USERNAME
+- Default email untuk testing: `admin@example.com` atau `user@example.com`
+- Default password: `admin123` atau `user123`
 
-### Tips Testing
+#### 3. Email belum Diverifikasi
+**Penyebab:** User belum mengklik link verifikasi di email
+**Solusi:**
+- Cek email inbox atau spam folder
+- Klik link verifikasi
+- Atau untuk development, bisa langsung set `email_verified = true` di database
 
-1. **Set Environment Variable:**
-   - Gunakan `{{variable}}` untuk reference environment variables
-   - Ini membuat testing lebih flexible
-
-2. **Use Pre-request Script untuk Auto Token:**
-   ```javascript
-   // Sebelum test authenticated endpoint
-   // Pastikan token sudah di environment
-   if (!pm.environment.get("token")) {
-       console.log("Token tidak ada di environment. Login terlebih dahulu!");
-   }
-   ```
-
-3. **Save Response ke Environment:**
-   ```javascript
-   // Pada Tests tab
-   if (pm.response.code === 200) {
-       var jsonData = pm.response.json();
-       pm.environment.set("token", jsonData.data.token);
-   }
-   ```
-
-4. **Create Postman Collection:**
-   - Save semua test requests
-   - Export sebagai `.json`
-   - Share dengan mobile team
+#### 4. Token Sudah Expired
+**Penyebab:** JWT token sudah kadaluarsa
+**Solusi:**
+- Login kembali untuk mendapatkan token baru
+- Untuk development, adjust JWT expiry time di config
 
 ---
 
-## Quick Reference
+## Changelog - Terbaru (Versi 2.0)
 
-### Authentication Headers
-```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
+### Changes:
+- ✅ **Login Email-Based**: Ganti dari username menjadi email
+- ✅ **Username Non-Unique**: Username bisa duplikat, hanya email yang harus unik
+- ✅ **Token Management**: Perbaikan token handling di article creation
+- ✅ **Base URL**: Ditambahkan production URL `https://jagamata.leapcell.app`
+- ✅ **Error Handling**: Pesan error lebih jelas dan informatif
+- ✅ **Database Schema**: Updated di setup.py dengan migration baru
 
-### Common Requests
-
-**Get Profile:**
-```bash
-curl -X GET "http://localhost:5000/api/auth/me" \
-  -H "Authorization: Bearer <token>"
-```
-
-**Get Articles:**
-```bash
-curl -X GET "http://localhost:5000/api/articles?page=1&per_page=10"
-```
-
-**Get Article Detail:**
-```bash
-curl -X GET "http://localhost:5000/api/articles/1"
-```
-
-**Chat with Chatbot:**
-```bash
-curl -X POST "http://localhost:5000/api/chatbot" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Saya sakit kepala"}'
-```
-
-**Login:**
-```bash
-curl -X POST "http://localhost:5000/api/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{"username": "john_doe", "password": "password123"}'
-```
-
----
-
-## Support & Troubleshooting
-
-### Chatbot Tidak Merespon
-- Check chatbot status di `/api/chatbot/status`
-- Pastikan model sudah dimuat (`model_loaded: true`)
-- Pastikan Gemini API sudah dikonfigurasi
-
-### Token Selalu Expired
-- Token dibuat dengan expiry time sesuai config
-- Untuk production, implementasi refresh token mechanism
-- Client harus handle 401 response dan ask user login ulang
-
-### CORS Issues
-- Pastikan backend sudah set CORS headers
-- Mobile apps tidak punya CORS restriction seperti web
-
-### Email Tidak Diterima
-- Check email service configuration
-- Lihat server logs untuk error detail
-- Pastikan email credentials valid di config
-
----
-
-**Last Updated:** 2025-01-15
-**API Version:** 1.0
-**Documentation Version:** 1.0
+### Migration Notes:
+Jika mengupdate dari versi lama:
+1. Run `python setup.py` untuk update database schema
+2. Update client login logic untuk menggunakan email bukan username
+3. Update token storage dan retrieval dari localStorage
+4. Test semua authentication flow di Postman

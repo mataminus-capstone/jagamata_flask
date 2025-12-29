@@ -323,9 +323,15 @@
           const token = localStorage.getItem("token");
 
           if (!token) {
-            alert("Token tidak ditemukan. Silakan login kembali!");
-            window.location.href = "/login";
-            return;
+            // Token tidak ada, coba ambil dari API atau redirect ke login
+            const response = await fetch("/api/auth/me");
+            const data = await response.json();
+
+            if (!data.success) {
+              alert("Token tidak ditemukan. Silakan login kembali!");
+              window.location.href = "/login";
+              return;
+            }
           }
 
           try {
@@ -346,10 +352,11 @@
               location.reload();
             } else {
               alert("Error: " + data.message);
+              console.error("Response:", data);
             }
           } catch (error) {
             console.error("Error:", error);
-            alert("Terjadi kesalahan");
+            alert("Terjadi kesalahan: " + error.message);
           }
         });
 
@@ -368,6 +375,26 @@
         ) {
           sidebar.classList.add("-translate-x-full");
         }
+      });
+
+      window.addEventListener("load", function () {
+        // Get token from API if user is authenticated
+        fetch("/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              // Token valid, user authenticated
+              console.log("[v0] User authenticated:", data.data.username);
+            } else {
+              // Try to get new token from cookies
+              console.log("[v0] Token invalid, attempting refresh");
+            }
+          })
+          .catch((e) => console.log("[v0] Auth check failed:", e));
       });
     </script>
   </body>

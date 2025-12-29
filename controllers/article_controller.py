@@ -115,7 +115,7 @@ class ArticleController:
             if not user:
                 return jsonify({
                     'success': False,
-                    'message': 'Token tidak valid. Silakan login terlebih dahulu.'
+                    'message': 'Token tidak ditemukan. Silakan login kembali!'
                 }), 401
             
             if not user.is_admin():
@@ -185,10 +185,10 @@ class ArticleController:
             if not user:
                 return jsonify({
                     'success': False,
-                    'message': 'Token tidak valid. Silakan login terlebih dahulu.'
+                    'message': 'Token tidak ditemukan. Silakan login kembali!'
                 }), 401
             
-            # Check if user is admin and author of the article
+            # Check if user is admin AND author of the article
             if not user.is_admin() or article.author_id != user.id:
                 return jsonify({
                     'success': False,
@@ -252,10 +252,10 @@ class ArticleController:
             if not user:
                 return jsonify({
                     'success': False,
-                    'message': 'Token tidak valid. Silakan login terlebih dahulu.'
+                    'message': 'Token tidak ditemukan. Silakan login kembali!'
                 }), 401
             
-            # Check if user is admin and author of the article
+            # Check if user is admin AND author of the article
             if not user.is_admin() or article.author_id != user.id:
                 return jsonify({
                     'success': False,

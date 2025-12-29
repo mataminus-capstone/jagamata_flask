@@ -35,11 +35,7 @@ class AuthController:
                     'message': 'Password minimal 6 karakter!'
                 }), 400
             
-            if User.query.filter_by(username=username).first():
-                return jsonify({
-                    'success': False,
-                    'message': 'Username sudah terdaftar!'
-                }), 400
+            # Hanya email yang harus unik
             
             if User.query.filter_by(email=email).first():
                 return jsonify({
@@ -94,16 +90,16 @@ class AuthController:
                     'message': 'Invalid JSON format'
                 }), 400
             
-            username = data.get('username', '').strip()
+            email = data.get('email', '').strip()
             password = data.get('password', '').strip()
             
-            if not username or not password:
+            if not email or not password:
                 return jsonify({
                     'success': False,
-                    'message': 'Username dan password harus diisi!'
+                    'message': 'Email dan password harus diisi!'
                 }), 400
             
-            user = User.query.filter_by(username=username).first()
+            user = User.query.filter_by(email=email).first()
             
             if user and user.check_password(password):
                 
@@ -136,7 +132,7 @@ class AuthController:
             
             return jsonify({
                 'success': False,
-                'message': 'Username atau password salah!'
+                'message': 'Email atau password salah!'
             }), 401
             
         except Exception as e:

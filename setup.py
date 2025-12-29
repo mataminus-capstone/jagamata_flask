@@ -9,6 +9,39 @@ from models import db, User
 
 load_dotenv()
 
+def migrate_remove_username_unique():
+    """Remove unique constraint from username column"""
+    app = create_app(os.getenv('FLASK_ENV', 'development'))
+    
+    with app.app_context():
+        try:
+            from sqlalchemy import text
+            
+            # Check if username constraint exists
+            result = db.session.execute(text(
+                "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE "
+                "WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'username' AND CONSTRAINT_NAME != 'PRIMARY'"
+            ))
+            
+            constraint = result.scalar()
+            
+            if constraint:
+                print(f"Removing unique constraint from username: {constraint}")
+                db.session.execute(text(
+                    f"ALTER TABLE users DROP CONSTRAINT {constraint}"
+                ))
+                db.session.commit()
+                print("✓ Username unique constraint removed!")
+                return True
+            else:
+                print("✓ Username constraint already handled")
+                return False
+                
+        except Exception as e:
+            db.session.rollback()
+            print(f"Note: Username constraint migration skipped: {str(e)}")
+            # Don't fail the setup for this, continue
+
 def migrate_oauth_columns():
     """Add OAuth columns to existing users table if they don't exist"""
     app = create_app(os.getenv('FLASK_ENV', 'development'))
@@ -52,7 +85,7 @@ def migrate_oauth_columns():
                 
         except Exception as e:
             db.session.rollback()
-            print(f"✗ Error migrating database: {str(e)}")
+            print(f"✗ Error migrating OAuth columns: {str(e)}")
             import traceback
             traceback.print_exc()
             raise
@@ -66,10 +99,11 @@ def init_db():
         db.create_all()
         print("✓ Database tables created successfully!")
         
+        migrate_remove_username_unique()
         migrate_oauth_columns()
         
         # Check if admin user already exists
-        admin_user = User.query.filter_by(username='admin').first()
+        admin_user = User.query.filter_by(email='admin@example.com').first()
         if not admin_user:
             admin = User(
                 username='admin',
@@ -80,12 +114,12 @@ def init_db():
             admin.set_password('admin123')
             db.session.add(admin)
             db.session.commit()
-            print("✓ Admin user created: username='admin', password='admin123'")
+            print("✓ Admin user created: email='admin@example.com', password='admin123'")
         else:
             print("✓ Admin user already exists")
         
         # Create sample regular user
-        user = User.query.filter_by(username='user').first()
+        user = User.query.filter_by(email='user@example.com').first()
         if not user:
             user = User(
                 username='user',
@@ -96,7 +130,7 @@ def init_db():
             user.set_password('user123')
             db.session.add(user)
             db.session.commit()
-            print("✓ Regular user created: username='user', password='user123'")
+            print("✓ Regular user created: email='user@example.com', password='user123'")
         else:
             print("✓ Regular user already exists")
 
