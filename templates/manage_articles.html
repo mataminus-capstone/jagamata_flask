@@ -320,10 +320,21 @@
           const title = document.getElementById("articleTitle").value;
           const content = document.getElementById("articleContent").value;
 
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            alert("Token tidak ditemukan. Silakan login kembali!");
+            window.location.href = "/login";
+            return;
+          }
+
           try {
             const response = await fetch("/api/articles", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
               body: JSON.stringify({ title, content }),
             });
 
