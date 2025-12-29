@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User, Article
 from functools import wraps
 from services.auth_service import email_service
+from services.jwt_service import JWTService
 
 web_bp = Blueprint('web', __name__)
 
@@ -40,12 +41,15 @@ def login():
                 return render_template('login.html')
             
             login_user(user)
-            flash('Login successful!', 'success')
+            
+            jwt_token = JWTService.generate_token(user.id, user.role)
+            
+            flash('Login berhasil!', 'success')
             if user.is_admin():
-                return redirect(url_for('web.dashboard'))
-            return redirect(url_for('web.index'))
+                return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.dashboard'))
+            return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.index'))
         else:
-            flash('Invalid email or password', 'error')
+            flash('Email atau password salah', 'error')
     
     return render_template('login.html')
 
@@ -76,7 +80,6 @@ def register():
         db.session.commit()  # save to get user.id
         
         # Generate verification token & send email
-        from services.auth_service import email_service
         token = user.generate_verification_token()
         db.session.commit()
         
