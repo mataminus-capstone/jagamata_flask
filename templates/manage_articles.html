@@ -302,8 +302,23 @@
     </div>
 
     <script>
+      function getToken() {
+        const token = localStorage.getItem("token");
+        console.log(
+          "[v0] Token from localStorage:",
+          token ? "Present" : "Missing"
+        );
+        return token;
+      }
+
       // Modal Functions
       function openCreateModal() {
+        const token = getToken();
+        if (!token) {
+          alert("Token tidak ditemukan. Silakan login kembali!");
+          window.location.href = "/login";
+          return;
+        }
         document.getElementById("createModal").classList.remove("hidden");
       }
 
@@ -320,14 +335,30 @@
           const title = document.getElementById("articleTitle").value;
           const content = document.getElementById("articleContent").value;
 
+          const token = getToken();
+
+          if (!token) {
+            alert("Token tidak ditemukan. Silakan login kembali!");
+            window.location.href = "/login";
+            return;
+          }
+
+          console.log("[v0] Creating article with title:", title);
+          console.log("[v0] Using token:", token.substring(0, 20) + "...");
+
           try {
             const response = await fetch("/api/articles", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
               body: JSON.stringify({ title, content }),
             });
 
+            console.log("[v0] Response status:", response.status);
             const data = await response.json();
+            console.log("[v0] Response data:", data);
 
             if (data.success) {
               alert("Artikel berhasil dibuat!");
@@ -337,8 +368,8 @@
               alert("Error: " + data.message);
             }
           } catch (error) {
-            console.error("Error:", error);
-            alert("Terjadi kesalahan");
+            console.error("[v0] Fetch error:", error);
+            alert("Terjadi kesalahan: " + error.message);
           }
         });
 
@@ -356,6 +387,17 @@
           !mobileMenuBtn.contains(e.target)
         ) {
           sidebar.classList.add("-translate-x-full");
+        }
+      });
+
+      window.addEventListener("load", function () {
+        const token = getToken();
+        if (!token) {
+          console.log("[v0] No token found, redirecting to login");
+          // Don't auto-redirect, just log warning
+          // User can still see articles but cannot create
+        } else {
+          console.log("[v0] Token found, user is authenticated");
         }
       });
     </script>

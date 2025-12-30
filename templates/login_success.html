@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Berhasil</title>
+  </head>
+  <body>
+    <script>
+      const token = "{{ token }}";
+      if (token) {
+        localStorage.setItem("token", token);
+        console.log("[v0] Token saved to localStorage");
+      }
+
+      const redirectUrl = "{{ redirect_url }}";
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      }
+    </script>
+  </body>
+</html>

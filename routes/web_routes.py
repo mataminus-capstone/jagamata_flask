@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User, Article
 from functools import wraps
 from services.auth_service import email_service
+from services.jwt_service import JWTService
 
 web_bp = Blueprint('web', __name__)
 
@@ -29,10 +30,10 @@ def login():
         return redirect(url_for('web.index'))
     
     if request.method == 'POST':
-        username = request.form.get('username')
+        email = request.form.get('email')
         password = request.form.get('password')
         
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         
         if user and user.check_password(password):
             if not user.email_verified:
@@ -40,12 +41,15 @@ def login():
                 return render_template('login.html')
             
             login_user(user)
-            flash('Login successful!', 'success')
+            
+            jwt_token = JWTService.generate_token(user.id, user.role)
+            
+            flash('Login berhasil!', 'success')
             if user.is_admin():
-                return redirect(url_for('web.dashboard'))
-            return redirect(url_for('web.index'))
+                return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.dashboard'))
+            return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.index'))
         else:
-            flash('Invalid username or password', 'error')
+            flash('Email atau password salah', 'error')
     
     return render_template('login.html')
 
@@ -65,10 +69,6 @@ def register():
             flash('Passwords do not match', 'error')
             return render_template('register.html')
         
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists', 'error')
-            return render_template('register.html')
-        
         if User.query.filter_by(email=email).first():
             flash('Email already registered', 'error')
             return render_template('register.html')
@@ -80,7 +80,6 @@ def register():
         db.session.commit()  # save to get user.id
         
         # Generate verification token & send email
-        from services.auth_service import email_service
         token = user.generate_verification_token()
         db.session.commit()
         
