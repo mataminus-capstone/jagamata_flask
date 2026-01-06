@@ -2,59 +2,58 @@
 block content %}
 <div class="flex items-center justify-center min-h-[calc(100vh-200px)]">
   <div class="w-full max-w-md">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
       <!-- Header -->
       <div class="text-center mb-8">
         <div
-          class="w-16 h-16 btn-gradient rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg"
+          class="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center text-white mx-auto mb-4"
         >
-          <i class="fas fa-sign-in-alt"></i>
+          <i class="fas fa-sign-in-alt text-lg"></i>
         </div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang</h1>
-        <p class="text-gray-600">Masuk ke akun Jagamata Anda</p>
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">Selamat Datang</h1>
+        <p class="text-gray-500 text-sm">Masuk ke akun Jagamata Anda</p>
       </div>
 
       <!-- Form -->
-      <form method="POST" class="space-y-6" id="loginForm">
-        <!-- Ubah username menjadi email -->
+      <form method="POST" class="space-y-5" id="loginForm">
         <div>
           <label
             for="email"
-            class="block text-sm font-semibold text-gray-700 mb-2"
+            class="block text-sm font-medium text-gray-700 mb-1.5"
           >
-            <i class="fas fa-envelope mr-2 text-sky-500"></i>Email
+            Email
           </label>
           <input
             type="email"
             id="email"
             name="email"
             required
-            placeholder="Masukkan email Anda"
-            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition"
+            placeholder="nama@email.com"
+            class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-200 transition text-sm"
           />
         </div>
 
         <div>
           <label
             for="password"
-            class="block text-sm font-semibold text-gray-700 mb-2"
+            class="block text-sm font-medium text-gray-700 mb-1.5"
           >
-            <i class="fas fa-lock mr-2 text-sky-500"></i>Password
+            Password
           </label>
           <input
             type="password"
             id="password"
             name="password"
             required
-            placeholder="Masukkan password Anda"
-            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition"
+            placeholder="Masukkan password"
+            class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-200 transition text-sm"
           />
         </div>
 
         <div class="flex items-center justify-end">
           <a
             href="{{ url_for('web.forgot_password') }}"
-            class="text-sm text-sky-600 hover:text-sky-700 font-medium"
+            class="text-sm text-primary-600 hover:text-primary-700 font-medium"
           >
             Lupa Password?
           </a>
@@ -62,32 +61,28 @@ block content %}
 
         <button
           type="submit"
-          class="w-full btn-gradient text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition"
+          class="w-full btn-primary text-white font-medium py-2.5 rounded-lg transition"
         >
-          <i class="fas fa-sign-in-alt mr-2"></i>
-          Masuk Sekarang
+          Masuk
         </button>
       </form>
 
-      <div class="relative my-8">
+      <div class="relative my-6">
         <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-gray-300"></div>
+          <div class="w-full border-t border-gray-200"></div>
         </div>
         <div class="relative flex justify-center text-sm">
-          <span class="px-4 bg-white text-gray-500 font-medium"
-            >Atau masuk dengan</span
-          >
+          <span class="px-3 bg-white text-gray-400">atau</span>
         </div>
       </div>
 
       <!-- OAuth Buttons -->
-      <div class="space-y-3 mb-8">
-        <!-- Updated OAuth link to use web OAuth route -->
+      <div class="mb-6">
         <a
           href="{{ url_for('web.oauth_google') }}"
-          class="flex items-center justify-center w-full px-6 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold transition"
+          class="flex items-center justify-center w-full px-4 py-2.5 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition text-sm"
         >
-          <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -109,67 +104,46 @@ block content %}
         </a>
       </div>
 
-      <!-- Divider -->
-      <div class="relative my-8">
-        <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-gray-300"></div>
-        </div>
-        <div class="relative flex justify-center text-sm">
-          <span class="px-4 bg-white text-gray-500 font-medium"
-            >Belum punya akun?</span
-          >
-        </div>
-      </div>
-
       <!-- Register Link -->
-      <div class="text-center">
+      <p class="text-center text-sm text-gray-500">
+        Belum punya akun?
         <a
           href="{{ url_for('web.register') }}"
-          class="inline-block w-full px-6 py-3 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-semibold transition"
+          class="text-primary-600 hover:text-primary-700 font-medium"
         >
-          <i class="fas fa-user-plus mr-2"></i>
-          Daftar Sekarang
+          Daftar
         </a>
-      </div>
+      </p>
     </div>
 
     <!-- Additional Info -->
-    <div class="mt-6 text-center">
-      <p class="text-sm text-gray-600">
-        <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+    <div class="mt-4 text-center">
+      <p class="text-xs text-gray-400 flex items-center justify-center gap-1">
+        <i class="fas fa-lock"></i>
         Dilindungi dengan enkripsi tingkat tinggi
       </p>
     </div>
   </div>
 </div>
 
-<!-- Add script untuk simpan token setelah login sukses via Flask form -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("loginForm");
 
-    // Jika login berhasil dan di-redirect, cek apakah sudah login
     if (loginForm) {
-      // Intercepted form submit untuk mencoba login via API
       loginForm.addEventListener("submit", async function (e) {
-        // Untuk sekarang, biarkan form submit normal via Flask
-        // Ini akan set Flask session
-        // Token akan di-extract dari API response jika perlu
+        // Biarkan form submit normal via Flask
       });
     }
 
-    // Try to fetch current user token from API
     const token = localStorage.getItem("token");
     if (!token && document.querySelector('a[href*="logout"]')) {
-      // User is logged in via Flask session, coba ambil token
       fetch("/api/auth/me", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token || ""}`,
         },
-      }).catch(() => {
-        // Token tidak ada atau invalid, itu OK
-      });
+      }).catch(() => {});
     }
   });
 </script>

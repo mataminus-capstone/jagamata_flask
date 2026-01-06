@@ -20,7 +20,14 @@ def create_app(config_name='development'):
     
     app.config.from_object(config[config_name])
     
-    CORS(app, origins=["*"], methods=["GET", "POST", "PUT", "DELETE", "PATCH"], allow_headers=["Content-Type", "Authorization"])
+    app.url_map.strict_slashes = False
+    
+    CORS(app, 
+         resources={r"/api/*": {"origins": "*"}},
+         methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+         allow_headers=["Content-Type", "Authorization"],
+         supports_credentials=False,
+         max_age=3600)
     
     # Initialize extensions
     db.init_app(app)
@@ -46,6 +53,14 @@ def create_app(config_name='development'):
     
     # Initialize chatbot
     chatbot.init_app(app)
+    
+    @app.after_request
+    def after_request(response):
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, PATCH, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        response.headers['Access-Control-Max-Age'] = '3600'
+        return response
     
     @app.errorhandler(404)
     def not_found(e):
@@ -78,6 +93,6 @@ def create_app(config_name='development'):
     return app
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT'))
+    port = int(os.getenv('PORT', 5000))
     app = create_app(os.getenv('FLASK_ENV', 'development'))
     app.run(debug=os.getenv('FLASK_ENV') == 'development', host='0.0.0.0', port=port)

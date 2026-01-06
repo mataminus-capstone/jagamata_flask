@@ -27,5 +27,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:8080/api/health', timeout=5)" || exit 1
 
-# Run the application with gunicorn
+# Run the application whttps://jagamata.leapcell.app/ith gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "120", "--workers", "2", "wsgi:app"]
