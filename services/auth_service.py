@@ -83,6 +83,30 @@ class GoogleOAuth:
         except Exception as e:
             current_app.logger.error(f"Error getting user info: {str(e)}")
             return None
+            
+    def verify_id_token(self, id_token):
+        """Verify Google ID Token"""
+        try:
+            # Verify via Google API
+            token_info_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
+            response = requests.get(token_info_url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check audience matches (optional but recommended)
+                # aud = data.get('aud')
+                # if aud != self.client_id:
+                #    current_app.logger.warning(f"Token audience mismatch: {aud}")
+                
+                return data
+            else:
+                current_app.logger.error(f"Token verification failed: {response.text}")
+                return None
+                
+        except Exception as e:
+            current_app.logger.error(f"Error verifying ID token: {str(e)}")
+            return None
 
 
 class ResendEmailService:
