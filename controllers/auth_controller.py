@@ -67,6 +67,7 @@ class AuthController:
                     'user_id': user.id,
                     'username': user.username,
                     'email': user.email,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified
                 }
             }), 201
@@ -124,6 +125,7 @@ class AuthController:
                         'username': user.username,
                         'email': user.email,
                         'role': user.role,
+                        'profile_picture': user.profile_picture,
                         'email_verified': user.email_verified,
                         'created_at': user.created_at.isoformat(),
                         'token': jwt_token
@@ -413,6 +415,7 @@ class AuthController:
             oauth_id = user_data.get('id')
             email = user_data.get('email')
             name = user_data.get('name')
+            picture = user_data.get('picture')
             
             user = User.query.filter_by(oauth_id=oauth_id).first()
             
@@ -439,9 +442,14 @@ class AuthController:
                         oauth_provider='google',
                         oauth_id=oauth_id,
                         email_verified=True,
+                        profile_picture=picture,
                         role='user'
                     )
                     db.session.add(user)
+            
+            # Update existing user picture if from OAuth and currently empty
+            if user and picture and not user.profile_picture:
+                user.profile_picture = picture
             
             db.session.commit()
             
@@ -455,6 +463,7 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'role': user.role,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'oauth_provider': user.oauth_provider,
                     'created_at': user.created_at.isoformat(),
@@ -487,6 +496,7 @@ class AuthController:
             
             oauth_id = user_data.get('sub') # 'sub' is the unique ID in ID Token
             email = user_data.get('email')
+            picture = user_data.get('picture')
             
             user = User.query.filter_by(oauth_id=oauth_id).first()
             
@@ -510,9 +520,14 @@ class AuthController:
                         oauth_provider='google',
                         oauth_id=oauth_id,
                         email_verified=True,
+                        profile_picture=picture,
                         role='user'
                     )
                     db.session.add(user)
+            
+            # Update picture if needed
+            if user and picture and not user.profile_picture:
+                user.profile_picture = picture
             
             db.session.commit()
             
@@ -526,6 +541,7 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'role': user.role,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'oauth_provider': user.oauth_provider,
                     'created_at': user.created_at.isoformat(),
@@ -576,6 +592,7 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'role': user.role,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'created_at': user.created_at.isoformat()
                 }

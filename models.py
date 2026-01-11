@@ -26,6 +26,8 @@ class User(UserMixin, db.Model):
     reset_token = db.Column(db.String(255), nullable=True)
     reset_token_expiry = db.Column(db.DateTime, nullable=True)
     
+    profile_picture = db.Column(db.String(512), nullable=True) # URL to Google profile picture
+    
     articles = db.relationship('Article', backref='author', lazy=True, cascade='all, delete-orphan')
     
     def set_password(self, password):
