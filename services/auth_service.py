@@ -43,22 +43,18 @@ class GoogleOAuth:
     def exchange_code_for_token(self, code, is_mobile=False):
         token_url = 'https://oauth2.googleapis.com/token'
         
-        if is_mobile:
-            # Mobile OAuth: Only client_id (no secret needed)
-            data = {
-                'code': code,
-                'client_id': self.mobile_client_id,
-                'grant_type': 'authorization_code'
-            }
-        else:
-            # Web OAuth: Use client_id and client_secret
-            data = {
-                'code': code,
-                'client_id': self.client_id,
-                'client_secret': self.client_secret,
-                'redirect_uri': self.redirect_uri,
-                'grant_type': 'authorization_code'
-            }
+        # Always use Web Client ID and Secret for code exchange
+        # because the code was obtained requesting the server_client_id (which is the Web ID)
+        data = {
+            'code': code,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'grant_type': 'authorization_code'
+        }
+        
+        if not is_mobile:
+            # Web OAuth needs redirect_uri
+            data['redirect_uri'] = self.redirect_uri
         
         try:
             response = requests.post(token_url, data=data)
@@ -86,6 +82,30 @@ class GoogleOAuth:
                 return None
         except Exception as e:
             current_app.logger.error(f"Error getting user info: {str(e)}")
+            return None
+            
+    def verify_id_token(self, id_token):
+        """Verify Google ID Token"""
+        try:
+            # Verify via Google API
+            token_info_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
+            response = requests.get(token_info_url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check audience matches (optional but recommended)
+                # aud = data.get('aud')
+                # if aud != self.client_id:
+                #    current_app.logger.warning(f"Token audience mismatch: {aud}")
+                
+                return data
+            else:
+                current_app.logger.error(f"Token verification failed: {response.text}")
+                return None
+                
+        except Exception as e:
+            current_app.logger.error(f"Error verifying ID token: {str(e)}")
             return None
 
 

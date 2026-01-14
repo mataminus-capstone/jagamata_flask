@@ -1,7 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
 from controllers.chatbot_controller import ChatbotController
 
 chatbot_bp = Blueprint('chatbot', __name__, url_prefix='/api/chatbot')
+
 
 @chatbot_bp.route('/', methods=['POST'])
 def chat():

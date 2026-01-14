@@ -26,7 +26,7 @@ def login():
     """Login page"""
     if current_user.is_authenticated:
         if current_user.is_admin():
-            return redirect(url_for('web.dashboard'))
+            return redirect(url_for('web.index'))
         return redirect(url_for('web.index'))
     
     if request.method == 'POST':
@@ -46,7 +46,7 @@ def login():
             
             flash('Login berhasil!', 'success')
             if user.is_admin():
-                return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.dashboard'))
+                return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.index'))
             return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.index'))
         else:
             flash('Email atau password salah', 'error')
@@ -314,7 +314,7 @@ def oauth_callback():
         flash(f'Login successful! Welcome {user.username}', 'success')
         
         if user.is_admin():
-            return redirect(url_for('web.dashboard'))
+            return redirect(url_for('web.index'))
         return redirect(url_for('web.index'))
         
     except Exception as e:

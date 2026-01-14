@@ -1,35 +1,36 @@
 {% extends "base.html" %} {% block content %}
 <!-- Hero Section -->
-<section class="relative overflow-hidden -mt-12 pt-16 pb-24">
-  <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-blue-50"></div>
+<section class="relative px-4 sm:px-6 lg:px-8 overflow-hidden">
+  <!-- Background Decorations - Optional, bisa dihapus jika tidak diperlukan -->
+  <div
+    class="absolute top-0 right-0 w-96 h-96 bg-gray-100 rounded-full -mr-48 -mt-48 opacity-40"
+  ></div>
+  <div
+    class="absolute bottom-0 left-1/4 w-64 h-64 bg-gray-100 rounded-full -mb-32 opacity-30"
+  ></div>
 
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto py-1 lg:py-2">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       <!-- Left Content -->
-      <div class="space-y-8">
-        <div
-          class="inline-block px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold"
-        >
-          <i class="fas fa-star mr-2"></i>Platform Kesehatan Mata Terpercaya
-        </div>
-
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-          Kesehatan Mata
-          <span class="gradient-text block">Lebih Penting</span>
-          Dari Segalanya
+      <div class="space-y-6 relative z-10">
+        <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+          Jagamata Sumber Terpercaya untuk
+          <span class="text-primary-600">Kesehatan Mata</span>
+          Anda
         </h1>
 
-        <p class="text-xl text-gray-600 leading-relaxed">
+        <p class="text-lg text-gray-600 leading-relaxed max-w-lg">
           Platform kesehatan terpadu dengan layanan deteksi penyakit mata
-          menggunakan AI, treatment profesional, akupresur, dan chatbot 24/7.
+          menggunakan AI, treatment profesional, dan chatbot 24/7 untuk membantu
+          Anda menjaga kesehatan mata.
         </p>
 
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-3 pt-4">
           {% if current_user.is_authenticated %} {% if current_user.is_admin()
           %}
           <a
             href="{{ url_for('web.dashboard') }}"
-            class="px-8 py-4 btn-gradient text-white rounded-xl font-bold shadow-lg inline-flex items-center gap-2"
+            class="px-6 py-3 bg-primary-600 text-white hover:bg-primary-700 rounded-lg font-medium inline-flex items-center gap-2 transition shadow-lg"
           >
             <i class="fas fa-dashboard"></i>
             Dashboard Admin
@@ -37,7 +38,7 @@
           {% else %}
           <a
             href="{{ url_for('web.articles') }}"
-            class="px-8 py-4 btn-gradient text-white rounded-xl font-bold shadow-lg inline-flex items-center gap-2"
+            class="px-6 py-3 bg-primary-600 text-white hover:bg-primary-700 rounded-lg font-medium inline-flex items-center gap-2 transition shadow-lg"
           >
             <i class="fas fa-newspaper"></i>
             Baca Artikel
@@ -45,55 +46,82 @@
           {% endif %} {% else %}
           <a
             href="{{ url_for('web.register') }}"
-            class="px-8 py-4 btn-gradient text-white rounded-xl font-bold shadow-lg inline-flex items-center gap-2"
+            class="px-6 py-3 bg-primary-600 text-white hover:bg-primary-700 rounded-lg font-medium inline-flex items-center gap-2 transition shadow-lg"
           >
-            <i class="fas fa-rocket"></i>
-            Daftar Gratis
-          </a>
-          <a
-            href="{{ url_for('web.login') }}"
-            class="px-8 py-4 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 rounded-xl font-bold transition inline-flex items-center gap-2"
-          >
-            <i class="fas fa-sign-in-alt"></i>
-            Masuk
+            Mulai Sekarang
+            <i class="fas fa-arrow-right"></i>
           </a>
           {% endif %}
         </div>
 
-        <!-- Stats -->
-        <div class="grid grid-cols-3 gap-6 pt-8">
-          <div class="text-center">
-            <div class="text-3xl font-bold gradient-text">10K+</div>
-            <div class="text-sm text-gray-600 font-medium">Pengguna</div>
+        <!-- Floating Card -->
+        <div
+          class="inline-flex items-center gap-4 bg-gray-50 backdrop-blur-sm rounded-xl p-4 mt-6 border border-gray-200"
+        >
+          <div
+            class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center"
+          >
+            <i class="fas fa-user-md text-white text-xl"></i>
           </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold gradient-text">98%</div>
-            <div class="text-sm text-gray-600 font-medium">Kepuasan</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold gradient-text">24/7</div>
-            <div class="text-sm text-gray-600 font-medium">Support</div>
+          <div>
+            <div class="font-semibold text-gray-900">Dokter Spesialis</div>
+            <div class="text-sm text-gray-600">
+              Tim profesional siap membantu Anda
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Right Image -->
-      <div class="hidden lg:flex justify-center">
+      <!-- Right Image - Doctor -->
+      <div class="hidden lg:flex justify-center relative z-10">
         <div class="relative">
-          <div
-            class="absolute inset-0 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-3xl transform rotate-6 opacity-20"
-          ></div>
-          <div
-            class="relative bg-gradient-to-br from-sky-500 to-cyan-600 rounded-3xl p-12 shadow-2xl"
-          >
-            <i class="fas fa-eye text-white text-9xl"></i>
+          <!-- Doctor Image Container -->
+          <div class="relative">
+            <img
+              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80 "
+              alt="Dokter Spesialis Mata"
+              class="w-full max-w-md rounded-2xl shadow-2xl object-cover h-[500px]"
+            />
+
+            <!-- Overlay gradient -->
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent rounded-2xl"
+            ></div>
           </div>
+
+          <!-- Floating Badge Top Right -->
           <div
-            class="absolute -bottom-6 -right-6 w-32 h-32 bg-white rounded-2xl shadow-xl flex items-center justify-center"
+            class="absolute -top-4 -right-4 bg-white rounded-full p-3 shadow-xl"
+          >
+            <i class="fas fa-eye text-primary-600 text-2xl"></i>
+          </div>
+
+          <!-- Floating Badge Bottom Left -->
+          <div
+            class="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-robot text-primary-600"></i>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-900 text-sm">
+                  AI Powered
+                </div>
+                <div class="text-xs text-gray-500">Deteksi akurat</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Badge -->
+          <div
+            class="absolute top-1/2 -right-8 bg-white rounded-xl p-3 shadow-xl transform -translate-y-1/2"
           >
             <div class="text-center">
-              <div class="text-2xl font-bold gradient-text">AI</div>
-              <div class="text-xs text-gray-600">Powered</div>
+              <div class="text-xl font-bold text-primary-600">10K+</div>
+              <div class="text-xs text-gray-500">Pengguna</div>
             </div>
           </div>
         </div>
@@ -103,186 +131,223 @@
 </section>
 
 <!-- Services Section -->
-<section id="services" class="py-20 bg-white rounded-t-3xl">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl font-bold text-gray-900 mb-4">Layanan Kami</h2>
-      <p class="text-xl text-gray-600">
-        Solusi lengkap untuk kesehatan mata Anda
+<section id="services" class="py-16">
+  <div class="text-center mb-12">
+    <span
+      class="inline-block px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium mb-4"
+      >Layanan Kami</span
+    >
+    <h2 class="text-3xl font-bold text-gray-900 mb-3">Fitur Unggulan Kami</h2>
+    <p class="text-gray-600 max-w-xl mx-auto">
+      Solusi lengkap untuk kesehatan mata Anda dengan teknologi modern
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Service 1 -->
+    <div class="card-hover p-6 bg-white rounded-xl border border-gray-100">
+      <div
+        class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4"
+      >
+        <i class="fas fa-robot text-primary-600 text-xl"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Deteksi AI</h3>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        Deteksi dini penyakit mata dengan teknologi AI canggih dan hasil akurat
+        dalam hitungan detik.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <!-- Service 1 -->
+    <!-- Service 2 -->
+    <div class="card-hover p-6 bg-white rounded-xl border border-gray-100">
       <div
-        class="card-hover p-8 bg-white rounded-2xl shadow-lg border border-gray-100"
+        class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4"
       >
-        <div
-          class="w-16 h-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-        >
-          <i class="fas fa-robot text-white text-2xl"></i>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Deteksi AI</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Deteksi dini penyakit mata dengan teknologi AI canggih dan akurat
-        </p>
+        <i class="fas fa-user-md text-emerald-600 text-xl"></i>
       </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">
+        Treatment Profesional
+      </h3>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        Penanganan oleh dokter mata berpengalaman dan berlisensi untuk perawatan
+        optimal.
+      </p>
+    </div>
 
-      <!-- Service 2 -->
+    <!-- Service 3 -->
+    <div class="card-hover p-6 bg-white rounded-xl border border-gray-100">
       <div
-        class="card-hover p-8 bg-white rounded-2xl shadow-lg border border-gray-100"
+        class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-4"
       >
-        <div
-          class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-        >
-          <i class="fas fa-user-md text-white text-2xl"></i>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">
-          Treatment Profesional
-        </h3>
-        <p class="text-gray-600 leading-relaxed">
-          Penanganan oleh dokter mata berpengalaman dan berlisensi
-        </p>
+        <i class="fas fa-hand-sparkles text-purple-600 text-xl"></i>
       </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Terapi Akupresur</h3>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        Terapi akupresur tradisional untuk menjaga kesehatan mata secara alami.
+      </p>
+    </div>
 
-      <!-- Service 3 -->
+    <!-- Service 4 -->
+    <div class="card-hover p-6 bg-white rounded-xl border border-gray-100">
       <div
-        class="card-hover p-8 bg-white rounded-2xl shadow-lg border border-gray-100"
+        class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-4"
       >
-        <div
-          class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-        >
-          <i class="fas fa-hand-sparkles text-white text-2xl"></i>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Akupresur</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Terapi akupresur tradisional untuk kesehatan mata optimal
-        </p>
+        <i class="fas fa-comments text-orange-600 text-xl"></i>
       </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Chatbot 24/7</h3>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        Konsultasi kapan saja dengan asisten virtual kami yang siap membantu
+        Anda.
+      </p>
+    </div>
 
-      <!-- Service 4 -->
+    <!-- Service 5 -->
+    <div class="card-hover p-6 bg-white rounded-xl border border-gray-100">
       <div
-        class="card-hover p-8 bg-white rounded-2xl shadow-lg border border-gray-100"
+        class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4"
       >
-        <div
-          class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-        >
-          <i class="fas fa-comments text-white text-2xl"></i>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Chatbot 24/7</h3>
-        <p class="text-gray-600 leading-relaxed">
-          Konsultasi kapan saja dengan asisten virtual kami
-        </p>
+        <i class="fas fa-book-medical text-blue-600 text-xl"></i>
       </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">
+        Artikel Kesehatan
+      </h3>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        Informasi dan tips kesehatan mata dari para ahli yang dapat dipercaya.
+      </p>
+    </div>
+
+    <!-- Service 6 -->
+    <div class="card-hover p-6 bg-white rounded-xl border border-gray-100">
+      <div
+        class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center mb-4"
+      >
+        <i class="fas fa-shield-alt text-rose-600 text-xl"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Privasi Terjamin</h3>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        Data Anda aman dengan enkripsi tingkat tinggi dan kebijakan privasi
+        ketat.
+      </p>
     </div>
   </div>
 </section>
 
 <!-- About Section -->
-<section id="about" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-      <div class="space-y-6">
-        <h2 class="text-4xl font-bold text-gray-900">Tentang Jagamata</h2>
-        <p class="text-lg text-gray-600 leading-relaxed">
-          Jagamata adalah platform kesehatan mata terpadu yang menggabungkan
-          teknologi AI modern dengan pendekatan medis profesional.
-        </p>
-        <p class="text-lg text-gray-600 leading-relaxed">
-          Kami berkomitmen untuk memberikan layanan terbaik dalam menjaga
-          kesehatan mata Anda dengan dukungan teknologi terkini dan tenaga medis
-          berpengalaman.
-        </p>
-        <div class="flex gap-4 pt-4">
-          <div class="flex items-center gap-3">
-            <i class="fas fa-check-circle text-green-500 text-2xl"></i>
-            <span class="font-semibold text-gray-800">Berlisensi Resmi</span>
+<section id="about" class="py-16">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div class="space-y-5">
+      <span
+        class="inline-block px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium"
+        >Tentang Kami</span
+      >
+      <h2 class="text-3xl font-bold text-gray-900">
+        Mengapa Memilih Jagamata?
+      </h2>
+      <p class="text-gray-600 leading-relaxed">
+        Jagamata adalah platform kesehatan mata terpadu yang menggabungkan
+        teknologi AI modern dengan pendekatan medis profesional. Kami
+        berkomitmen untuk memberikan layanan terbaik.
+      </p>
+
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center"
+          >
+            <i class="fas fa-check text-primary-600 text-xs"></i>
           </div>
-          <div class="flex items-center gap-3">
-            <i class="fas fa-check-circle text-green-500 text-2xl"></i>
-            <span class="font-semibold text-gray-800">Tim Profesional</span>
+          <span class="text-gray-700">Teknologi AI terdepan untuk deteksi</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div
+            class="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center"
+          >
+            <i class="fas fa-check text-primary-600 text-xs"></i>
           </div>
+          <span class="text-gray-700">Layanan support 24/7</span>
         </div>
       </div>
+    </div>
 
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-lg">
-          <i class="fas fa-award text-sky-500 text-4xl mb-4"></i>
-          <h4 class="font-bold text-gray-900 mb-2">Terakreditasi</h4>
-          <p class="text-sm text-gray-600">Standar internasional</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-lg">
-          <i class="fas fa-shield-alt text-emerald-500 text-4xl mb-4"></i>
-          <h4 class="font-bold text-gray-900 mb-2">Aman & Terpercaya</h4>
-          <p class="text-sm text-gray-600">Data terenkripsi</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-lg">
-          <i class="fas fa-users text-purple-500 text-4xl mb-4"></i>
-          <h4 class="font-bold text-gray-900 mb-2">10K+ Pengguna</h4>
-          <p class="text-sm text-gray-600">Di seluruh Indonesia</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-lg">
-          <i class="fas fa-clock text-orange-500 text-4xl mb-4"></i>
-          <h4 class="font-bold text-gray-900 mb-2">Support 24/7</h4>
-          <p class="text-sm text-gray-600">Selalu siap membantu</p>
-        </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-white p-5 rounded-xl border border-gray-100 card-hover">
+        <i class="fas fa-award text-primary-600 text-2xl mb-3"></i>
+        <h4 class="font-semibold text-gray-900 mb-1">Krediable</h4>
+        <p class="text-sm text-gray-500">Data latih yang terjamin</p>
+      </div>
+      <div class="bg-white p-5 rounded-xl border border-gray-100 card-hover">
+        <i class="fas fa-shield-alt text-emerald-600 text-2xl mb-3"></i>
+        <h4 class="font-semibold text-gray-900 mb-1">Aman</h4>
+        <p class="text-sm text-gray-500">Data terenkripsi</p>
+      </div>
+      <div class="bg-white p-5 rounded-xl border border-gray-100 card-hover">
+        <i class="fas fa-users text-purple-600 text-2xl mb-3"></i>
+        <h4 class="font-semibold text-gray-900 mb-1">10K+ Pengguna</h4>
+        <p class="text-sm text-gray-500">Di seluruh Indonesia</p>
+      </div>
+      <div class="bg-white p-5 rounded-xl border border-gray-100 card-hover">
+        <i class="fas fa-clock text-orange-600 text-2xl mb-3"></i>
+        <h4 class="font-semibold text-gray-900 mb-1">24/7 Support</h4>
+        <p class="text-sm text-gray-500">Selalu siap membantu</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FAQ Section -->
-<section id="faq" class="py-20 bg-white rounded-t-3xl">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16">
-      <h2 class="text-4xl font-bold text-gray-900 mb-4">Pertanyaan Umum</h2>
-      <p class="text-xl text-gray-600">
-        Jawaban untuk pertanyaan yang sering diajukan
-      </p>
+<section id="faq" class="py-16">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <span
+        class="inline-block px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium mb-4"
+        >FAQ</span
+      >
+      <h2 class="text-3xl font-bold text-gray-900 mb-3">Pertanyaan Umum</h2>
+      <p class="text-gray-600">Jawaban untuk pertanyaan yang sering diajukan</p>
     </div>
 
-    <div class="space-y-4">
-      <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition">
-        <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <i class="fas fa-question-circle text-sky-500"></i>
-          Bagaimana cara menggunakan layanan deteksi AI?
+    <div class="space-y-3">
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+          <i class="fas fa-circle text-primary-500 text-xs"></i>
+          Bagaimana cara menggunakan layanan deteksi kesehatan mata dengan AI?
         </h3>
-        <p class="text-gray-600 pl-9">
-          Cukup daftar akun, upload foto mata Anda, dan sistem AI kami akan
+        <p class="text-gray-600 text-sm pl-5">
+          Cukup daftar akun, potret mata anda atau upload foto mata Anda, dan sistem AI kami akan
           menganalisis dalam hitungan detik.
         </p>
       </div>
 
-      <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition">
-        <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <i class="fas fa-question-circle text-sky-500"></i>
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+          <i class="fas fa-circle text-primary-500 text-xs"></i>
           Apakah layanan ini aman dan terpercaya?
         </h3>
-        <p class="text-gray-600 pl-9">
+        <p class="text-gray-600 text-sm pl-5">
           Ya, kami menggunakan enkripsi data dan bekerja sama dengan dokter mata
-          berlisensi.
+          berlisensi untuk memastikan keamanan.
         </p>
       </div>
 
-      <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition">
-        <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <i class="fas fa-question-circle text-sky-500"></i>
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+          <i class="fas fa-circle text-primary-500 text-xs"></i>
           Berapa biaya layanan?
         </h3>
-        <p class="text-gray-600 pl-9">
+        <p class="text-gray-600 text-sm pl-5">
           Pendaftaran gratis! Biaya konsultasi dan treatment bervariasi sesuai
-          kebutuhan.
+          kebutuhan Anda.
         </p>
       </div>
 
-      <div class="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition">
-        <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <i class="fas fa-question-circle text-sky-500"></i>
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+          <i class="fas fa-circle text-primary-500 text-xs"></i>
           Apakah tersedia layanan darurat?
         </h3>
-        <p class="text-gray-600 pl-9">
-          Ya, chatbot kami tersedia 24/7 untuk konsultasi awal dan arahan
-          darurat.
+        <p class="text-gray-600 text-sm pl-5">
+          Ya, chatbot kami tersedia 24/7 untuk konsultasi awal dan memberikan
+          arahan darurat.
         </p>
       </div>
     </div>
@@ -290,24 +355,34 @@
 </section>
 
 <!-- CTA Section -->
-<section
-  class="py-20 bg-gradient-to-r from-sky-500 to-cyan-500 text-white rounded-t-3xl"
->
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-4xl font-bold mb-6">Siap Menjaga Kesehatan Mata Anda?</h2>
-    <p class="text-xl mb-10 text-white/90">
-      Bergabunglah dengan ribuan pengguna yang telah mempercayai Jagamata
-    </p>
+<section class="py-16">
+  <div
+    class="bg-primary-600 rounded-2xl p-8 lg:p-12 text-center relative overflow-hidden"
+  >
+    <div
+      class="absolute top-0 right-0 w-64 h-64 bg-primary-500 rounded-full -mr-32 -mt-32 opacity-50"
+    ></div>
+    <div
+      class="absolute bottom-0 left-0 w-48 h-48 bg-primary-500 rounded-full -ml-24 -mb-24 opacity-50"
+    ></div>
 
-    {% if not current_user.is_authenticated %}
-    <a
-      href="{{ url_for('web.register') }}"
-      class="inline-block px-10 py-5 bg-white text-sky-600 hover:bg-gray-100 rounded-xl font-bold text-lg shadow-2xl transition transform hover:scale-105"
-    >
-      <i class="fas fa-rocket mr-2"></i>
-      Mulai Sekarang - Gratis!
-    </a>
-    {% endif %}
+    <div class="relative z-10">
+      <h2 class="text-2xl lg:text-3xl font-bold text-white mb-4">
+        Siap Menjaga Kesehatan Mata Anda?
+      </h2>
+      <p class="text-white/80 mb-8 max-w-lg mx-auto">
+        Bergabunglah dengan ribuan pengguna yang telah mempercayai Jagamata
+      </p>
+
+      {% if not current_user.is_authenticated %}
+      <a
+        href="{{ url_for('web.register') }}"
+        class="inline-block px-8 py-3 bg-white text-primary-600 hover:bg-gray-50 rounded-lg font-semibold transition"
+      >
+        Mulai Sekarang - Gratis
+      </a>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

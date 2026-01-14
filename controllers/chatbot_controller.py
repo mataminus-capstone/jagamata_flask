@@ -36,7 +36,7 @@ class ChatbotController:
                     'success': False,
                     'message': 'Gagal memproses pesan.',
                     'data': {
-                        'response': result['response'],
+                        'response': result.get('response', 'Terjadi kesalahan saat memproses pesan.'),
                         'doctor': 'System',
                         'confidence': 0
                     }
@@ -46,9 +46,9 @@ class ChatbotController:
                 'success': True,
                 'message': 'Berhasil mendapatkan respons.',
                 'data': {
-                    'response': result['response'],
-                    'doctor': result['doctor'],
-                    'confidence': result['confidence']
+                    'response': result.get('response', ''),
+                    'doctor': result.get('doctor', 'ChatBot AI'),
+                    'confidence': result.get('confidence', 0)
                 }
             }), 200
             
@@ -88,7 +88,6 @@ class ChatbotController:
     @staticmethod
     def get_history():
         """Get chat history (requires auth)"""
-        # TODO: Implement chat history with user authentication
         return jsonify({
             'success': False,
             'message': 'Not implemented yet. Requires authentication.'

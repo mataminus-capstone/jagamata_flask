@@ -1,53 +1,58 @@
 {% extends "base.html" %} {% block title %}Articles{% endblock %} {% block
 content %}
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-4xl font-bold mb-8">Articles</h1>
+<div class="py-4">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">Articles</h1>
 
-  <div class="grid grid-cols-1 gap-6">
+  <div class="space-y-4">
     {% if articles.items %} {% for article in articles.items %}
-    <div
-      class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
-    >
-      <h2 class="text-2xl font-semibold mb-2">{{ article.title }}</h2>
-      <p class="text-gray-600 text-sm mb-4">
-        By <strong>{{ article.author.username }}</strong> | {{
-        article.created_at.strftime('%B %d, %Y') }}
+    <article class="bg-white rounded-xl p-6 border border-gray-100 card-hover">
+      <h2 class="text-xl font-semibold text-gray-900 mb-2">
+        {{ article.title }}
+      </h2>
+      <p class="text-gray-500 text-sm mb-3">
+        By
+        <span class="font-medium text-gray-700"
+          >{{ article.author.username }}</span
+        >
+        • {{ article.created_at.strftime('%B %d, %Y') }}
       </p>
-      <p class="text-gray-800 mb-4 line-clamp-3">
+      <p class="text-gray-600 mb-4 line-clamp-3">
         {{ article.content[:200] }}...
       </p>
       <a
         href="{{ url_for('web.article_detail', article_id=article.id) }}"
-        class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+        class="inline-block btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium transition"
       >
         Read More
       </a>
-    </div>
+    </article>
     {% endfor %} {% else %}
-    <p class="text-gray-600 text-center py-8">No articles found.</p>
+    <p class="text-gray-500 text-center py-12">No articles found.</p>
     {% endif %}
   </div>
 
   <!-- Pagination -->
-  <div class="mt-8 flex justify-center gap-2">
+  <div class="mt-8 flex justify-center items-center gap-2">
     {% if articles.has_prev %}
     <a
       href="{{ url_for('web.articles', page=articles.prev_num) }}"
-      class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-      >Previous</a
+      class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition"
     >
+      Previous
+    </a>
     {% endif %}
 
-    <span class="px-4 py-2"
-      >Page {{ articles.page }} of {{ articles.pages }}</span
-    >
+    <span class="px-4 py-2 text-gray-600 text-sm">
+      Page {{ articles.page }} of {{ articles.pages }}
+    </span>
 
     {% if articles.has_next %}
     <a
       href="{{ url_for('web.articles', page=articles.next_num) }}"
-      class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-      >Next</a
+      class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition"
     >
+      Next
+    </a>
     {% endif %}
   </div>
 </div>

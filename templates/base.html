@@ -11,11 +11,33 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0fdfa",
+                100: "#ccfbf1",
+                200: "#99f6e4",
+                300: "#5eead4",
+                400: "#2dd4bf",
+                500: "#14b8a6",
+                600: "#0d9488",
+                700: "#0f766e",
+                800: "#115e59",
+                900: "#134e4a",
+              },
+            },
+          },
+        },
+      };
+    </script>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
 
       * {
-        font-family: "Inter", sans-serif;
+        font-family: "Plus Jakarta Sans", sans-serif;
       }
 
       .chatbot-box {
@@ -26,19 +48,18 @@
       }
 
       .chatbot-widget {
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       }
 
       .chatbot-widget.collapsed {
-        width: 64px;
-        height: 64px;
+        width: 56px;
+        height: 56px;
       }
 
       .chatbot-widget.expanded {
-        width: 400px;
-        max-height: 600px;
+        width: 380px;
+        max-height: 500px;
       }
 
       @media (max-width: 768px) {
@@ -49,95 +70,67 @@
 
         .chatbot-widget.expanded {
           width: calc(100vw - 32px);
-          max-width: 380px;
+          max-width: 360px;
         }
       }
 
       .chatbot-content {
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: max-height 0.3s ease;
       }
 
       .chatbot-content.visible {
-        max-height: 550px;
+        max-height: 450px;
       }
 
       .gradient-text {
-        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+        background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
 
-      .glass-effect {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+      .btn-primary {
+        background-color: #0d9488;
+        transition: all 0.2s ease;
       }
 
-      .nav-link {
-        position: relative;
-        transition: all 0.3s ease;
-      }
-
-      .nav-link::after {
-        content: "";
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, #0ea5e9, #06b6d4);
-        transition: width 0.3s ease;
-      }
-
-      .nav-link:hover::after {
-        width: 100%;
-      }
-
-      .btn-gradient {
-        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
-        transition: all 0.3s ease;
-      }
-
-      .btn-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+      .btn-primary:hover {
+        background-color: #0f766e;
       }
 
       .card-hover {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s ease;
       }
 
       .card-hover:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
       }
 
       /* Toast notification styles */
       .toast-container {
         position: fixed;
-        top: 24px;
-        right: 24px;
+        top: 20px;
+        right: 20px;
         z-index: 9999;
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        max-width: 400px;
+        gap: 8px;
+        max-width: 360px;
       }
 
       .toast {
-        padding: 16px 20px;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        padding: 14px 16px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         display: flex;
         align-items: center;
-        gap: 12px;
-        animation: slideIn 0.3s ease-out;
+        gap: 10px;
+        animation: slideIn 0.25s ease-out;
         background: white;
-        border-left: 4px solid;
+        border-left: 3px solid;
       }
 
       .toast.success {
@@ -149,12 +142,12 @@
       }
 
       .toast.info {
-        border-left-color: #0ea5e9;
+        border-left-color: #0d9488;
       }
 
       @keyframes slideIn {
         from {
-          transform: translateX(400px);
+          transform: translateX(100%);
           opacity: 0;
         }
         to {
@@ -169,93 +162,88 @@
           opacity: 1;
         }
         to {
-          transform: translateX(400px);
+          transform: translateX(100%);
           opacity: 0;
         }
       }
 
       .toast.hiding {
-        animation: slideOut 0.3s ease-in forwards;
+        animation: slideOut 0.25s ease-in forwards;
       }
     </style>
   </head>
-  <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+  <body class="bg-gray-50 min-h-screen">
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Navigation Bar -->
-    <nav
-      class="glass-effect border-b border-gray-200 sticky top-0 z-40 shadow-sm"
-    >
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20">
+        <div class="flex justify-between items-center h-16">
           <!-- Logo & Brand -->
-          <div class="flex items-center gap-3">
+          <a
+            href="{{ url_for('web.index') }}"
+            class="flex items-center gap-2.5"
+          >
             <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg btn-gradient"
+              class="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm bg-primary-600"
             >
               J
             </div>
-            <div>
-              <div class="text-xl font-bold gradient-text">Jagamata</div>
-              <div class="text-xs text-gray-500 font-medium">
-                Kesehatan Mata Terpadu
-              </div>
-            </div>
-          </div>
+            <span class="text-lg font-bold text-gray-900">Jagamata</span>
+          </a>
 
           <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center gap-8">
+          <div class="hidden md:flex items-center gap-6">
             <a
               href="{{ url_for('web.index') }}"
-              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
               >Home</a
             >
             <a
-              href="{{ url_for('web.index') }}#about"
-              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
-              >Tentang</a
-            >
-            <a
               href="{{ url_for('web.index') }}#services"
-              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
               >Layanan</a
             >
             <a
+              href="{{ url_for('web.index') }}#about"
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
+              >Tentang</a
+            >
+            <a
               href="{{ url_for('web.index') }}#faq"
-              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
               >FAQ</a
             >
             {% if current_user.is_authenticated %}
             <a
               href="{{ url_for('web.articles') }}"
-              class="nav-link text-gray-700 hover:text-sky-600 font-medium"
-              >Articles</a
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
+              >Artikel</a
             >
             {% if current_user.is_admin() %}
             <a
               href="{{ url_for('web.dashboard') }}"
-              class="px-5 py-2.5 rounded-xl btn-gradient text-white font-semibold shadow-lg"
+              class="px-4 py-2 rounded-lg btn-primary text-white font-medium text-sm"
             >
               Dashboard
             </a>
             {% endif %}
             <a
               href="{{ url_for('web.logout') }}"
-              class="px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition shadow-lg"
+              class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm transition"
             >
-              Logout
+              Keluar
             </a>
             {% else %}
             <a
               href="{{ url_for('web.login') }}"
-              class="px-5 py-2.5 rounded-xl border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold transition"
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
+              >Masuk</a
             >
-              Masuk
-            </a>
             <a
               href="{{ url_for('web.register') }}"
-              class="px-5 py-2.5 rounded-xl btn-gradient text-white font-semibold shadow-lg"
+              class="px-4 py-2 rounded-lg btn-primary text-white font-medium text-sm"
             >
               Daftar
             </a>
@@ -268,7 +256,7 @@
             class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
           >
             <svg
-              class="w-6 h-6 text-gray-700"
+              class="w-5 h-5 text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -287,62 +275,58 @@
       <!-- Mobile Menu -->
       <div
         id="mobile-menu"
-        class="hidden md:hidden border-t border-gray-200 bg-white"
+        class="hidden md:hidden border-t border-gray-100 bg-white"
       >
-        <div class="px-4 py-4 space-y-2">
+        <div class="px-4 py-3 space-y-1">
           <a
             href="{{ url_for('web.index') }}"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
             >Home</a
           >
           <a
-            href="{{ url_for('web.index') }}#about"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
-            >Tentang</a
-          >
-          <a
             href="{{ url_for('web.index') }}#services"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
             >Layanan</a
           >
           <a
+            href="{{ url_for('web.index') }}#about"
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
+            >Tentang</a
+          >
+          <a
             href="{{ url_for('web.index') }}#faq"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
             >FAQ</a
           >
           {% if current_user.is_authenticated %}
           <a
             href="{{ url_for('web.articles') }}"
-            class="block px-4 py-3 rounded-lg hover:bg-gray-100 text-gray-700 font-medium transition"
-            >Articles</a
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
+            >Artikel</a
           >
           {% if current_user.is_admin() %}
           <a
             href="{{ url_for('web.dashboard') }}"
-            class="block px-4 py-3 rounded-lg btn-gradient text-white font-semibold text-center"
+            class="block px-3 py-2.5 rounded-lg btn-primary text-white font-medium text-sm text-center"
+            >Dashboard</a
           >
-            Dashboard
-          </a>
           {% endif %}
           <a
             href="{{ url_for('web.logout') }}"
-            class="block px-4 py-3 rounded-lg bg-red-500 text-white font-semibold text-center"
+            class="block px-3 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-medium text-sm text-center"
+            >Keluar</a
           >
-            Logout
-          </a>
           {% else %}
           <a
             href="{{ url_for('web.login') }}"
-            class="block px-4 py-3 rounded-lg border-2 border-sky-500 text-sky-600 font-semibold text-center"
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
+            >Masuk</a
           >
-            Masuk
-          </a>
           <a
             href="{{ url_for('web.register') }}"
-            class="block px-4 py-3 rounded-lg btn-gradient text-white font-semibold text-center"
+            class="block px-3 py-2.5 rounded-lg btn-primary text-white font-medium text-sm text-center"
+            >Daftar</a
           >
-            Daftar
-          </a>
           {% endif %}
         </div>
       </div>
@@ -350,10 +334,47 @@
 
     <!-- Main Content -->
     <main>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {% block content %}{% endblock %}
       </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div
+          class="flex flex-col md:flex-row justify-between items-center gap-4"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs bg-primary-600"
+            >
+              J
+            </div>
+            <span class="text-sm text-gray-600"
+              >© 2026 Jagamata. All rights reserved.</span
+            >
+          </div>
+          <div class="flex items-center gap-6">
+            <a
+              href="#"
+              class="text-gray-500 hover:text-primary-600 text-sm transition"
+              >Privacy</a
+            >
+            <a
+              href="#"
+              class="text-gray-500 hover:text-primary-600 text-sm transition"
+              >Terms</a
+            >
+            <a
+              href="#"
+              class="text-gray-500 hover:text-primary-600 text-sm transition"
+              >Contact</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <!-- Chatbot Widget -->
     <div class="chatbot-box">
@@ -364,51 +385,49 @@
         <!-- Collapsed State - Chat Button -->
         <button
           id="chatbot-toggle"
-          class="w-full h-full flex items-center justify-center btn-gradient text-white hover:scale-105 transition"
+          class="w-full h-full flex items-center justify-center btn-primary text-white rounded-full"
         >
-          <i class="fas fa-comments text-2xl"></i>
+          <i class="fas fa-comment-dots text-xl"></i>
         </button>
 
         <!-- Expanded State - Chat Interface -->
         <div id="chatbot-content" class="chatbot-content bg-white">
           <!-- Chat Header -->
           <div
-            class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-4 flex justify-between items-center"
+            class="bg-primary-600 text-white p-3 flex justify-between items-center"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
               <div
-                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+                class="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center"
               >
-                <i class="fas fa-robot text-lg"></i>
+                <i class="fas fa-robot text-sm"></i>
               </div>
               <div>
-                <div class="font-semibold">Asisten Jagamata</div>
-                <div class="text-xs text-white/80">
-                  Selalu siap membantu Anda
-                </div>
+                <div class="font-semibold text-sm">Asisten Jagamata</div>
+                <div class="text-xs text-white/70">Online</div>
               </div>
             </div>
             <button
               id="chatbot-close"
-              class="hover:bg-white/20 p-2 rounded-lg transition"
+              class="hover:bg-white/20 p-1.5 rounded-lg transition"
             >
-              <i class="fas fa-times"></i>
+              <i class="fas fa-times text-sm"></i>
             </button>
           </div>
 
           <!-- Chat Messages -->
-          <div id="chat-messages" class="h-80 overflow-y-auto p-4 bg-gray-50">
-            <div class="bg-white p-4 rounded-xl shadow-sm mb-3">
-              <div class="flex gap-3">
+          <div id="chat-messages" class="h-64 overflow-y-auto p-3 bg-gray-50">
+            <div class="bg-white p-3 rounded-xl shadow-sm mb-2">
+              <div class="flex gap-2.5">
                 <div
-                  class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0"
+                  class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0"
                 >
-                  <i class="fas fa-robot text-white text-sm"></i>
+                  <i class="fas fa-robot text-white text-xs"></i>
                 </div>
                 <div class="text-sm text-gray-700">
-                  <p class="font-medium mb-1">Halo! 👋</p>
                   <p>
-                    Saya asisten virtual Jagamata. Ada yang bisa saya bantu?
+                    Halo! 👋 Saya asisten virtual Jagamata. Ada yang bisa saya
+                    bantu?
                   </p>
                 </div>
               </div>
@@ -416,19 +435,19 @@
           </div>
 
           <!-- Chat Input -->
-          <div class="p-4 border-t border-gray-200 bg-white">
+          <div class="p-3 border-t border-gray-100 bg-white">
             <form id="chat-form" class="flex gap-2">
               <input
                 type="text"
                 id="chat-input"
-                placeholder="Ketik pesan Anda..."
-                class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition"
+                placeholder="Ketik pesan..."
+                class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-200 transition"
               />
               <button
                 type="submit"
-                class="px-5 py-3 btn-gradient text-white rounded-xl font-medium shadow-lg"
+                class="px-3 py-2 btn-primary text-white rounded-lg"
               >
-                <i class="fas fa-paper-plane"></i>
+                <i class="fas fa-paper-plane text-sm"></i>
               </button>
             </form>
           </div>
@@ -451,26 +470,25 @@
             : "fa-info-circle";
         const iconColor =
           type === "success"
-            ? "text-green-500"
+            ? "text-emerald-500"
             : type === "error"
             ? "text-red-500"
-            : "text-sky-500";
+            : "text-primary-600";
 
         toast.innerHTML = `
-          <i class="fas ${icon} ${iconColor} text-xl"></i>
-          <span class="flex-1 text-gray-800 font-medium">${message}</span>
+          <i class="fas ${icon} ${iconColor}"></i>
+          <span class="flex-1 text-gray-700 text-sm">${message}</span>
           <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times text-xs"></i>
           </button>
         `;
 
         container.appendChild(toast);
 
-        // Auto dismiss after 5 seconds
         setTimeout(() => {
           toast.classList.add("hiding");
-          setTimeout(() => toast.remove(), 300);
-        }, 5000);
+          setTimeout(() => toast.remove(), 250);
+        }, 4000);
       }
 
       // Mobile Menu Toggle
@@ -490,7 +508,7 @@
       chatbotToggle?.addEventListener("click", () => {
         chatbotWidget.classList.remove("collapsed");
         chatbotWidget.classList.add("expanded");
-        setTimeout(() => chatbotContent.classList.add("visible"), 100);
+        setTimeout(() => chatbotContent.classList.add("visible"), 50);
       });
 
       chatbotClose?.addEventListener("click", () => {
@@ -498,7 +516,7 @@
         setTimeout(() => {
           chatbotWidget.classList.remove("expanded");
           chatbotWidget.classList.add("collapsed");
-        }, 300);
+        }, 250);
       });
 
       // Chat Form Handler
@@ -514,9 +532,9 @@
 
         // Add user message
         const userMsg = document.createElement("div");
-        userMsg.className = "flex justify-end mb-3";
+        userMsg.className = "flex justify-end mb-2";
         userMsg.innerHTML = `
-          <div class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-3 rounded-xl max-w-xs shadow-sm">
+          <div class="bg-primary-600 text-white p-2.5 rounded-xl max-w-xs">
             <p class="text-sm">${message}</p>
           </div>
         `;
@@ -526,14 +544,14 @@
 
         // Show loading indicator
         const loadingMsg = document.createElement("div");
-        loadingMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
+        loadingMsg.className = "bg-white p-3 rounded-xl shadow-sm mb-2";
         loadingMsg.innerHTML = `
-          <div class="flex gap-3">
-            <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-              <i class="fas fa-robot text-white text-sm"></i>
+          <div class="flex gap-2.5">
+            <div class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-robot text-white text-xs"></i>
             </div>
-            <div class="text-sm text-gray-700">
-              <p>Sedang mengetik<span class="animate-pulse">...</span></p>
+            <div class="text-sm text-gray-500">
+              <p>Mengetik<span class="animate-pulse">...</span></p>
             </div>
           </div>
         `;
@@ -553,13 +571,12 @@
 
           if (response.ok) {
             const data = await response.json();
-
             const botMsg = document.createElement("div");
-            botMsg.className = "bg-white p-4 rounded-xl shadow-sm mb-3";
+            botMsg.className = "bg-white p-3 rounded-xl shadow-sm mb-2";
             botMsg.innerHTML = `
-              <div class="flex gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-                  <i class="fas fa-robot text-white text-sm"></i>
+              <div class="flex gap-2.5">
+                <div class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-robot text-white text-xs"></i>
                 </div>
                 <div class="text-sm text-gray-700">
                   <p>${data.data.response}</p>
@@ -575,41 +592,23 @@
           if (loadingMsg.parentNode) {
             chatMessages.removeChild(loadingMsg);
           }
-
           const errorMsg = document.createElement("div");
-          errorMsg.className = "bg-red-50 p-4 rounded-xl shadow-sm mb-3";
+          errorMsg.className = "bg-white p-3 rounded-xl shadow-sm mb-2";
           errorMsg.innerHTML = `
-            <div class="flex gap-3">
-              <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <i class="fas fa-exclamation-circle text-white text-sm"></i>
+            <div class="flex gap-2.5">
+              <div class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-robot text-white text-xs"></i>
               </div>
-              <div class="text-sm text-red-700">
+              <div class="text-sm text-gray-700">
                 <p>Maaf, terjadi kesalahan. Silakan coba lagi.</p>
               </div>
             </div>
           `;
           chatMessages.appendChild(errorMsg);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       });
     </script>
-
-    <!-- Moved flash messages outside of script tag to prevent Jinja2 syntax errors -->
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <script id="flash-data" type="application/json">
-      {{ messages | tojson }}
-    </script>
-
-    <script>
-      const flashMessages = JSON.parse(
-        document.getElementById("flash-data").textContent
-      );
-
-      flashMessages.forEach(([category, message]) => {
-        showToast(message, category);
-      });
-    </script>
-    {% endif %} {% endwith %}
   </body>
 </html>

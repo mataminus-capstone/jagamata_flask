@@ -67,6 +67,7 @@ class AuthController:
                     'user_id': user.id,
                     'username': user.username,
                     'email': user.email,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified
                 }
             }), 201
@@ -124,6 +125,7 @@ class AuthController:
                         'username': user.username,
                         'email': user.email,
                         'role': user.role,
+                        'profile_picture': user.profile_picture,
                         'email_verified': user.email_verified,
                         'created_at': user.created_at.isoformat(),
                         'token': jwt_token
@@ -359,12 +361,17 @@ class AuthController:
                 }), 400
             
             code = data.get('code')
+            id_token_str = data.get('id_token')
             
-            if not code:
+            if not code and not id_token_str:
                 return jsonify({
                     'success': False,
-                    'message': 'Kode otorisasi tidak ditemukan.'
+                    'message': 'Kode otorisasi atau ID token tidak ditemukan.'
                 }), 400
+            
+            if id_token_str:
+                # Use ID Token verification flow
+                return AuthController._process_oauth_id_token(id_token_str)
             
             return AuthController._process_oauth_callback(code, is_mobile=True)
             
@@ -372,7 +379,7 @@ class AuthController:
             current_app.logger.error(f"OAuth mobile callback error: {str(e)}")
             return jsonify({
                 'success': False,
-                'message': 'Terjadi kesalahan saat OAuth mobile callback.'
+                'message': f'Terjadi kesalahan: {str(e)}'
             }), 500
     
     @staticmethod
@@ -408,6 +415,7 @@ class AuthController:
             oauth_id = user_data.get('id')
             email = user_data.get('email')
             name = user_data.get('name')
+            picture = user_data.get('picture')
             
             user = User.query.filter_by(oauth_id=oauth_id).first()
             
@@ -434,9 +442,14 @@ class AuthController:
                         oauth_provider='google',
                         oauth_id=oauth_id,
                         email_verified=True,
+                        profile_picture=picture,
                         role='user'
                     )
                     db.session.add(user)
+            
+            # Update existing user picture if from OAuth and currently empty
+            if user and picture and not user.profile_picture:
+                user.profile_picture = picture
             
             db.session.commit()
             
@@ -450,6 +463,7 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'role': user.role,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'oauth_provider': user.oauth_provider,
                     'created_at': user.created_at.isoformat(),
@@ -462,6 +476,84 @@ class AuthController:
             return jsonify({
                 'success': False,
                 'message': 'Terjadi kesalahan saat memproses OAuth.'
+            }), 500
+
+    @staticmethod
+    def _process_oauth_id_token(id_token_str):
+        """Process Google ID Token from mobile app"""
+        try:
+            # Verify the token
+            user_data = google_oauth.verify_id_token(id_token_str)
+            
+            if not user_data:
+                return jsonify({
+                    'success': False,
+                    'message': 'Token ID Google tidak valid.'
+                }), 400
+            
+            # Get or create user (Reuse the same logic as code flow)
+            # The user_data structure from verify_id_token matches what we need
+            
+            oauth_id = user_data.get('sub') # 'sub' is the unique ID in ID Token
+            email = user_data.get('email')
+            picture = user_data.get('picture')
+            
+            user = User.query.filter_by(oauth_id=oauth_id).first()
+            
+            if not user:
+                user = User.query.filter_by(email=email).first()
+                if user:
+                    user.oauth_provider = 'google'
+                    user.oauth_id = oauth_id
+                    user.email_verified = True
+                else:
+                    username = email.split('@')[0]
+                    base_username = username
+                    counter = 1
+                    while User.query.filter_by(username=username).first():
+                        username = f"{base_username}{counter}"
+                        counter += 1
+                    
+                    user = User(
+                        username=username,
+                        email=email,
+                        oauth_provider='google',
+                        oauth_id=oauth_id,
+                        email_verified=True,
+                        profile_picture=picture,
+                        role='user'
+                    )
+                    db.session.add(user)
+            
+            # Update picture if needed
+            if user and picture and not user.profile_picture:
+                user.profile_picture = picture
+            
+            db.session.commit()
+            
+            jwt_token = JWTService.generate_token(user.id, user.role)
+            
+            return jsonify({
+                'success': True,
+                'message': f'Login berhasil! Selamat datang {user.username}',
+                'data': {
+                    'user_id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': user.role,
+                    'profile_picture': user.profile_picture,
+                    'email_verified': user.email_verified,
+                    'oauth_provider': user.oauth_provider,
+                    'created_at': user.created_at.isoformat(),
+                    'token': jwt_token
+                }
+            }), 200
+            
+        except Exception as e:
+            current_app.logger.error(f"Process ID Token error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'message': f'Gagal memvalidasi token: {str(e)}'
             }), 500
     
     @staticmethod
@@ -500,6 +592,7 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'role': user.role,
+                    'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'created_at': user.created_at.isoformat()
                 }
