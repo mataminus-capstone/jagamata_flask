@@ -10,6 +10,8 @@ flask-cors
 PyJWT
 gunicorn
 
+cloudinary
+
 tensorflow
 keras
 numpy
@@ -24,3 +26,6 @@ google-generativeai
 # Auth dependencies
 requests
 sib-api-v3-sdk
+
+
+gradio_client

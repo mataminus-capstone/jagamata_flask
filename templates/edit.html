@@ -20,7 +20,7 @@
     </div>
 
     <!-- Form -->
-    <form method="POST" class="space-y-6">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
       <div>
         <label
           for="title"
@@ -37,6 +37,32 @@
           placeholder="Masukkan judul artikel"
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition"
         />
+      </div>
+
+      <!-- Image Upload -->
+      <div>
+        <label
+          for="image"
+          class="block text-sm font-semibold text-gray-700 mb-2"
+        >
+          <i class="fas fa-image mr-2 text-sky-500"></i>Gambar Artikel
+        </label>
+        
+        {% if article.image_url %}
+        <div class="mb-4">
+            <p class="text-sm text-gray-500 mb-2">Gambar Saat Ini:</p>
+            <img src="{{ article.image_url }}" alt="Article Image" class="h-40 object-cover rounded-lg shadow-sm border border-gray-200">
+        </div>
+        {% endif %}
+        
+        <input
+          type="file"
+          id="image"
+          name="image"
+          accept="image/*"
+          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition bg-white"
+        />
+        <p class="text-xs text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengubah gambar.</p>
       </div>
 
       <div>

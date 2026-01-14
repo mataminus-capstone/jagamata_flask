@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kelola Artikel - Jagamata</title>
+    <title>Kelola Klinik - Jagamata</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -65,18 +65,17 @@
             <i class="fas fa-users w-5 text-purple-400"></i>Kelola Pengguna
           </a>
           <a
-            href="{{ url_for('web.articles') }}"
-            class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+            href="{{ url_for('web.dashboard_articles') }}"
+            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
             <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
           </a>
           <a
             href="{{ url_for('web.dashboard_clinics') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+            class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
             <i class="fas fa-hospital w-5 text-green-400"></i>Kelola Klinik
           </a>
-          
         </nav>
 
         <div
@@ -98,8 +97,8 @@
         >
           <div class="px-6 py-4 flex justify-between items-center">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900">Kelola Artikel</h1>
-              <p class="text-sm text-gray-600">Atur semua konten artikel</p>
+              <h1 class="text-2xl font-bold text-gray-900">Kelola Klinik</h1>
+              <p class="text-sm text-gray-600">Atur semua data klinik</p>
             </div>
             <button
               id="mobile-menu-btn"
@@ -111,20 +110,31 @@
         </div>
 
         <div class="p-6">
+          <!-- Flash Messages -->
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-xl {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
           <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             <!-- Table Header -->
             <div
               class="px-6 py-5 border-b border-gray-200 flex justify-between items-center"
             >
               <div>
-                <h2 class="text-xl font-bold text-gray-900">Daftar Artikel</h2>
-                <p class="text-sm text-gray-600">Kelola semua konten</p>
+                <h2 class="text-xl font-bold text-gray-900">Daftar Klinik</h2>
+                <p class="text-sm text-gray-600">Total: {{ clinics.total }} klinik</p>
               </div>
               <a
-                href="{{ url_for('web.create_article') }}"
+                href="{{ url_for('web.create_clinic') }}"
                 class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg inline-flex items-center"
               >
-                <i class="fas fa-plus mr-2"></i>Buat Baru
+                <i class="fas fa-plus mr-2"></i>Tambah Klinik
               </a>
             </div>
 
@@ -136,22 +146,22 @@
                     <th
                       class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
                     >
-                      Judul
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
                       Gambar
                     </th>
                     <th
                       class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
                     >
-                      Author
+                      Nama Klinik
                     </th>
                     <th
                       class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
                     >
-                      Tanggal
+                      Alamat
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
+                    >
+                      No. Telp
                     </th>
                     <th
                       class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase"
@@ -161,48 +171,35 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                  {% for article in articles.items %}
+                  {% for clinic in clinics.items %}
                   <tr class="hover:bg-gray-50 transition">
                     <td class="px-6 py-4">
-                      <div class="font-semibold text-gray-900">
-                        {{ article.title }}
-                      </div>
-                      <div class="text-sm text-gray-600 line-clamp-1">
-                        {{ article.content[:60] }}...
-                      </div>
+                        <img src="{{ clinic.image_url }}" alt="Klinik Image" class="w-16 h-16 object-cover rounded-lg shadow-sm">
                     </td>
                     <td class="px-6 py-4">
-                      {% if article.image_url %}
-                        <img src="{{ article.image_url }}" alt="Thumbnail" class="w-16 h-16 object-cover rounded-lg">
-                      {% else %}
-                        <span class="text-gray-400 italic">No image</span>
-                      {% endif %}
+                      <div class="font-semibold text-gray-900">
+                        {{ clinic.name }}
+                      </div>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-700">
-                      {{ article.author.username }}
+                      {{ clinic.address }}
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-700">
-                      {{ article.created_at.strftime('%d %b %Y') }}
+                      {{ clinic.phone_number }}
                     </td>
                     <td class="px-6 py-4">
                       <div class="flex justify-center gap-2">
                         <a
-                          href="{{ url_for('web.article_detail', article_id=article.id) }}"
-                          class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm transition"
-                        >
-                          <i class="fas fa-eye"></i>
-                        </a>
-                        <a
-                          href="{{ url_for('web.edit_article', article_id=article.id) }}"
+                          href="{{ url_for('web.edit_clinic', clinic_id=clinic.id) }}"
                           class="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm transition"
                         >
                           <i class="fas fa-edit"></i>
                         </a>
                         <form
                           method="POST"
-                          action="{{ url_for('web.delete_article', article_id=article.id) }}"
+                          action="{{ url_for('web.delete_clinic', clinic_id=clinic.id) }}"
                           style="display: inline"
-                          onsubmit="return confirm('Yakin hapus?')"
+                          onsubmit="return confirm('Yakin hapus klinik ini?')"
                         >
                           <button
                             type="submit"
@@ -220,24 +217,24 @@
             </div>
 
             <!-- Pagination -->
-            {% if articles.pages > 1 %}
+            {% if clinics.pages > 1 %}
             <div
               class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center"
             >
               <div class="text-sm text-gray-600">
-                {{ articles.page }} / {{ articles.pages }}
+                {{ clinics.page }} / {{ clinics.pages }}
               </div>
               <div class="flex gap-2">
-                {% if articles.has_prev %}
+                {% if clinics.has_prev %}
                 <a
-                  href="{{ url_for('web.articles', page=articles.prev_num) }}"
+                  href="{{ url_for('web.dashboard_clinics', page=clinics.prev_num) }}"
                   class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition"
                 >
                   Sebelumnya
                 </a>
-                {% endif %} {% if articles.has_next %}
+                {% endif %} {% if clinics.has_next %}
                 <a
-                  href="{{ url_for('web.articles', page=articles.next_num) }}"
+                  href="{{ url_for('web.dashboard_clinics', page=clinics.next_num) }}"
                   class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition"
                 >
                   Selanjutnya
@@ -251,8 +248,9 @@
       </div>
     </div>
 
+    <script>
       // Mobile Menu
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
       const sidebar = document.getElementById("sidebar");
       mobileMenuBtn?.addEventListener("click", () => {
         sidebar.classList.toggle("-translate-x-full");
@@ -265,17 +263,6 @@
           !mobileMenuBtn.contains(e.target)
         ) {
           sidebar.classList.add("-translate-x-full");
-        }
-      });
-
-      window.addEventListener("load", function () {
-        const token = getToken();
-        if (!token) {
-          console.log("[v0] No token found, redirecting to login");
-          // Don't auto-redirect, just log warning
-          // User can still see articles but cannot create
-        } else {
-          console.log("[v0] Token found, user is authenticated");
         }
       });
     </script>

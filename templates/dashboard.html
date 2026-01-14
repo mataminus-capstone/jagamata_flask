@@ -92,13 +92,12 @@
           >
             <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
           </a>
-          <button
-            id="create-article-btn"
-            class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100 hover:bg-green-500/20"
-            onclick="openCreateModal()"
+          <a
+            href="{{ url_for('web.dashboard_clinics') }}"
+            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
-            <i class="fas fa-plus-circle w-5 text-green-400"></i>Buat Artikel
-          </button>
+            <i class="fas fa-hospital w-5 text-green-400"></i>Kelola Klinik
+          </a>
         </nav>
 
         <div
@@ -168,6 +167,25 @@
                   >
                     <i
                       class="fas fa-file-alt text-green-600 text-xl"
+                    ></i>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Total Klinik -->
+              <div class="stat-card bg-white p-6">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="text-gray-600 text-sm font-medium">Total Klinik</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">
+                      {{ stats.total_clinics }}
+                    </p>
+                  </div>
+                  <div
+                    class="w-14 h-14 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center"
+                  >
+                    <i
+                      class="fas fa-hospital text-indigo-600 text-xl"
                     ></i>
                   </div>
                 </div>
@@ -274,75 +292,7 @@
       </div>
     </div>
 
-    <!-- Create Article Modal -->
-    <div
-      id="createModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"
-    >
-      <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">Buat Artikel Baru</h2>
-          <button
-            onclick="closeCreateModal()"
-            class="text-gray-500 hover:text-gray-700 text-2xl"
-          >
-            ×
-          </button>
-        </div>
-
-        <form id="createArticleForm" class="space-y-4">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Judul</label>
-            <input
-              type="text"
-              id="articleTitle"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Judul artikel..."
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Konten</label>
-            <textarea
-              id="articleContent"
-              required
-              rows="8"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Konten artikel..."
-            ></textarea>
-          </div>
-
-          <div class="flex gap-3">
-            <button
-              type="submit"
-              class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold py-2.5 rounded-lg transition"
-            >
-              Buat Artikel
-            </button>
-            <button
-              type="button"
-              onclick="closeCreateModal()"
-              class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition"
-            >
-              Batal
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
     <script>
-      // Modal Functions
-      function openCreateModal() {
-        document.getElementById('createModal').classList.remove('hidden');
-      }
-
-      function closeCreateModal() {
-        document.getElementById('createModal').classList.add('hidden');
-        document.getElementById('createArticleForm').reset();
-      }
-
       // Mobile Menu
       const mobileMenuBtn = document.getElementById('mobile-menu-btn');
       const sidebar = document.getElementById('sidebar');
@@ -360,79 +310,48 @@
         }
       });
 
-      // Create Article Form
-      document.getElementById('createArticleForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const title = document.getElementById('articleTitle').value;
-        const content = document.getElementById('articleContent').value;
-
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-          alert('Token tidak ditemukan. Silakan login kembali!');
-          window.location.href = '/login';
-          return;
-        }
-
-        try {
-          const response = await fetch('/api/articles', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` // Added JWT token in Authorization header
-            },
-            body: JSON.stringify({ title, content })
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            alert('Artikel berhasil dibuat!');
-            closeCreateModal();
-            location.reload();
-          } else {
-            alert('Error: ' + data.message);
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('Terjadi kesalahan');
-        }
-      });
-
       // Charts
       const roleData   = document.getElementById('chart-data');
-      const adminCnt   = Number(roleData.dataset.admin);
-      const userCnt    = Number(roleData.dataset.user);
-      const verified   = Number(roleData.dataset.verified);
-      const totalUser  = Number(roleData.dataset.total);
+      if (roleData) {
+        const adminCnt   = Number(roleData.dataset.admin || 0);
+        const userCnt    = Number(roleData.dataset.user || 0);
+        const verified   = Number(roleData.dataset.verified || 0);
+        const totalUser  = Number(roleData.dataset.total || 0);
 
-      new Chart(document.getElementById('roleChart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Admin', 'User'],
-          datasets: [{
-            data: [adminCnt, userCnt],
-            backgroundColor: ['#a855f7', '#3b82f6'],
-            borderColor: '#ffffff',
-            borderWidth: 2
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
+        const roleCtx = document.getElementById('roleChart');
+        if (roleCtx) {
+          new Chart(roleCtx, {
+            type: 'doughnut',
+            data: {
+              labels: ['Admin', 'User'],
+              datasets: [{
+                data: [adminCnt, userCnt],
+                backgroundColor: ['#a855f7', '#3b82f6'],
+                borderColor: '#ffffff',
+                borderWidth: 2
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        }
 
-      new Chart(document.getElementById('verificationChart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Terverifikasi', 'Belum Terverifikasi'],
-          datasets: [{
-            data: [verified, totalUser - verified],
-            backgroundColor: ['#0ea5e9', '#f87171'],
-            borderColor: '#ffffff',
-            borderWidth: 2
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
+        const verifyCtx = document.getElementById('verificationChart');
+        if (verifyCtx) {
+          new Chart(verifyCtx, {
+            type: 'doughnut',
+            data: {
+              labels: ['Terverifikasi', 'Belum Terverifikasi'],
+              datasets: [{
+                data: [verified, totalUser - verified],
+                backgroundColor: ['#0ea5e9', '#f87171'],
+                borderColor: '#ffffff',
+                borderWidth: 2
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        }
+      }
     </script>
   </body>
 </html>

@@ -8,6 +8,39 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from urllib.parse import urlencode
 from services.jwt_service import JWTService
+from functools import wraps
+from flask import request, jsonify
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = JWTService.extract_token_from_headers(request.headers)
+        
+        if not token:
+            return jsonify({
+                'success': False,
+                'message': 'Token is missing!'
+            }), 401
+        
+        payload = JWTService.verify_token(token)
+        
+        if not payload:
+            return jsonify({
+                'success': False,
+                'message': 'Token is invalid or expired!'
+            }), 401
+            
+        current_user = User.query.get(payload['user_id'])
+        
+        if not current_user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found!'
+            }), 401
+            
+        return f(current_user, *args, **kwargs)
+        
+    return decorated
 
 
 class GoogleOAuth:

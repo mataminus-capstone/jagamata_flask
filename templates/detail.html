@@ -12,8 +12,7 @@ endblock %} {% block content %}
           {{ article.title }}
         </h1>
 
-        {% if current_user.is_admin() and article.author_id == current_user.id
-        %}
+        {% if current_user.is_authenticated and current_user.is_admin() and article.author_id == current_user.id %}
         <div class="flex gap-2 flex-shrink-0">
           <a
             href="{{ url_for('web.edit_article', article_id=article.id) }}"
@@ -69,6 +68,13 @@ endblock %} {% block content %}
         {% endif %}
       </div>
     </div>
+
+    <!-- Article Image -->
+    {% if article.image_url %}
+    <div class="w-full h-96 overflow-hidden bg-gray-100">
+      <img src="{{ article.image_url }}" alt="{{ article.title }}" class="w-full h-full object-cover">
+    </div>
+    {% endif %}
 
     <div class="p-8 md:p-12">
       <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">

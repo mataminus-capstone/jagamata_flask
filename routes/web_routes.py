@@ -1,9 +1,10 @@
 from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from models import db, User, Article
+from models import db, User, Article, Clinic
 from functools import wraps
 from services.auth_service import email_service
 from services.jwt_service import JWTService
+from services.cloudinary_service import CloudinaryService
 
 web_bp = Blueprint('web', __name__)
 
@@ -112,6 +113,7 @@ def dashboard():
     stats = {
         'total_articles': Article.query.count(),
         'total_users': User.query.count(),
+        'total_clinics': Clinic.query.count(),
         'user_articles': Article.query.filter_by(author_id=current_user.id).count(),
         'verified_count': User.query.filter_by(email_verified=True).count(),
         'admin_count': User.query.filter_by(role='admin').count(),
@@ -138,6 +140,98 @@ def dashboard_articles():
     articles = Article.query.order_by(Article.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
     return render_template('manage_articles.html', articles=articles)
 
+@web_bp.route('/dashboard/clinics', methods=['GET'])
+@login_required
+@admin_required
+def dashboard_clinics():
+    """Admin dashboard clinics management page"""
+    page = request.args.get('page', 1, type=int)
+    clinics = Clinic.query.order_by(Clinic.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    return render_template('manage_clinics.html', clinics=clinics)
+
+@web_bp.route('/dashboard/clinics/create', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def create_clinic():
+    """Create clinic page (admin only)"""
+    if request.method == 'POST':
+        name = request.form.get('name')
+        address = request.form.get('address')
+        phone_number = request.form.get('phone_number')
+        
+        # Handle Image Upload
+        image_url = ''
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename != '':
+                upload_result = CloudinaryService.upload_image(file)
+                if upload_result['success']:
+                    image_url = upload_result['url']
+                else:
+                    flash(f'Gagal mengupload gambar: {upload_result.get("message")}', 'error')
+                    return render_template('create_clinic.html')
+        
+        if not image_url:
+             flash('Gambar klinik wajib diupload!', 'error')
+             return render_template('create_clinic.html')
+
+        clinic = Clinic(
+            name=name, 
+            address=address, 
+            phone_number=phone_number,
+            image_url=image_url
+        )
+        db.session.add(clinic)
+        db.session.commit()
+        
+        flash('Klinik berhasil ditambahkan!', 'success')
+        return redirect(url_for('web.dashboard_clinics'))
+    
+    return render_template('create_clinic.html')
+
+@web_bp.route('/dashboard/clinics/<int:clinic_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_clinic(clinic_id):
+    """Edit clinic page (admin only)"""
+    clinic = Clinic.query.get_or_404(clinic_id)
+    
+    if request.method == 'POST':
+        clinic.name = request.form.get('name')
+        clinic.address = request.form.get('address')
+        clinic.phone_number = request.form.get('phone_number')
+        
+        # Handle Image Upload (Optional)
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename != '':
+                upload_result = CloudinaryService.upload_image(file)
+                if upload_result['success']:
+                    clinic.image_url = upload_result['url']
+                else:
+                    flash(f'Gagal mengupload gambar: {upload_result.get("message")}', 'error')
+                    return render_template('edit_clinic.html', clinic=clinic)
+        
+        db.session.commit()
+        
+        flash('Data klinik berhasil diperbarui!', 'success')
+        return redirect(url_for('web.dashboard_clinics'))
+    
+    return render_template('edit_clinic.html', clinic=clinic)
+
+@web_bp.route('/dashboard/clinics/<int:clinic_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_clinic(clinic_id):
+    """Delete clinic (admin only)"""
+    clinic = Clinic.query.get_or_404(clinic_id)
+    
+    db.session.delete(clinic)
+    db.session.commit()
+    
+    flash('Klinik berhasil dihapus!', 'success')
+    return redirect(url_for('web.dashboard_clinics'))
+
 @web_bp.route('/dashboard/articles/create', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -147,7 +241,19 @@ def create_article():
         title = request.form.get('title')
         content = request.form.get('content')
         
-        article = Article(title=title, content=content, author_id=current_user.id)
+        # Handle Image Upload
+        image_url = ''
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename != '':
+                upload_result = CloudinaryService.upload_image(file)
+                if upload_result['success']:
+                    image_url = upload_result['url']
+                else:
+                    flash(f'Gagal mengupload gambar: {upload_result.get("message")}', 'error')
+                    return render_template('create.html')
+        
+        article = Article(title=title, content=content, author_id=current_user.id, image_url=image_url)
         db.session.add(article)
         db.session.commit()
         
@@ -170,6 +276,18 @@ def edit_article(article_id):
     if request.method == 'POST':
         article.title = request.form.get('title')
         article.content = request.form.get('content')
+        
+        # Handle Image Upload
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename != '':
+                upload_result = CloudinaryService.upload_image(file)
+                if upload_result['success']:
+                    article.image_url = upload_result['url']
+                else:
+                    flash(f'Gagal mengupload gambar: {upload_result.get("message")}', 'error')
+                    return render_template('edit.html', article=article)
+                    
         db.session.commit()
         
         flash('Article updated successfully!', 'success')

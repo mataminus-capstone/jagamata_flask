@@ -27,6 +27,8 @@ class User(UserMixin, db.Model):
     reset_token_expiry = db.Column(db.DateTime, nullable=True)
     
     profile_picture = db.Column(db.String(512), nullable=True) # URL to Google profile picture
+    address = db.Column(db.String(255), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=True)
     
     articles = db.relationship('Article', backref='author', lazy=True, cascade='all, delete-orphan')
     
@@ -60,6 +62,7 @@ class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.String(512), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -79,3 +82,33 @@ class Chatbot(db.Model):
     
     def __repr__(self):
         return f'<Chatbot {self.id}>'
+
+class Clinic(db.Model):
+    __tablename__ = 'clinics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=False)
+    image_url = db.Column(db.String(512), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Clinic {self.name}>'
+
+class DetectionHistory(db.Model):
+    __tablename__ = 'detection_history'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    image_url = db.Column(db.String(512), nullable=False)
+    diagnosis = db.Column(db.String(100), nullable=False)
+    confidence = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    # Store simplified recommendation summary properly if needed, 
+    # but mostly we will map diagnosis to static advice in controller/frontend
+    
+    def __repr__(self):
+        return f'<DetectionHistory {self.diagnosis}>'
+

@@ -41,12 +41,17 @@ def create_app(config_name='development'):
     from routes.auth_routes import auth_bp
     from routes.chatbot_routes import chatbot_bp
     from routes.article_routes import article_bp
-    from routes.user_routes import user_bp  
+    from routes.user_routes import user_bp
+    from routes.user_routes import user_bp
+    from routes.clinic_routes import clinic_bp
+    from routes.detection_routes import detection_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(chatbot_bp)
     app.register_blueprint(article_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(clinic_bp, url_prefix='/api/clinics')
+    app.register_blueprint(detection_bp)
     
     from routes.web_routes import web_bp
     app.register_blueprint(web_bp)

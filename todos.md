@@ -2,6 +2,8 @@
 [ ] integrasi model untuk deteksi potensi penyakit mata
 [ ] integrasi model untuk akupresur
 [x] smpt
-[x] oaut
+[x] oauth
 [ ] tambah gambar di artikel
-[ ] integrasi cloudinary
+[x] integrasi cloudinary
+[x] tambah kolom alamat dan nomor user (mobile forced)
+[x] api klinik (CRUD + rule based filtering)
