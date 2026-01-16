@@ -4,6 +4,8 @@ from services.auth_service import google_oauth, email_service
 from datetime import datetime
 from services.jwt_service import JWTService
 
+from services.cloudinary_service import CloudinaryService
+
 class AuthController:
     
     @staticmethod
@@ -640,15 +642,33 @@ class AuthController:
             user = User.query.get(user_id)
             if not user:
                 return jsonify({'success': False, 'message': 'User not found'}), 404
+            
+            # Helper to get data from form (multipart) or json
+            data = {}
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                data = request.form.to_dict()
+            else:
+                data = request.get_json(force=True, silent=True) or {}
                 
-            data = request.get_json(force=True, silent=True)
-            if not data:
-                return jsonify({'success': False, 'message': 'Invalid data'}), 400
+            if 'username' in data:
+                 username = data['username'].strip()
+                 if username:
+                    user.username = username
             
             if 'address' in data:
                 user.address = data['address']
             if 'phone_number' in data:
                 user.phone_number = data['phone_number']
+
+            # Handle Image Upload
+            if 'profile_picture' in request.files:
+                file = request.files['profile_picture']
+                if file.filename != '':
+                    upload_result = CloudinaryService.upload_image(file)
+                    if upload_result['success']:
+                        user.profile_picture = upload_result['url']
+                    else:
+                        return jsonify({'success': False, 'message': upload_result.get('message', 'Failed to upload image')}), 500
                 
             db.session.commit()
             
@@ -660,7 +680,8 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'address': user.address,
-                    'phone_number': user.phone_number
+                    'phone_number': user.phone_number,
+                    'profile_picture': user.profile_picture
                 }
             }), 200
             
