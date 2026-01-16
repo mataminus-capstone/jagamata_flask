@@ -76,27 +76,39 @@
         <nav class="p-4 space-y-2">
           <a
             href="{{ url_for('web.dashboard') }}"
-            class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+            class="nav-link {% if request.endpoint == 'web.dashboard' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
             <i class="fas fa-chart-line w-5 text-sky-400"></i>Dashboard
           </a>
           <a
             href="{{ url_for('web.manage_users') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+            class="nav-link {% if request.endpoint == 'web.manage_users' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
             <i class="fas fa-users w-5 text-purple-400"></i>Kelola Pengguna
           </a>
           <a
             href="{{ url_for('web.dashboard_articles') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+            class="nav-link {% if request.endpoint in ['web.dashboard_articles', 'web.create_article', 'web.edit_article'] %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
             <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
           </a>
           <a
             href="{{ url_for('web.dashboard_clinics') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+            class="nav-link {% if request.endpoint in ['web.dashboard_clinics', 'web.create_clinic', 'web.edit_clinic'] %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
           >
             <i class="fas fa-hospital w-5 text-green-400"></i>Kelola Klinik
+          </a>
+          <a
+            href="{{ url_for('web.dashboard_categories') }}"
+            class="nav-link {% if request.endpoint in ['web.dashboard_categories', 'web.create_category', 'web.edit_category'] %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+          >
+            <i class="fas fa-tags w-5 text-yellow-400"></i>Kelola Kategori
+          </a>
+          <a
+            href="{{ url_for('web.dashboard_medicines') }}"
+            class="nav-link {% if request.endpoint in ['web.dashboard_medicines', 'web.create_medicine', 'web.edit_medicine'] %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
+          >
+            <i class="fas fa-pills w-5 text-red-400"></i>Kelola Obat
           </a>
         </nav>
 
@@ -130,6 +142,7 @@
         </div>
 
         <div class="p-6 space-y-8">
+          {% block content %}
           <!-- Status Statistics -->
           <div>
             <h2 class="text-xl font-bold text-gray-900 mb-4">Status Statistik</h2>
@@ -187,6 +200,36 @@
                     <i
                       class="fas fa-hospital text-indigo-600 text-xl"
                     ></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Kategori -->
+              <div class="stat-card bg-white p-6">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="text-gray-600 text-sm font-medium">Total Kategori</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">
+                      {{ stats.total_categories }}
+                    </p>
+                  </div>
+                  <div class="w-14 h-14 bg-gradient-to-br from-yellow-100 to-amber-200 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tags text-amber-600 text-xl"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total Obat -->
+              <div class="stat-card bg-white p-6">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="text-gray-600 text-sm font-medium">Total Obat</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">
+                      {{ stats.total_medicines }}
+                    </p>
+                  </div>
+                  <div class="w-14 h-14 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-pills text-red-600 text-xl"></i>
                   </div>
                 </div>
               </div>
@@ -288,6 +331,7 @@
               </table>
             </div>
           </div>
+          {% endblock %}
         </div>
       </div>
     </div>
@@ -353,5 +397,6 @@
         }
       }
     </script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>

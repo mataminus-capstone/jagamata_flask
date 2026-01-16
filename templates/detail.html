@@ -1,132 +1,106 @@
-{% extends 'base.html' %} {% block title %}{{ article.title }} - Jagamata{%
-endblock %} {% block content %}
-<div class="max-w-4xl mx-auto">
-  <article
-    class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100"
-  >
-    <div
-      class="bg-gradient-to-r from-sky-500 to-cyan-600 p-8 md:p-12 text-white"
-    >
-      <div class="flex items-start justify-between gap-4 mb-6">
-        <h1 class="text-3xl md:text-4xl font-bold leading-tight">
-          {{ article.title }}
-        </h1>
+{% extends 'base.html' %} 
+{% block title %}{{ article.title }} - Jagamata{% endblock %} 
 
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center text-sm text-gray-500 mb-8 overflow-x-auto whitespace-nowrap pb-2">
+        <a href="{{ url_for('web.index') }}" class="hover:text-primary-600 transition">Beranda</a>
+        <i class="fas fa-chevron-right text-xs mx-3 text-gray-300"></i>
+        <a href="{{ url_for('web.articles') }}" class="hover:text-primary-600 transition">Artikel</a>
+        <i class="fas fa-chevron-right text-xs mx-3 text-gray-300"></i>
+        <span class="text-gray-900 font-medium truncate">{{ article.title }}</span>
+    </nav>
+
+    <!-- Main Content -->
+    <article class="relative">
+        <!-- Header -->
+        <header class="mb-10 text-center max-w-3xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-xs font-bold uppercase tracking-wider mb-6">
+                <i class="fas fa-star text-primary-500"></i>
+                Artikel Kesehatan
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                {{ article.title }}
+            </h1>
+
+            <div class="flex items-center justify-center gap-6 text-gray-500 text-sm border-y border-gray-100 py-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs">
+                        {{ article.author.username[0] | upper }}
+                    </div>
+                    <span>
+                        Oleh <span class="font-semibold text-gray-900">{{ article.author.username }}</span>
+                        {% if article.author.is_admin() %}
+                        <span class="ml-1 bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px] font-bold">ADMIN</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="hidden sm:block w-1 h-1 bg-gray-300 rounded-full"></div>
+                <div class="flex items-center gap-2">
+                    <i class="far fa-calendar"></i>
+                    <span>{{ article.created_at.strftime('%d %B %Y') }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Featured Image -->
+        {% if article.image_url %}
+        <figure class="mb-12 rounded-2xl overflow-hidden shadow-2xl shadow-gray-200">
+            <img src="{{ article.image_url }}" alt="{{ article.title }}" class="w-full h-auto max-h-[600px] object-cover">
+        </figure>
+        {% endif %}
+
+        <!-- Content Body -->
+        <div class="prose prose-lg md:prose-xl max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-600 prose-p:leading-relaxed prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl prose-strong:text-gray-900 mb-16">
+            {{ article.content | replace('\n', '<br />') | safe }}
+        </div>
+
+        <!-- Admin Actions -->
         {% if current_user.is_authenticated and current_user.is_admin() and article.author_id == current_user.id %}
-        <div class="flex gap-2 flex-shrink-0">
-          <a
-            href="{{ url_for('web.edit_article', article_id=article.id) }}"
-            class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-semibold transition shadow-lg"
-          >
-            <i class="fas fa-edit"></i>
-          </a>
-          <form
-            method="POST"
-            action="{{ url_for('web.delete_article', article_id=article.id) }}"
-            style="display: inline"
-            onsubmit="return confirm('Yakin ingin hapus artikel ini?')"
-          >
-            <button
-              type="submit"
-              class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition shadow-lg"
-            >
-              <i class="fas fa-trash"></i>
-            </button>
-          </form>
+        <div class="bg-gray-50 rounded-xl p-6 mb-12 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h3 class="font-bold text-gray-900">Admin Controls</h3>
+                <p class="text-sm text-gray-500">Anda adalah penulis artikel ini</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="{{ url_for('web.edit_article', article_id=article.id) }}" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-primary-600 font-medium transition flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-pen"></i> Edit Artikel
+                </a>
+                <form method="POST" action="{{ url_for('web.delete_article', article_id=article.id) }}" onsubmit="return confirm('Yakin ingin hapus artikel ini?')">
+                    <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 font-medium transition flex items-center gap-2 shadow-sm">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </form>
+            </div>
         </div>
         {% endif %}
-      </div>
 
-      <div class="flex flex-wrap items-center gap-6 text-white/90">
-        <div class="flex items-center gap-2">
-          <div
-            class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"
-          >
-            <i class="fas fa-user"></i>
-          </div>
-          <div>
-            <div class="font-semibold">{{ article.author.username }}</div>
-            {% if article.author.is_admin() %}
-            <span
-              class="inline-block bg-white/20 text-white text-xs font-bold px-2 py-1 rounded"
-              >ADMIN</span
-            >
-            {% endif %}
-          </div>
+        <!-- Share and Navigation -->
+        <div class="border-t border-gray-100 pt-10 pb-16 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-4">
+                <span class="text-sm font-bold text-gray-900 uppercase tracking-wider">Bagikan:</span>
+                <div class="flex gap-2">
+                    <button class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:scale-110 transition shadow-lg shadow-blue-200">
+                        <i class="fab fa-facebook-f"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center hover:scale-110 transition shadow-lg shadow-sky-200">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:scale-110 transition shadow-lg shadow-green-200">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:scale-110 hover:bg-gray-200 transition">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </div>
+
+            <a href="{{ url_for('web.articles') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition shadow-xl shadow-gray-200 font-medium">
+                <i class="fas fa-arrow-left"></i> Kembali ke Artikel
+            </a>
         </div>
-
-        <div class="flex items-center gap-2">
-          <i class="fas fa-calendar"></i>
-          <span>Published: {{ article.created_at.strftime('%d %B %Y') }}</span>
-        </div>
-
-        {% if article.updated_at != article.created_at %}
-        <div class="flex items-center gap-2">
-          <i class="fas fa-clock"></i>
-          <span>Updated: {{ article.updated_at.strftime('%d %B %Y') }}</span>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- Article Image -->
-    {% if article.image_url %}
-    <div class="w-full h-96 overflow-hidden bg-gray-100">
-      <img src="{{ article.image_url }}" alt="{{ article.title }}" class="w-full h-full object-cover">
-    </div>
-    {% endif %}
-
-    <div class="p-8 md:p-12">
-      <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-        {{ article.content | replace('\n', '<br />') | safe }}
-      </div>
-    </div>
-
-    <div class="border-t border-gray-200 p-8 bg-gray-50">
-      <div class="flex flex-wrap gap-4 items-center justify-between">
-        <a
-          href="{{ url_for('web.articles') }}"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg"
-        >
-          <i class="fas fa-arrow-left"></i>
-          Kembali ke Artikel
-        </a>
-
-        <div class="flex gap-2">
-          <button
-            class="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition shadow-lg"
-          >
-            <i class="fab fa-facebook-f"></i>
-          </button>
-          <button
-            class="px-4 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl transition shadow-lg"
-          >
-            <i class="fab fa-twitter"></i>
-          </button>
-          <button
-            class="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition shadow-lg"
-          >
-            <i class="fab fa-whatsapp"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <div
-    class="mt-12 p-8 bg-gradient-to-r from-sky-500 to-cyan-600 rounded-2xl text-white text-center shadow-2xl"
-  >
-    <h3 class="text-2xl font-bold mb-3">Baca Artikel Lainnya</h3>
-    <p class="mb-6 text-white/90">
-      Temukan lebih banyak informasi kesehatan mata yang bermanfaat
-    </p>
-    <a
-      href="{{ url_for('web.articles') }}"
-      class="inline-block px-8 py-4 bg-white text-sky-600 hover:bg-gray-100 rounded-xl font-bold transition shadow-lg"
-    >
-      <i class="fas fa-th-large mr-2"></i>
-      Lihat Semua Artikel
-    </a>
-  </div>
+    </article>
 </div>
 {% endblock %}

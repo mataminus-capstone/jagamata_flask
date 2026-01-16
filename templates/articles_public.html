@@ -1,68 +1,118 @@
-{% extends "base.html" %} {% block title %}Articles{% endblock %} {% block
-content %}
-<div class="py-4">
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">Articles</h1>
+{% extends "base.html" %} 
+{% block title %}Artikel Kesehatan Mata - Jagamata{% endblock %} 
 
-  <div class="space-y-4">
-    {% if articles.items %} {% for article in articles.items %}
-    <article class="bg-white rounded-xl p-6 border border-gray-100 card-hover">
-      <h2 class="text-xl font-semibold text-gray-900 mb-2">
-        {{ article.title }}
-      </h2>
-      <p class="text-gray-500 text-sm mb-3">
-        By
-        <span class="font-medium text-gray-700"
-          >{{ article.author.username }}</span
-        >
-        • {{ article.created_at.strftime('%B %d, %Y') }}
-      </p>
-      <div class="flex flex-col md:flex-row gap-6">
-          {% if article.image_url %}
-          <div class="w-full md:w-48 h-32 flex-shrink-0">
-              <img src="{{ article.image_url }}" alt="{{ article.title }}" class="w-full h-full object-cover rounded-lg">
-          </div>
-          {% endif %}
-          <div>
-              <p class="text-gray-600 mb-4 line-clamp-3">
-                {{ article.content[:200] }}...
-              </p>
-          </div>
-      </div>
-      <a
-        href="{{ url_for('web.article_detail', article_id=article.id) }}"
-        class="inline-block btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-      >
-        Read More
-      </a>
-    </article>
-    {% endfor %} {% else %}
-    <p class="text-gray-500 text-center py-12">No articles found.</p>
-    {% endif %}
-  </div>
+{% block content %}
+<!-- Hero Section -->
+<div class="py-12 text-center relative overflow-hidden mb-12">
+    <!-- Decorative blobs -->
+    <div class="absolute top-0 left-1/4 w-64 h-64 bg-primary-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+    <div class="absolute top-0 right-1/4 w-64 h-64 bg-sky-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
 
-  <!-- Pagination -->
-  <div class="mt-8 flex justify-center items-center gap-2">
-    {% if articles.has_prev %}
-    <a
-      href="{{ url_for('web.articles', page=articles.prev_num) }}"
-      class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition"
-    >
-      Previous
-    </a>
-    {% endif %}
-
-    <span class="px-4 py-2 text-gray-600 text-sm">
-      Page {{ articles.page }} of {{ articles.pages }}
-    </span>
-
-    {% if articles.has_next %}
-    <a
-      href="{{ url_for('web.articles', page=articles.next_num) }}"
-      class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition"
-    >
-      Next
-    </a>
-    {% endif %}
-  </div>
+    <div class="relative z-10 max-w-2xl mx-auto px-4">
+        <span class="text-primary-600 font-bold tracking-wider text-sm uppercase mb-2 block">Blog & Artikel</span>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            Wawasan Kesehatan Mata Terkini
+        </h1>
+        <p class="text-lg text-gray-600 leading-relaxed">
+            Temukan berbagai informasi menarik, tips kesehatan, dan panduan perawatan mata yang kredibel dari para ahli kami.
+        </p>
+    </div>
 </div>
+
+<!-- Featured/Main Articles Grid -->
+<div class="max-w-7xl mx-auto px-4">
+    {% if articles.items %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for article in articles.items %}
+        <article class="group bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full">
+            <!-- Article Image -->
+            <div class="relative overflow-hidden h-56">
+                {% if article.image_url %}
+                    <img src="{{ article.image_url }}" alt="{{ article.title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                {% else %}
+                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-image text-4xl text-gray-300"></i>
+                    </div>
+                {% endif %}
+                
+                <!-- Date Badge -->
+                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold text-gray-700 shadow-sm">
+                    {{ article.created_at.strftime('%d %b %Y') }}
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-xs font-bold">
+                        {{ article.author.username[0] | upper }}
+                    </div>
+                    <span class="text-xs font-medium text-gray-500">{{ article.author.username }}</span>
+                </div>
+
+                <h2 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition line-clamp-2">
+                    <a href="{{ url_for('web.article_detail', article_id=article.id) }}">
+                        {{ article.title }}
+                    </a>
+                </h2>
+                
+                <p class="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed flex-1">
+                    {{ article.content[:150] }}...
+                </p>
+                
+                <a href="{{ url_for('web.article_detail', article_id=article.id) }}" class="inline-flex items-center text-primary-600 font-semibold text-sm group-hover:gap-2 transition-all">
+                    Baca Selengkapnya <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if articles.pages > 1 %}
+    <div class="mt-16 flex justify-center items-center gap-3">
+        {% if articles.has_prev %}
+        <a href="{{ url_for('web.articles', page=articles.prev_num) }}" class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 transition">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+
+        <span class="px-6 py-2 bg-gray-900 text-white rounded-xl text-sm font-medium">
+            Hal {{ articles.page }} dari {{ articles.pages }}
+        </span>
+
+        {% if articles.has_next %}
+        <a href="{{ url_for('web.articles', page=articles.next_num) }}" class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 transition">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-24">
+        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400 text-3xl">
+            <i class="far fa-newspaper"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada artikel</h3>
+        <p class="text-gray-500">Artikel terbaru akan segera hadir untuk Anda.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+</style>
 {% endblock %}

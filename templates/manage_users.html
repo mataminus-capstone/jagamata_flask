@@ -1,484 +1,240 @@
-<!DOCTYPE html>
-<html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kelola Pengguna - Jagamata</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-      * {
-        font-family: "Inter", sans-serif;
-      }
-      .gradient-bg {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      }
-      .nav-link {
-        transition: all 0.3s ease;
-      }
-      .nav-link:hover {
-        background: rgba(14, 165, 233, 0.1);
-        border-left: 4px solid #0ea5e9;
-      }
-      .nav-link.active {
-        background: rgba(14, 165, 233, 0.15);
-        border-left: 4px solid #0ea5e9;
-      }
-      .user-row {
-        transition: all 0.3s ease;
-      }
-      .user-row:hover {
-        background-color: #f8fafc;
-      }
-      .role-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      .role-admin {
-        background-color: #fecaca;
-        color: #991b1b;
-      }
-      .role-moderator {
-        background-color: #bfdbfe;
-        color: #1e3a8a;
-      }
-      .role-user {
-        background-color: #d1fae5;
-        color: #065f46;
-      }
-    </style>
-  </head>
-  <body class="bg-gradient-to-br from-gray-50 to-gray-100">
-    <div class="flex h-screen">
-      <!-- Sidebar -->
-      <div
-        id="sidebar"
-        class="fixed left-0 top-0 h-screen w-64 gradient-bg text-white transform -translate-x-full md:translate-x-0 transition-transform z-40 overflow-y-auto shadow-2xl"
-      >
-        <div class="p-6 border-b border-white/10 sticky top-0 gradient-bg">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg"
-            >
-              J
-            </div>
-            <div>
-              <div class="text-lg font-bold">Jagamata</div>
-              <div class="text-xs text-gray-400">Admin Panel</div>
-            </div>
-          </div>
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <!-- Table Header -->
+    <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
+        <div>
+            <h2 class="text-xl font-bold text-gray-900">Daftar Pengguna</h2>
+            <p class="text-sm text-gray-600">Kelola semua pengguna sistem</p>
         </div>
-
-        <nav class="p-4 space-y-2">
-          <a
-            href="{{ url_for('web.dashboard') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-chart-line w-5 text-sky-400"></i>Dashboard
-          </a>
-          <a
-            href="{{ url_for('web.manage_users') }}"
-            class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-users w-5 text-purple-400"></i>Kelola Pengguna
-          </a>
-          <a
-            href="{{ url_for('web.dashboard_articles') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
-          </a>
-          <a
-            href="{{ url_for('web.dashboard_clinics') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-hospital w-5 text-green-400"></i>Kelola Klinik
-          </a>
-        </nav>
-
-        <div
-          class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 gradient-bg"
-        >
-          <a
-            href="{{ url_for('web.logout') }}"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 font-semibold text-red-300 transition"
-          >
-            <i class="fas fa-sign-out-alt w-5"></i>Logout
-          </a>
+        <div class="flex gap-2">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari pengguna..."
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+            />
         </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="flex-1 md:ml-64 overflow-y-auto">
-        <div
-          class="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-200"
-        >
-          <div class="px-6 py-4 flex justify-between items-center">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Kelola Pengguna</h1>
-              <p class="text-sm text-gray-600">
-                Atur role dan kelola akun pengguna
-              </p>
-            </div>
-            <button
-              id="mobile-menu-btn"
-              class="md:hidden p-2 rounded-lg hover:bg-gray-100"
-            >
-              <i class="fas fa-bars text-xl text-gray-700"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="p-6">
-          <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <!-- Table Header -->
-            <div
-              class="px-6 py-5 border-b border-gray-200 flex justify-between items-center"
-            >
-              <div>
-                <h2 class="text-xl font-bold text-gray-900">Daftar Pengguna</h2>
-                <p class="text-sm text-gray-600">
-                  Kelola semua pengguna sistem
-                </p>
-              </div>
-              <div class="flex gap-2">
-                <input
-                  type="text"
-                  id="searchInput"
-                  placeholder="Cari pengguna..."
-                  class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                />
-              </div>
-            </div>
-
-            <!-- Table -->
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Nama Pengguna
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Email
-                    </th>
-                    <th
-                      class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Role
-                    </th>
-                    <th
-                      class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Status
-                    </th>
-                    <th
-                      class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="userTable" class="divide-y divide-gray-200">
-                  <!-- Will be populated by JavaScript -->
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Pagination -->
-            <div
-              id="pagination"
-              class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center"
-            >
-              <!-- Will be populated by JavaScript -->
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Edit Role Modal -->
-    <div
-      id="editRoleModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"
-    >
-      <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Nama Pengguna</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Email</th>
+                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase">Role</th>
+                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase">Status</th>
+                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="userTable" class="divide-y divide-gray-200">
+                <!-- Will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+        <!-- Will be populated by JavaScript -->
+    </div>
+</div>
+
+<!-- Edit Role Modal -->
+<div id="editRoleModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">Ubah Role</h2>
-          <button
-            onclick="closeEditModal()"
-            class="text-gray-500 hover:text-gray-700 text-2xl"
-          >
-            ×
-          </button>
+            <h2 class="text-2xl font-bold text-gray-900">Ubah Role</h2>
+            <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
         </div>
 
         <div class="mb-6">
-          <p class="text-gray-600">
-            Pengguna: <span id="editUserName" class="font-bold"></span>
-          </p>
-          <p class="text-gray-600 text-sm">
-            Email: <span id="editUserEmail" class="font-semibold"></span>
-          </p>
+            <p class="text-gray-600">Pengguna: <span id="editUserName" class="font-bold"></span></p>
+            <p class="text-gray-600 text-sm">Email: <span id="editUserEmail" class="font-semibold"></span></p>
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2"
-            >Pilih Role</label
-          >
-          <select
-            id="roleSelect"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-          >
-            <option value="user">User</option>
-            <!-- <option value="moderator">Moderator</option> -->
-            <option value="admin">Admin</option>
-          </select>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Role</label>
+            <select id="roleSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <option value="user">User</option>
+                <!-- <option value="moderator">Moderator</option> -->
+                <option value="admin">Admin</option>
+            </select>
         </div>
 
         <div class="flex gap-3 mt-6">
-          <button
-            onclick="saveRoleChange()"
-            class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold py-2.5 rounded-lg transition"
-          >
-            Simpan
-          </button>
-          <button
-            onclick="closeEditModal()"
-            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition"
-          >
-            Batal
-          </button>
+            <button onclick="saveRoleChange()" class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold py-2.5 rounded-lg transition">Simpan</button>
+            <button onclick="closeEditModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition">Batal</button>
         </div>
-      </div>
     </div>
+</div>
 
-    <!-- Delete Confirmation Modal -->
-    <div
-      id="deleteModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"
-    >
-      <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Hapus Pengguna?</h2>
-        <p class="text-gray-600 mb-6">
-          Apakah Anda yakin ingin menghapus pengguna
-          <span id="deleteUserName" class="font-bold"></span>? Tindakan ini
-          tidak dapat dibatalkan.
-        </p>
+        <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus pengguna <span id="deleteUserName" class="font-bold"></span>? Tindakan ini tidak dapat dibatalkan.</p>
 
         <div class="flex gap-3">
-          <button
-            onclick="confirmDelete()"
-            class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-lg transition"
-          >
-            Hapus
-          </button>
-          <button
-            onclick="closeDeleteModal()"
-            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition"
-          >
-            Batal
-          </button>
+            <button onclick="confirmDelete()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-lg transition">Hapus</button>
+            <button onclick="closeDeleteModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition">Batal</button>
         </div>
-      </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
-      let currentPage = 1;
-      let currentUserId = null;
+{% block scripts %}
+<script>
+    let currentPage = 1;
+    let currentUserId = null;
 
-      // Load users
-      async function loadUsers(page = 1) {
+    // Load users
+    async function loadUsers(page = 1) {
         try {
-          const response = await fetch(`/api/users?page=${page}&per_page=10`);
-          const data = await response.json();
+            const response = await fetch(`/api/users?page=${page}&per_page=10`);
+            const data = await response.json();
 
-          if (data.success) {
-            renderUserTable(data.data.users);
-            renderPagination(data.data);
-          }
+            if (data.success) {
+                renderUserTable(data.data.users);
+                renderPagination(data.data);
+            }
         } catch (error) {
-          console.error("Error loading users:", error);
+            console.error("Error loading users:", error);
         }
-      }
+    }
 
-      // Render user table
-      function renderUserTable(users) {
+    // Render user table
+    function renderUserTable(users) {
         const tableBody = document.getElementById("userTable");
-        tableBody.innerHTML = users
-          .map(
-            (user) => `
-          <tr class="user-row hover:bg-gray-50 transition">
-            <td class="px-6 py-4">
-              <div class="font-semibold text-gray-900">${user.username}</div>
-            </td>
-            <td class="px-6 py-4 text-gray-600">${user.email}</td>
-            <td class="px-6 py-4 text-center">
-              <span class="role-badge role-${
-                user.role
-              }">${user.role.toUpperCase()}</span>
-            </td>
-            <td class="px-6 py-4 text-center">
-              ${
-                user.email_verified
-                  ? '<span class="inline-flex items-center gap-1 text-emerald-600 font-semibold"><i class="fas fa-check-circle"></i> Terverifikasi</span>'
-                  : '<span class="inline-flex items-center gap-1 text-amber-600 font-semibold"><i class="fas fa-clock"></i> Pending</span>'
-              }
-            </td>
-            <td class="px-6 py-4 text-center">
-              <div class="flex justify-center gap-2">
-                <button
-                  onclick="openEditModal(${user.id}, '${user.username}', '${
-              user.email
-            }', '${user.role}')"
-                  class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm transition"
-                  title="Edit Role"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
-                  onclick="openDeleteModal(${user.id}, '${user.username}')"
-                  class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition"
-                  title="Hapus"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `
-          )
-          .join("");
-      }
+        tableBody.innerHTML = users.map(user => `
+            <tr class="user-row hover:bg-gray-50 transition">
+                <td class="px-6 py-4">
+                    <div class="font-semibold text-gray-900">${user.username}</div>
+                </td>
+                <td class="px-6 py-4 text-gray-600">${user.email}</td>
+                <td class="px-6 py-4 text-center">
+                    <span class="role-badge role-${user.role} px-3 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${user.role.toUpperCase()}</span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    ${user.email_verified 
+                        ? '<span class="inline-flex items-center gap-1 text-emerald-600 font-semibold"><i class="fas fa-check-circle"></i> Terverifikasi</span>' 
+                        : '<span class="inline-flex items-center gap-1 text-amber-600 font-semibold"><i class="fas fa-clock"></i> Pending</span>'
+                    }
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-2">
+                        <button onclick="openEditModal(${user.id}, '${user.username}', '${user.email}', '${user.role}')" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm transition" title="Edit Role">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="openDeleteModal(${user.id}, '${user.username}')" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join("");
+    }
 
-      // Render pagination
-      function renderPagination(data) {
+    // Render pagination
+    function renderPagination(data) {
         const pagination = document.getElementById("pagination");
         currentPage = data.current_page;
 
         if (data.pages <= 1) {
-          pagination.innerHTML = `<div class="text-sm text-gray-600">Halaman 1 / 1</div>`;
-          return;
+            pagination.innerHTML = `<div class="text-sm text-gray-600">Halaman 1 / 1</div>`;
+            return;
         }
 
         let html = `<div class="text-sm text-gray-600">Halaman ${data.current_page} / ${data.pages}</div>`;
         html += '<div class="flex gap-2">';
 
         if (data.current_page > 1) {
-          html += `<button onclick="loadUsers(${
-            data.current_page - 1
-          })" class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition">Sebelumnya</button>`;
+            html += `<button onclick="loadUsers(${data.current_page - 1})" class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition">Sebelumnya</button>`;
         }
 
         if (data.current_page < data.pages) {
-          html += `<button onclick="loadUsers(${
-            data.current_page + 1
-          })" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition">Selanjutnya</button>`;
+            html += `<button onclick="loadUsers(${data.current_page + 1})" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition">Selanjutnya</button>`;
         }
 
         html += "</div>";
         pagination.innerHTML = html;
-      }
+    }
 
-      // Modal functions
-      function openEditModal(userId, username, email, role) {
+    // Modal functions
+    function openEditModal(userId, username, email, role) {
         currentUserId = userId;
         document.getElementById("editUserName").textContent = username;
         document.getElementById("editUserEmail").textContent = email;
         document.getElementById("roleSelect").value = role;
         document.getElementById("editRoleModal").classList.remove("hidden");
-      }
+    }
 
-      function closeEditModal() {
+    function closeEditModal() {
         document.getElementById("editRoleModal").classList.add("hidden");
-      }
+    }
 
-      async function saveRoleChange() {
+    async function saveRoleChange() {
         const newRole = document.getElementById("roleSelect").value;
-
         try {
-          const response = await fetch(`/api/users/${currentUserId}/role`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role: newRole }),
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            alert("Role berhasil diubah!");
-            closeEditModal();
-            loadUsers(currentPage);
-          } else {
-            alert("Error: " + data.message);
-          }
+            const response = await fetch(`/api/users/${currentUserId}/role`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role: newRole }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert("Role berhasil diubah!");
+                closeEditModal();
+                loadUsers(currentPage);
+            } else {
+                alert("Error: " + data.message);
+            }
         } catch (error) {
-          console.error("Error:", error);
-          alert("Terjadi kesalahan");
+            console.error("Error:", error);
+            alert("Terjadi kesalahan");
         }
-      }
+    }
 
-      function openDeleteModal(userId, username) {
+    function openDeleteModal(userId, username) {
         currentUserId = userId;
         document.getElementById("deleteUserName").textContent = username;
         document.getElementById("deleteModal").classList.remove("hidden");
-      }
+    }
 
-      function closeDeleteModal() {
+    function closeDeleteModal() {
         document.getElementById("deleteModal").classList.add("hidden");
-      }
+    }
 
-      async function confirmDelete() {
+    async function confirmDelete() {
         try {
-          const response = await fetch(`/api/users/${currentUserId}`, {
-            method: "DELETE",
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            alert("Pengguna berhasil dihapus!");
-            closeDeleteModal();
-            loadUsers(1);
-          } else {
-            alert("Error: " + data.message);
-          }
+            const response = await fetch(`/api/users/${currentUserId}`, { method: "DELETE" });
+            const data = await response.json();
+            if (data.success) {
+                alert("Pengguna berhasil dihapus!");
+                closeDeleteModal();
+                loadUsers(1);
+            } else {
+                alert("Error: " + data.message);
+            }
         } catch (error) {
-          console.error("Error:", error);
-          alert("Terjadi kesalahan");
+            console.error("Error:", error);
+            alert("Terjadi kesalahan");
         }
-      }
+    }
 
-      // Search
-      document.getElementById("searchInput").addEventListener("input", (e) => {
+    // Search
+    document.getElementById("searchInput").addEventListener("input", (e) => {
         const searchTerm = e.target.value.toLowerCase();
         const rows = document.querySelectorAll(".user-row");
         rows.forEach((row) => {
-          const text = row.textContent.toLowerCase();
-          row.style.display = text.includes(searchTerm) ? "" : "none";
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? "" : "none";
         });
-      });
+    });
 
-      // Mobile menu
-      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-      const sidebar = document.getElementById("sidebar");
-      mobileMenuBtn?.addEventListener("click", () => {
-        sidebar.classList.toggle("-translate-x-full");
-      });
-
-      // Initial load
-      loadUsers();
-    </script>
-  </body>
-</html>
+    // Initial load
+    loadUsers();
+</script>
+{% endblock %}

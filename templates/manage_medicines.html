@@ -1,0 +1,102 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-gray-900">Kelola Obat Mata</h2>
+            <p class="text-sm text-gray-500 mt-1">Daftar semua obat dan rekomendasi dalam sistem</p>
+        </div>
+        <a href="{{ url_for('web.create_medicine') }}" class="bg-teal-600 px-4 py-2 rounded-lg text-white font-medium hover:bg-teal-700 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i> Tambah Obat
+        </a>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+                <tr>
+                    <th class="px-4 py-3 rounded-tl-lg">Gambar</th>
+                    <th class="px-4 py-3">Nama Obat</th>
+                    <th class="px-4 py-3">Kategori</th>
+                    <th class="px-4 py-3">Harga</th>
+                    <th class="px-4 py-3">Deskripsi</th>
+                    <th class="px-4 py-3 rounded-tr-lg text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for medicine in medicines.items %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-4 py-3">
+                        {% if medicine.image_url %}
+                        <img src="{{ medicine.image_url }}" alt="{{ medicine.name }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                        {% else %}
+                        <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-900">{{ medicine.name }}</td>
+                    <td class="px-4 py-3 text-gray-600">
+                        {% if medicine.category %}
+                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
+                            {{ medicine.category.name }}
+                        </span>
+                        {% else %}
+                        <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-xs">
+                            Uncategorized
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-gray-600">Rp {{ "{:,.0f}".format(medicine.price).replace(',', '.') }}</td>
+                    <td class="px-4 py-3 text-gray-500 truncate max-w-xs">{{ medicine.description[:50] }}{% if medicine.description|length > 50 %}...{% endif %}</td>
+                    <td class="px-4 py-3 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ url_for('web.edit_medicine', medicine_id=medicine.id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ url_for('web.delete_medicine', medicine_id=medicine.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus obat ini?');" class="inline">
+                                <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        <div class="flex flex-col items-center gap-2">
+                            <i class="fas fa-pills text-4xl text-gray-300"></i>
+                            <p>Belum ada data obat.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if medicines.pages > 1 %}
+    <div class="flex justify-center mt-6 gap-2">
+        {% if medicines.has_prev %}
+        <a href="{{ url_for('web.dashboard_medicines', page=medicines.prev_num) }}" class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        <span class="px-3 py-1 text-gray-600">
+            Halaman {{ medicines.page }} dari {{ medicines.pages }}
+        </span>
+
+        {% if medicines.has_next %}
+        <a href="{{ url_for('web.dashboard_medicines', page=medicines.next_num) }}" class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

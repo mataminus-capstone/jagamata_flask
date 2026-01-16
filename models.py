@@ -112,3 +112,30 @@ class DetectionHistory(db.Model):
     def __repr__(self):
         return f'<DetectionHistory {self.diagnosis}>'
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    medicines = db.relationship('Medicine', backref='category', lazy=True)
+
+    def __repr__(self):
+        return f'<Category {self.name}>'
+
+class Medicine(db.Model):
+    __tablename__ = 'medicines'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(512), nullable=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Medicine {self.name}>'
+

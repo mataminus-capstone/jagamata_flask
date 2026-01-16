@@ -1,270 +1,83 @@
-<!DOCTYPE html>
-<html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kelola Klinik - Jagamata</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-      * {
-        font-family: "Inter", sans-serif;
-      }
-      .gradient-bg {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      }
-      .nav-link {
-        transition: all 0.3s ease;
-      }
-      .nav-link:hover {
-        background: rgba(14, 165, 233, 0.1);
-        border-left: 4px solid #0ea5e9;
-      }
-      .nav-link.active {
-        background: rgba(14, 165, 233, 0.15);
-        border-left: 4px solid #0ea5e9;
-      }
-    </style>
-  </head>
-  <body class="bg-gradient-to-br from-gray-50 to-gray-100">
-    <div class="flex h-screen">
-      <!-- Sidebar -->
-      <div
-        id="sidebar"
-        class="fixed left-0 top-0 h-screen w-64 gradient-bg text-white transform -translate-x-full md:translate-x-0 transition-transform z-40 overflow-y-auto shadow-2xl"
-      >
-        <div class="p-6 border-b border-white/10 sticky top-0 gradient-bg">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg"
-            >
-              J
-            </div>
-            <div>
-              <div class="text-lg font-bold">Jagamata</div>
-              <div class="text-xs text-gray-400">Admin Panel</div>
-            </div>
-          </div>
-        </div>
+{% extends "dashboard.html" %}
 
-        <nav class="p-4 space-y-2">
-          <a
-            href="{{ url_for('web.dashboard') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-chart-line w-5 text-sky-400"></i>Dashboard
-          </a>
-          <a
-            href="{{ url_for('web.manage_users') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-users w-5 text-purple-400"></i>Kelola Pengguna
-          </a>
-          <a
-            href="{{ url_for('web.dashboard_articles') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
-          </a>
-          <a
-            href="{{ url_for('web.dashboard_clinics') }}"
-            class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-hospital w-5 text-green-400"></i>Kelola Klinik
-          </a>
-        </nav>
-
-        <div
-          class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 gradient-bg"
-        >
-          <a
-            href="{{ url_for('web.logout') }}"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 font-semibold text-red-300 transition"
-          >
-            <i class="fas fa-sign-out-alt w-5"></i>Logout
-          </a>
-        </div>
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="mb-4 p-4 rounded-xl {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+        {{ message }}
       </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
-      <!-- Main Content -->
-      <div class="flex-1 md:ml-64 overflow-y-auto">
-        <div
-          class="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-200"
-        >
-          <div class="px-6 py-4 flex justify-between items-center">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Kelola Klinik</h1>
-              <p class="text-sm text-gray-600">Atur semua data klinik</p>
-            </div>
-            <button
-              id="mobile-menu-btn"
-              class="md:hidden p-2 rounded-lg hover:bg-gray-100"
-            >
-              <i class="fas fa-bars text-xl text-gray-700"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="p-6">
-          <!-- Flash Messages -->
-          {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-              {% for category, message in messages %}
-                <div class="mb-4 p-4 rounded-xl {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endwith %}
-
-          <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <!-- Table Header -->
-            <div
-              class="px-6 py-5 border-b border-gray-200 flex justify-between items-center"
-            >
-              <div>
-                <h2 class="text-xl font-bold text-gray-900">Daftar Klinik</h2>
-                <p class="text-sm text-gray-600">Total: {{ clinics.total }} klinik</p>
-              </div>
-              <a
-                href="{{ url_for('web.create_clinic') }}"
-                class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg inline-flex items-center"
-              >
-                <i class="fas fa-plus mr-2"></i>Tambah Klinik
-              </a>
-            </div>
-
-            <!-- Table -->
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Gambar
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Nama Klinik
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Alamat
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      No. Telp
-                    </th>
-                    <th
-                      class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                  {% for clinic in clinics.items %}
-                  <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4">
-                        <img src="{{ clinic.image_url }}" alt="Klinik Image" class="w-16 h-16 object-cover rounded-lg shadow-sm">
-                    </td>
-                    <td class="px-6 py-4">
-                      <div class="font-semibold text-gray-900">
-                        {{ clinic.name }}
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
-                      {{ clinic.address }}
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
-                      {{ clinic.phone_number }}
-                    </td>
-                    <td class="px-6 py-4">
-                      <div class="flex justify-center gap-2">
-                        <a
-                          href="{{ url_for('web.edit_clinic', clinic_id=clinic.id) }}"
-                          class="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm transition"
-                        >
-                          <i class="fas fa-edit"></i>
-                        </a>
-                        <form
-                          method="POST"
-                          action="{{ url_for('web.delete_clinic', clinic_id=clinic.id) }}"
-                          style="display: inline"
-                          onsubmit="return confirm('Yakin hapus klinik ini?')"
-                        >
-                          <button
-                            type="submit"
-                            class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition"
-                          >
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Pagination -->
-            {% if clinics.pages > 1 %}
-            <div
-              class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center"
-            >
-              <div class="text-sm text-gray-600">
-                {{ clinics.page }} / {{ clinics.pages }}
-              </div>
-              <div class="flex gap-2">
-                {% if clinics.has_prev %}
-                <a
-                  href="{{ url_for('web.dashboard_clinics', page=clinics.prev_num) }}"
-                  class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition"
-                >
-                  Sebelumnya
-                </a>
-                {% endif %} {% if clinics.has_next %}
-                <a
-                  href="{{ url_for('web.dashboard_clinics', page=clinics.next_num) }}"
-                  class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition"
-                >
-                  Selanjutnya
-                </a>
-                {% endif %}
-              </div>
-            </div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+  <!-- Table Header -->
+  <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
+    <div>
+      <h2 class="text-xl font-bold text-gray-900">Daftar Klinik</h2>
+      <p class="text-sm text-gray-600">Total: {{ clinics.total }} klinik</p>
     </div>
+    <a href="{{ url_for('web.create_clinic') }}" class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg inline-flex items-center">
+      <i class="fas fa-plus mr-2"></i>Tambah Klinik
+    </a>
+  </div>
 
-    <script>
-      // Mobile Menu
-      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-      const sidebar = document.getElementById("sidebar");
-      mobileMenuBtn?.addEventListener("click", () => {
-        sidebar.classList.toggle("-translate-x-full");
-      });
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Gambar</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Nama Klinik</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Alamat</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">No. Telp</th>
+          <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {% for clinic in clinics.items %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4">
+              <img src="{{ clinic.image_url }}" alt="Klinik Image" class="w-16 h-16 object-cover rounded-lg shadow-sm">
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-semibold text-gray-900">{{ clinic.name }}</div>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-700">{{ clinic.address }}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">{{ clinic.phone_number }}</td>
+          <td class="px-6 py-4">
+            <div class="flex justify-center gap-2">
+              <a href="{{ url_for('web.edit_clinic', clinic_id=clinic.id) }}" class="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm transition">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form method="POST" action="{{ url_for('web.delete_clinic', clinic_id=clinic.id) }}" style="display: inline" onsubmit="return confirm('Yakin hapus klinik ini?')">
+                <button type="submit" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-      document.addEventListener("click", (e) => {
-        if (
-          window.innerWidth < 768 &&
-          !sidebar.contains(e.target) &&
-          !mobileMenuBtn.contains(e.target)
-        ) {
-          sidebar.classList.add("-translate-x-full");
-        }
-      });
-    </script>
-  </body>
-</html>
+  <!-- Pagination -->
+  {% if clinics.pages > 1 %}
+  <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+    <div class="text-sm text-gray-600">{{ clinics.page }} / {{ clinics.pages }}</div>
+    <div class="flex gap-2">
+      {% if clinics.has_prev %}
+      <a href="{{ url_for('web.dashboard_clinics', page=clinics.prev_num) }}" class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition">Sebelumnya</a>
+      {% endif %} 
+      {% if clinics.has_next %}
+      <a href="{{ url_for('web.dashboard_clinics', page=clinics.next_num) }}" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition">Selanjutnya</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
