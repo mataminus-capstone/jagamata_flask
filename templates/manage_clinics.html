@@ -1,0 +1,83 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="mb-4 p-4 rounded-xl {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+  <!-- Table Header -->
+  <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
+    <div>
+      <h2 class="text-xl font-bold text-gray-900">Daftar Klinik</h2>
+      <p class="text-sm text-gray-600">Total: {{ clinics.total }} klinik</p>
+    </div>
+    <a href="{{ url_for('web.create_clinic') }}" class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg inline-flex items-center">
+      <i class="fas fa-plus mr-2"></i>Tambah Klinik
+    </a>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Gambar</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Nama Klinik</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Alamat</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">No. Telp</th>
+          <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {% for clinic in clinics.items %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4">
+              <img src="{{ clinic.image_url }}" alt="Klinik Image" class="w-16 h-16 object-cover rounded-lg shadow-sm">
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-semibold text-gray-900">{{ clinic.name }}</div>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-700">{{ clinic.address }}</td>
+          <td class="px-6 py-4 text-sm text-gray-700">{{ clinic.phone_number }}</td>
+          <td class="px-6 py-4">
+            <div class="flex justify-center gap-2">
+              <a href="{{ url_for('web.edit_clinic', clinic_id=clinic.id) }}" class="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm transition">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form method="POST" action="{{ url_for('web.delete_clinic', clinic_id=clinic.id) }}" style="display: inline" onsubmit="return confirm('Yakin hapus klinik ini?')">
+                <button type="submit" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if clinics.pages > 1 %}
+  <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+    <div class="text-sm text-gray-600">{{ clinics.page }} / {{ clinics.pages }}</div>
+    <div class="flex gap-2">
+      {% if clinics.has_prev %}
+      <a href="{{ url_for('web.dashboard_clinics', page=clinics.prev_num) }}" class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition">Sebelumnya</a>
+      {% endif %} 
+      {% if clinics.has_next %}
+      <a href="{{ url_for('web.dashboard_clinics', page=clinics.next_num) }}" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition">Selanjutnya</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

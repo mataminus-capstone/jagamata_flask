@@ -1,405 +1,113 @@
-<!DOCTYPE html>
-<html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kelola Artikel - Jagamata</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-      * {
-        font-family: "Inter", sans-serif;
-      }
-      .gradient-bg {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      }
-      .nav-link {
-        transition: all 0.3s ease;
-      }
-      .nav-link:hover {
-        background: rgba(14, 165, 233, 0.1);
-        border-left: 4px solid #0ea5e9;
-      }
-      .nav-link.active {
-        background: rgba(14, 165, 233, 0.15);
-        border-left: 4px solid #0ea5e9;
-      }
-    </style>
-  </head>
-  <body class="bg-gradient-to-br from-gray-50 to-gray-100">
-    <div class="flex h-screen">
-      <!-- Sidebar -->
-      <div
-        id="sidebar"
-        class="fixed left-0 top-0 h-screen w-64 gradient-bg text-white transform -translate-x-full md:translate-x-0 transition-transform z-40 overflow-y-auto shadow-2xl"
-      >
-        <div class="p-6 border-b border-white/10 sticky top-0 gradient-bg">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-sky-400 to-cyan-500 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg"
-            >
-              J
-            </div>
-            <div>
-              <div class="text-lg font-bold">Jagamata</div>
-              <div class="text-xs text-gray-400">Admin Panel</div>
-            </div>
-          </div>
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-5 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-gray-900">Daftar Artikel</h2>
+            <p class="text-sm text-gray-600">Kelola semua konten artikel dalam sistem</p>
         </div>
+        <a href="{{ url_for('web.create_article') }}" class="inline-flex items-center px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-semibold transition shadow-md gap-2">
+            <i class="fas fa-plus"></i> Buat Artikel Baru
+        </a>
+    </div>
 
-        <nav class="p-4 space-y-2">
-          <a
-            href="{{ url_for('web.dashboard') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-chart-line w-5 text-sky-400"></i>Dashboard
-          </a>
-          <a
-            href="{{ url_for('web.manage_users') }}"
-            class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-users w-5 text-purple-400"></i>Kelola Pengguna
-          </a>
-          <a
-            href="{{ url_for('web.articles') }}"
-            class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100"
-          >
-            <i class="fas fa-newspaper w-5 text-blue-400"></i>Kelola Artikel
-          </a>
-          <button
-            id="create-article-btn"
-            class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-gray-100 hover:bg-green-500/20"
-            onclick="openCreateModal()"
-          >
-            <i class="fas fa-plus-circle w-5 text-green-400"></i>Buat Artikel
-          </button>
-        </nav>
-
-        <div
-          class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 gradient-bg"
-        >
-          <a
-            href="{{ url_for('web.logout') }}"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 font-semibold text-red-300 transition"
-          >
-            <i class="fas fa-sign-out-alt w-5"></i>Logout
-          </a>
-        </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="flex-1 md:ml-64 overflow-y-auto">
-        <div
-          class="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-200"
-        >
-          <div class="px-6 py-4 flex justify-between items-center">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Kelola Artikel</h1>
-              <p class="text-sm text-gray-600">Atur semua konten artikel</p>
-            </div>
-            <button
-              id="mobile-menu-btn"
-              class="md:hidden p-2 rounded-lg hover:bg-gray-100"
-            >
-              <i class="fas fa-bars text-xl text-gray-700"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="p-6">
-          <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <!-- Table Header -->
-            <div
-              class="px-6 py-5 border-b border-gray-200 flex justify-between items-center"
-            >
-              <div>
-                <h2 class="text-xl font-bold text-gray-900">Daftar Artikel</h2>
-                <p class="text-sm text-gray-600">Kelola semua konten</p>
-              </div>
-              <button
-                onclick="openCreateModal()"
-                class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition shadow-lg"
-              >
-                <i class="fas fa-plus mr-2"></i>Buat Baru
-              </button>
-            </div>
-
-            <!-- Table -->
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Judul
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Author
-                    </th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Tanggal
-                    </th>
-                    <th
-                      class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase"
-                    >
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                  {% for article in articles.items %}
-                  <tr class="hover:bg-gray-50 transition">
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-4 uppercase text-xs tracking-wider">Judul</th>
+                    <th class="px-6 py-4 uppercase text-xs tracking-wider">Gambar</th>
+                    <th class="px-6 py-4 uppercase text-xs tracking-wider">Author</th>
+                    <th class="px-6 py-4 uppercase text-xs tracking-wider">Tanggal</th>
+                    <th class="px-6 py-4 uppercase text-xs tracking-wider text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 bg-white">
+                {% for article in articles.items %}
+                <tr class="hover:bg-gray-50 transition duration-150">
                     <td class="px-6 py-4">
-                      <div class="font-semibold text-gray-900">
-                        {{ article.title }}
-                      </div>
-                      <div class="text-sm text-gray-600 line-clamp-1">
-                        {{ article.content[:60] }}...
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
-                      {{ article.author.username }}
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
-                      {{ article.created_at.strftime('%d %b %Y') }}
+                        <div class="font-bold text-gray-900 mb-1">{{ article.title }}</div>
+                        <div class="text-gray-500 text-xs line-clamp-1">{{ article.content[:60] }}...</div>
                     </td>
                     <td class="px-6 py-4">
-                      <div class="flex justify-center gap-2">
-                        <a
-                          href="{{ url_for('web.article_detail', article_id=article.id) }}"
-                          class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm transition"
-                        >
-                          <i class="fas fa-eye"></i>
-                        </a>
-                        <a
-                          href="{{ url_for('web.edit_article', article_id=article.id) }}"
-                          class="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm transition"
-                        >
-                          <i class="fas fa-edit"></i>
-                        </a>
-                        <form
-                          method="POST"
-                          action="{{ url_for('web.delete_article', article_id=article.id) }}"
-                          style="display: inline"
-                          onsubmit="return confirm('Yakin hapus?')"
-                        >
-                          <button
-                            type="submit"
-                            class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold text-sm transition"
-                          >
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </form>
-                      </div>
+                        {% if article.image_url %}
+                        <img src="{{ article.image_url }}" alt="Thumbnail" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-gray-100">
+                        {% else %}
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        {% endif %}
                     </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+                    <td class="px-6 py-4 text-gray-600 font-medium">
+                        {{ article.author.username }}
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">
+                        {{ article.created_at.strftime('%d %b %Y') }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ url_for('web.dashboard_article_detail', article_id=article.id) }}" 
+                               class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" 
+                               title="Lihat Detail">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('web.edit_article', article_id=article.id) }}" 
+                               class="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition" 
+                               title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('web.delete_article', article_id=article.id) }}" 
+                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus artikel ini?');" 
+                                  class="inline">
+                                <button type="submit" 
+                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" 
+                                        title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                                <i class="fas fa-newspaper text-2xl"></i>
+                            </div>
+                            <p class="font-medium">Belum ada artikel.</p>
+                            <a href="{{ url_for('web.create_article') }}" class="text-sky-600 hover:underline">Buat artikel pertama sekarang</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-            <!-- Pagination -->
-            {% if articles.pages > 1 %}
-            <div
-              class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center"
-            >
-              <div class="text-sm text-gray-600">
-                {{ articles.page }} / {{ articles.pages }}
-              </div>
-              <div class="flex gap-2">
-                {% if articles.has_prev %}
-                <a
-                  href="{{ url_for('web.articles', page=articles.prev_num) }}"
-                  class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition"
-                >
-                  Sebelumnya
-                </a>
-                {% endif %} {% if articles.has_next %}
-                <a
-                  href="{{ url_for('web.articles', page=articles.next_num) }}"
-                  class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition"
-                >
-                  Selanjutnya
-                </a>
-                {% endif %}
-              </div>
-            </div>
+    <!-- Pagination -->
+    {% if articles.pages > 1 %}
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <span class="text-sm text-gray-600">
+            Halaman {{ articles.page }} dari {{ articles.pages }}
+        </span>
+        <div class="flex gap-2">
+            {% if articles.has_prev %}
+            <a href="{{ url_for('web.dashboard_articles', page=articles.prev_num) }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
+                Sebelumnya
+            </a>
             {% endif %}
-          </div>
+            
+            {% if articles.has_next %}
+            <a href="{{ url_for('web.dashboard_articles', page=articles.next_num) }}" class="px-4 py-2 bg-sky-500 text-white border border-transparent rounded-lg text-sm font-medium hover:bg-sky-600 transition shadow-sm">
+                Selanjutnya
+            </a>
+            {% endif %}
         </div>
-      </div>
     </div>
-
-    <!-- Create Article Modal -->
-    <div
-      id="createModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden"
-    >
-      <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">Buat Artikel Baru</h2>
-          <button
-            onclick="closeCreateModal()"
-            class="text-gray-500 hover:text-gray-700 text-2xl"
-          >
-            ×
-          </button>
-        </div>
-
-        <form id="createArticleForm" class="space-y-4">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2"
-              >Judul</label
-            >
-            <input
-              type="text"
-              id="articleTitle"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Judul artikel..."
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2"
-              >Konten</label
-            >
-            <textarea
-              id="articleContent"
-              required
-              rows="8"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Konten artikel..."
-            ></textarea>
-          </div>
-
-          <div class="flex gap-3">
-            <button
-              type="submit"
-              class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold py-2.5 rounded-lg transition"
-            >
-              Buat Artikel
-            </button>
-            <button
-              type="button"
-              onclick="closeCreateModal()"
-              class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-lg transition"
-            >
-              Batal
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <script>
-      function getToken() {
-        const token = localStorage.getItem("token");
-        console.log(
-          "[v0] Token from localStorage:",
-          token ? "Present" : "Missing"
-        );
-        return token;
-      }
-
-      // Modal Functions
-      function openCreateModal() {
-        const token = getToken();
-        if (!token) {
-          alert("Token tidak ditemukan. Silakan login kembali!");
-          window.location.href = "/login";
-          return;
-        }
-        document.getElementById("createModal").classList.remove("hidden");
-      }
-
-      function closeCreateModal() {
-        document.getElementById("createModal").classList.add("hidden");
-        document.getElementById("createArticleForm").reset();
-      }
-
-      // Create Article Form
-      document
-        .getElementById("createArticleForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const title = document.getElementById("articleTitle").value;
-          const content = document.getElementById("articleContent").value;
-
-          const token = getToken();
-
-          if (!token) {
-            alert("Token tidak ditemukan. Silakan login kembali!");
-            window.location.href = "/login";
-            return;
-          }
-
-          console.log("[v0] Creating article with title:", title);
-          console.log("[v0] Using token:", token.substring(0, 20) + "...");
-
-          try {
-            const response = await fetch("/api/articles", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ title, content }),
-            });
-
-            console.log("[v0] Response status:", response.status);
-            const data = await response.json();
-            console.log("[v0] Response data:", data);
-
-            if (data.success) {
-              alert("Artikel berhasil dibuat!");
-              closeCreateModal();
-              location.reload();
-            } else {
-              alert("Error: " + data.message);
-            }
-          } catch (error) {
-            console.error("[v0] Fetch error:", error);
-            alert("Terjadi kesalahan: " + error.message);
-          }
-        });
-
-      // Mobile Menu
-      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-      const sidebar = document.getElementById("sidebar");
-      mobileMenuBtn?.addEventListener("click", () => {
-        sidebar.classList.toggle("-translate-x-full");
-      });
-
-      document.addEventListener("click", (e) => {
-        if (
-          window.innerWidth < 768 &&
-          !sidebar.contains(e.target) &&
-          !mobileMenuBtn.contains(e.target)
-        ) {
-          sidebar.classList.add("-translate-x-full");
-        }
-      });
-
-      window.addEventListener("load", function () {
-        const token = getToken();
-        if (!token) {
-          console.log("[v0] No token found, redirecting to login");
-          // Don't auto-redirect, just log warning
-          // User can still see articles but cannot create
-        } else {
-          console.log("[v0] Token found, user is authenticated");
-        }
-      });
-    </script>
-  </body>
-</html>
+    {% endif %}
+</div>
+{% endblock %}

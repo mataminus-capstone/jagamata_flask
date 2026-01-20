@@ -56,3 +56,8 @@ def get_current_user():
 def logout():
     """Logout user"""
     return AuthController.logout()
+
+@auth_bp.route('/me', methods=['PUT', 'PATCH'])
+def update_profile():
+    """Update current user profile"""
+    return AuthController.update_profile()

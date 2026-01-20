@@ -354,6 +354,115 @@
   </div>
 </section>
 
+<!-- Download App Section -->
+<section id="download-app" class="py-16">
+  <div class="max-w-6xl mx-auto">
+    <div class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 rounded-3xl p-8 lg:p-12 relative overflow-hidden">
+      <!-- Background Decorations -->
+      <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40"></div>
+      <div class="absolute bottom-0 left-0 w-60 h-60 bg-white/5 rounded-full -ml-30 -mb-30"></div>
+      <div class="absolute top-1/2 right-1/4 w-20 h-20 bg-white/10 rounded-full"></div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10">
+        <!-- Left Content -->
+        <div class="space-y-6 text-center lg:text-left">
+          <div>
+            <span class="inline-block px-4 py-1.5 bg-white/20 text-white rounded-full text-sm font-medium mb-4 backdrop-blur-sm">
+              <i class="fab fa-android mr-2"></i>Aplikasi Mobile
+            </span>
+            <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight">
+              Download Aplikasi<br/>
+              <span class="text-primary-200">Jagamata</span> Sekarang!
+            </h2>
+            <p class="text-white/80 leading-relaxed max-w-md mx-auto lg:mx-0">
+              Akses semua fitur kesehatan mata langsung dari smartphone Anda. Deteksi AI, konsultasi, dan tips kesehatan dalam genggaman.
+            </p>
+          </div>
+          
+          <!-- Features List -->
+          <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
+            <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              <i class="fas fa-camera text-primary-200"></i>
+              <span class="text-white text-sm">Scan Mata AI</span>
+            </div>
+            <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              <i class="fas fa-comments text-primary-200"></i>
+              <span class="text-white text-sm">Chatbot 24/7</span>
+            </div>
+            <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              <i class="fas fa-history text-primary-200"></i>
+              <span class="text-white text-sm">Riwayat Deteksi</span>
+            </div>
+          </div>
+          
+          <!-- Download Button -->
+          <div class="pt-2">
+            <a
+              href="https://drive.google.com/drive/folders/1FbomHJLsqPPV0UqESl1DLWFsxG4NKGnt?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary-700 hover:bg-gray-50 rounded-xl font-semibold transition-all shadow-xl hover:shadow-2xl hover:scale-105 group"
+            >
+              <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition">
+                <i class="fab fa-android text-primary-600 text-xl"></i>
+              </div>
+              <div class="text-left">
+                <div class="text-xs text-gray-500 uppercase tracking-wide">Download untuk</div>
+                <div class="text-lg font-bold text-gray-900">Android</div>
+              </div>
+              <i class="fas fa-arrow-right text-primary-600 ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+          </div>
+          
+          <p class="text-white/60 text-sm">
+            <i class="fas fa-info-circle mr-1"></i>
+            Tersedia untuk Android 7.0 ke atas
+          </p>
+        </div>
+        
+        <!-- Right Content - App Preview -->
+        <div class="flex justify-center lg:justify-end">
+          <div class="relative">
+            <!-- Phone Frame Effect -->
+            <div class="relative transform hover:scale-105 transition-transform duration-500">
+              <!-- Shadow -->
+              <div class="absolute inset-0 bg-black/20 rounded-3xl blur-2xl transform translate-y-4"></div>
+              
+              <!-- App Screenshot -->
+              <div class="relative rounded-3xl p-2">
+                <img
+                  src="{{ url_for('static', filename='images/app.png') }}"
+                  alt="Jagamata Mobile App Preview"
+                  class="w-64 lg:w-72 h-auto rounded-2xl"
+                />
+              </div>
+              
+              <!-- Floating Badge -->
+              <div class="absolute -top-4 -right-4 bg-white rounded-full p-3 shadow-xl animate-bounce">
+                <i class="fab fa-android text-green-500 text-2xl"></i>
+              </div>
+              
+              <!-- Rating Badge -->
+              <!-- <div class="absolute -bottom-4 -left-4 bg-white rounded-xl p-3 shadow-xl">
+                <div class="flex items-center gap-2">
+                  <div class="flex text-yellow-400">
+                    <i class="fas fa-star text-sm"></i>
+                    <i class="fas fa-star text-sm"></i>
+                    <i class="fas fa-star text-sm"></i>
+                    <i class="fas fa-star text-sm"></i>
+                    <i class="fas fa-star-half-alt text-sm"></i>
+                  </div>
+                  <span class="text-gray-700 font-semibold text-sm">4.8</span>
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CTA Section -->
 <section class="py-16">
   <div

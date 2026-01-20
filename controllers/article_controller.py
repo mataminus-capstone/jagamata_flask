@@ -2,6 +2,7 @@ from flask import request, jsonify, current_app
 from models import db, Article, User
 from datetime import datetime
 from services.jwt_service import JWTService
+from services.cloudinary_service import CloudinaryService
 
 
 class ArticleController:
@@ -42,6 +43,7 @@ class ArticleController:
                 'id': article.id,
                 'title': article.title,
                 'content': article.content,
+                'image_url': article.image_url,
                 'author': {
                     'id': article.author.id,
                     'username': article.author.username
@@ -90,6 +92,7 @@ class ArticleController:
                     'id': article.id,
                     'title': article.title,
                     'content': article.content,
+                    'image_url': article.image_url,
                     'author': {
                         'id': article.author.id,
                         'username': article.author.username
@@ -124,25 +127,39 @@ class ArticleController:
                     'message': 'Hanya admin yang bisa membuat artikel!'
                 }), 403
             
-            data = request.get_json(force=True, silent=True)
+            title = request.form.get('title', '').strip()
+            content = request.form.get('content', '').strip()
             
-            if not data:
-                return jsonify({
-                    'success': False,
-                    'message': 'Invalid JSON format'
-                }), 400
-            
-            title = data.get('title', '').strip()
-            content = data.get('content', '').strip()
-            
+            if not title or not content:
+                # Fallback to JSON if form data is empty (kept for backward compatibility if client sends JSON)
+                if not title and not content:
+                    data = request.get_json(silent=True)
+                    if data:
+                        title = data.get('title', '').strip()
+                        content = data.get('content', '').strip()
+
             if not title or not content:
                 return jsonify({
                     'success': False,
                     'message': 'Judul dan konten harus diisi!'
                 }), 400
             
+            # Handle Image Upload
+            image_url = ''
+            if 'image' in request.files:
+                file = request.files['image']
+                if file and file.filename != '':
+                    upload_result = CloudinaryService.upload_image(file)
+                    if upload_result['success']:
+                        image_url = upload_result['url']
+                    else:
+                        return jsonify({
+                            'success': False,
+                            'message': f"Gagal upload gambar: {upload_result.get('message')}"
+                        }), 500
+
             # Create article
-            article = Article(title=title, content=content, author_id=user.id)
+            article = Article(title=title, content=content, author_id=user.id, image_url=image_url)
             db.session.add(article)
             db.session.commit()
             
@@ -153,6 +170,7 @@ class ArticleController:
                     'id': article.id,
                     'title': article.title,
                     'content': article.content,
+                    'image_url': article.image_url,
                     'author': {
                         'id': article.author.id,
                         'username': article.author.username
@@ -194,19 +212,34 @@ class ArticleController:
                     'message': 'Anda tidak punya akses untuk edit artikel ini!'
                 }), 403
             
-            data = request.get_json(force=True, silent=True)
+            title = request.form.get('title')
+            content = request.form.get('content')
             
-            if not data:
-                return jsonify({
-                    'success': False,
-                    'message': 'Invalid JSON format'
-                }), 400
-            
+            # Fallback to JSON
+            if title is None and content is None:
+                data = request.get_json(silent=True)
+                if data:
+                    title = data.get('title')
+                    content = data.get('content')
+
             # Update fields
-            if 'title' in data:
-                article.title = data['title'].strip()
-            if 'content' in data:
-                article.content = data['content'].strip()
+            if title:
+                article.title = title.strip()
+            if content:
+                article.content = content.strip()
+            
+            # Handle Image Upload
+            if 'image' in request.files:
+                file = request.files['image']
+                if file and file.filename != '':
+                    upload_result = CloudinaryService.upload_image(file)
+                    if upload_result['success']:
+                        article.image_url = upload_result['url']
+                    else:
+                        return jsonify({
+                            'success': False,
+                            'message': f"Gagal upload gambar: {upload_result.get('message')}"
+                        }), 500
             
             article.updated_at = datetime.utcnow()
             db.session.commit()
@@ -218,6 +251,7 @@ class ArticleController:
                     'id': article.id,
                     'title': article.title,
                     'content': article.content,
+                    'image_url': article.image_url,
                     'author': {
                         'id': article.author.id,
                         'username': article.author.username

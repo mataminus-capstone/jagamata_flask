@@ -4,6 +4,8 @@ from services.auth_service import google_oauth, email_service
 from datetime import datetime
 from services.jwt_service import JWTService
 
+from services.cloudinary_service import CloudinaryService
+
 class AuthController:
     
     @staticmethod
@@ -68,7 +70,9 @@ class AuthController:
                     'username': user.username,
                     'email': user.email,
                     'profile_picture': user.profile_picture,
-                    'email_verified': user.email_verified
+                    'email_verified': user.email_verified,
+                    'address': user.address,
+                    'phone_number': user.phone_number
                 }
             }), 201
             
@@ -127,6 +131,8 @@ class AuthController:
                         'role': user.role,
                         'profile_picture': user.profile_picture,
                         'email_verified': user.email_verified,
+                        'address': user.address,
+                        'phone_number': user.phone_number,
                         'created_at': user.created_at.isoformat(),
                         'token': jwt_token
                     }
@@ -466,6 +472,8 @@ class AuthController:
                     'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'oauth_provider': user.oauth_provider,
+                    'address': user.address,
+                    'phone_number': user.phone_number,
                     'created_at': user.created_at.isoformat(),
                     'token': jwt_token
                 }
@@ -544,6 +552,8 @@ class AuthController:
                     'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
                     'oauth_provider': user.oauth_provider,
+                    'address': user.address,
+                    'phone_number': user.phone_number,
                     'created_at': user.created_at.isoformat(),
                     'token': jwt_token
                 }
@@ -594,6 +604,8 @@ class AuthController:
                     'role': user.role,
                     'profile_picture': user.profile_picture,
                     'email_verified': user.email_verified,
+                    'address': user.address,
+                    'phone_number': user.phone_number,
                     'created_at': user.created_at.isoformat()
                 }
             }), 200
@@ -613,3 +625,66 @@ class AuthController:
             'success': True,
             'message': 'Logout berhasil!'
         }), 200
+
+    @staticmethod
+    def update_profile():
+        """Update current user profile"""
+        try:
+            token = JWTService.extract_token_from_headers(request.headers)
+            if not token:
+                return jsonify({'success': False, 'message': 'Token missing'}), 401
+                
+            payload = JWTService.verify_token(token)
+            if not payload:
+                return jsonify({'success': False, 'message': 'Invalid token'}), 401
+                
+            user_id = payload.get('user_id')
+            user = User.query.get(user_id)
+            if not user:
+                return jsonify({'success': False, 'message': 'User not found'}), 404
+            
+            # Helper to get data from form (multipart) or json
+            data = {}
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                data = request.form.to_dict()
+            else:
+                data = request.get_json(force=True, silent=True) or {}
+                
+            if 'username' in data:
+                 username = data['username'].strip()
+                 if username:
+                    user.username = username
+            
+            if 'address' in data:
+                user.address = data['address']
+            if 'phone_number' in data:
+                user.phone_number = data['phone_number']
+
+            # Handle Image Upload
+            if 'profile_picture' in request.files:
+                file = request.files['profile_picture']
+                if file.filename != '':
+                    upload_result = CloudinaryService.upload_image(file)
+                    if upload_result['success']:
+                        user.profile_picture = upload_result['url']
+                    else:
+                        return jsonify({'success': False, 'message': upload_result.get('message', 'Failed to upload image')}), 500
+                
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Profile updated successfully',
+                'data': {
+                    'user_id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'address': user.address,
+                    'phone_number': user.phone_number,
+                    'profile_picture': user.profile_picture
+                }
+            }), 200
+            
+        except Exception as e:
+            current_app.logger.error(f"Update profile error: {str(e)}")
+            return jsonify({'success': False, 'message': str(e)}), 500

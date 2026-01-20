@@ -1,95 +1,90 @@
-{% extends 'base.html' %} {% block title %}Edit Artikel - Jagamata{% endblock %}
+{% extends "dashboard.html" %}
+
 {% block content %}
-<div class="max-w-3xl mx-auto">
-  <div
-    class="bg-white rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-100"
-  >
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    
     <!-- Header -->
-    <div class="mb-8">
-      <div class="flex items-center gap-4 mb-4">
-        <div
-          class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg"
-        >
-          <i class="fas fa-edit"></i>
-        </div>
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">Edit Artikel</h1>
-          <p class="text-gray-600">Perbarui konten artikel Anda</p>
-        </div>
+    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
+      <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-600 text-xl">
+        <i class="fas fa-edit"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Edit Artikel</h1>
+        <p class="text-gray-500 text-sm">Perbarui konten artikel Anda</p>
       </div>
     </div>
 
-    <!-- Form -->
-    <form method="POST" class="space-y-6">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      <!-- Title -->
       <div>
-        <label
-          for="title"
-          class="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          <i class="fas fa-heading mr-2 text-sky-500"></i>Judul Artikel
-        </label>
+        <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">Judul Artikel</label>
         <input
           type="text"
           id="title"
           name="title"
           required
           value="{{ article.title }}"
-          placeholder="Masukkan judul artikel"
-          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 transition text-gray-900"
         />
       </div>
-
+      
+      <!-- Image Upload -->
       <div>
-        <label
-          for="content"
-          class="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          <i class="fas fa-align-left mr-2 text-sky-500"></i>Konten Artikel
-        </label>
+        <label for="image" class="block text-sm font-semibold text-gray-700 mb-2">Gambar Sampul</label>
+        
+        {% if article.image_url %}
+        <div class="mb-4 relative group w-fit">
+            <img src="{{ article.image_url }}" alt="Current Image" class="h-32 rounded-lg object-cover shadow-sm border border-gray-100">
+            <div class="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <span class="text-white text-xs font-semibold">Gambar Saat Ini</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative group">
+            <input
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <div class="flex flex-col items-center gap-2 text-gray-500">
+                <i class="fas fa-camera text-2xl group-hover:text-yellow-500 transition"></i>
+                <span class="text-sm font-medium">Klik untuk ganti gambar (opsional)</span>
+            </div>
+        </div>
+      </div>
+      
+      <!-- Content -->
+      <div>
+        <label for="content" class="block text-sm font-semibold text-gray-700 mb-2">Konten Artikel</label>
         <textarea
           id="content"
           name="content"
           required
-          rows="16"
-          placeholder="Edit konten artikel di sini..."
-          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition font-mono text-sm leading-relaxed"
-        >
-{{ article.content }}</textarea
-        >
+          rows="12"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 transition font-sans text-gray-900 leading-relaxed resize-y"
+        >{{ article.content }}</textarea>
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-4 pt-4">
-        <button
-          type="submit"
-          class="flex-1 bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-bold py-4 rounded-xl transition shadow-lg transform hover:scale-[1.02]"
-        >
-          <i class="fas fa-save mr-2"></i>
-          Update Artikel
-        </button>
+      <div class="flex items-center gap-4 pt-4 border-t border-gray-100">
         <a
-          href="{{ url_for('web.article_detail', article_id=article.id) }}"
-          class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 rounded-xl transition text-center shadow-lg"
+          href="{{ url_for('web.dashboard_articles') }}"
+          class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition"
         >
-          <i class="fas fa-times mr-2"></i>
           Batal
         </a>
+        <button
+          type="submit"
+          class="flex-1 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl transition shadow-lg shadow-yellow-200"
+        >
+          <i class="fas fa-save mr-2"></i> Simpan Perubahan
+        </button>
       </div>
     </form>
-
-    <!-- Info Box -->
-    <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg">
-      <div class="flex gap-3">
-        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mt-1"></i>
-        <div class="text-sm text-gray-700">
-          <p class="font-semibold mb-1">Perhatian:</p>
-          <p>
-            Perubahan akan langsung terlihat setelah Anda menyimpan artikel.
-            Pastikan semua informasi sudah benar sebelum menyimpan.
-          </p>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 {% endblock %}

@@ -90,6 +90,45 @@ def migrate_oauth_columns():
             traceback.print_exc()
             raise
 
+def migrate_user_profile_columns():
+    """Add address and phone_number columns to existing users table if they don't exist"""
+    app = create_app(os.getenv('FLASK_ENV', 'development'))
+    
+    with app.app_context():
+        try:
+            from sqlalchemy import text
+            
+            # Check if address column exists
+            result = db.session.execute(text(
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS "
+                "WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'address'"
+            ))
+            
+            if result.scalar() == 0:
+                print("Adding address and phone_number columns to users table...")
+                
+                # Add new columns
+                db.session.execute(text(
+                    "ALTER TABLE users "
+                    "ADD COLUMN address VARCHAR(255), "
+                    "ADD COLUMN phone_number VARCHAR(20)"
+                ))
+                
+                db.session.commit()
+                print("✓ Address and phone_number columns added successfully!")
+                return True
+            else:
+                print("✓ Address and phone_number columns already exist")
+                return False
+                
+        except Exception as e:
+            db.session.rollback()
+            print(f"✗ Error migrating user profile columns: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            # Do not raise here to allow setup to continue if it's just a column exists error that wasn't caught
+
+
 def init_db():
     """Initialize database dengan sample data"""
     app = create_app(os.getenv('FLASK_ENV', 'development'))
@@ -101,6 +140,7 @@ def init_db():
         
         migrate_remove_username_unique()
         migrate_oauth_columns()
+        migrate_user_profile_columns()
         
         # Check if admin user already exists
         admin_user = User.query.filter_by(email='admin@example.com').first()
