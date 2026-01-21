@@ -1,5 +1,5 @@
 import os
-os.environ['TF_USE_LEGACY_KERAS'] = '1'
+
 
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
@@ -45,6 +45,7 @@ def create_app(config_name='development'):
     from routes.detection_routes import detection_bp
     from routes.medicine_routes import medicine_bp
     from routes.category_routes import category_bp
+    from routes.feedback_routes import feedback_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(chatbot_bp)
@@ -54,6 +55,7 @@ def create_app(config_name='development'):
     app.register_blueprint(detection_bp)
     app.register_blueprint(medicine_bp)
     app.register_blueprint(category_bp)
+    app.register_blueprint(feedback_bp)
     
     from routes.web_routes import web_bp
     app.register_blueprint(web_bp)

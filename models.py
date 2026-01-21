@@ -139,3 +139,16 @@ class Medicine(db.Model):
     def __repr__(self):
         return f'<Medicine {self.name}>'
 
+
+class Feedback(db.Model):
+    __tablename__ = 'feedbacks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) # Optional, can be anonymous
+    content = db.Column(db.Text, nullable=False)
+    sentiment_label = db.Column(db.String(50), nullable=True)
+    sentiment_score = db.Column(db.Float, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<Feedback {self.id}>'

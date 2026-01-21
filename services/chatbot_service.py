@@ -1,17 +1,16 @@
 import os
-import pickle
+import joblib
 import numpy as np
 import pandas as pd
 import re
 import google.generativeai as genai
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import current_app
 
 class ChatbotModel:
     def __init__(self, app=None):
         self.is_loaded = False
-        self.dataset_df = None
+        self.answers = None
         self.vectorizer = None
         self.tfidf_matrix = None
         self.gemini_configured = False
@@ -24,27 +23,29 @@ class ChatbotModel:
         try:
             base_dir = os.path.dirname(os.path.abspath(__file__))
             # Go up one level to reach models folder
-            models_dir = os.path.join(os.path.dirname(base_dir), 'models')
+            models_dir = os.path.join(os.path.dirname(base_dir), 'models', 'alodokter_chatbot')
             
-            app.logger.info("Loading semantic search model...")
+            app.logger.info("Loading semantic search model from alodokter_chatbot...")
             
-            # Load dataset.pkl
-            dataset_path = os.path.join(models_dir, 'dataset.pkl')
-            if not os.path.exists(dataset_path):
-                raise FileNotFoundError(f"File tidak ditemukan: {dataset_path}")
-            self.dataset_df = pd.read_pickle(dataset_path)
-            app.logger.info(f"✓ Dataset: {len(self.dataset_df)} rows")
+            # Load answers.pkl
+            answers_path = os.path.join(models_dir, 'answers.pkl')
+            if not os.path.exists(answers_path):
+                raise FileNotFoundError(f"File tidak ditemukan: {answers_path}")
+            
+            with open(answers_path, 'rb') as f:
+                self.answers = joblib.load(f)
+            app.logger.info(f"✓ Answers loaded: {len(self.answers)} items")
             
             # Load vectorizer.pkl
             vectorizer_path = os.path.join(models_dir, 'vectorizer.pkl')
             with open(vectorizer_path, 'rb') as f:
-                self.vectorizer = pickle.load(f)
+                self.vectorizer = joblib.load(f)
             app.logger.info("✓ Vectorizer loaded")
             
-            # Load tfidf_matrix.pkl
-            tfidf_path = os.path.join(models_dir, 'tfidf_matrix.pkl')
+            # Load X_matrix.pkl (tfidf_matrix)
+            tfidf_path = os.path.join(models_dir, 'X_matrix.pkl')
             with open(tfidf_path, 'rb') as f:
-                self.tfidf_matrix = pickle.load(f)
+                self.tfidf_matrix = joblib.load(f)
             app.logger.info("✓ TF-IDF matrix loaded")
             
             gemini_api_key = os.getenv('GEMINI_API_KEY')
@@ -73,7 +74,7 @@ class ChatbotModel:
         text = re.sub(r'\s+', ' ', text).strip()
         return text
     
-    def generate_with_gemini(self, user_message, semantic_response, doctor_name):
+    def generate_with_gemini(self, user_message, semantic_response):
         try:
             if not self.gemini_configured:
                 current_app.logger.warning("Gemini not configured, returning semantic response")
@@ -82,27 +83,18 @@ class ChatbotModel:
             model = genai.GenerativeModel('gemini-2.5-flash')
             
             prompt = f"""Anda adalah chatbot medis mata yang membantu user. 
-
-anda adalah chatbot untuk aplikasi konsultasi kesehatan mata bernama JagaMata.  
             
 User bertanya: "{user_message}"
 
-Berikut adalah jawaban dari {doctor_name}:
+Berikut adalah referensi jawaban medis:
 "{semantic_response}"
 
-Jika user hanya mengirim sapaan atau pertanyaan umum, balas dengan sopan dan ramah tanpa konteks medis.
-Atau jika sudah keluar dari konteks medis mata, katakan "Maaf, saya hanya bisa membantu masalah terkait kesehatan mata."
-
-dan tidak usah tulis nama dokter lagi.
-hapus isi jawaban semacam "**Jawaban dari dr.....:** ", dan langsung berikan jawaban yang jelas dan informatif.
-hapus juga penyebutan nama orang, 
-
-Tolong enhance/improve jawaban tersebut dengan:
-1. Jelas dan mudah dipahami
-2. Tambahkan konteks medis jika diperlukan
-3. Berikan saran praktis
-4. Gunakan bahasa Indonesia yang baik
-5. Jangan terlalu panjang (maksimal 3-4 kalimat saja)
+Instruksi:
+1. Gunakan referensi jawaban di atas sebagai dasar, namun sampaikan ulang dengan bahasa yang lebih personal dan ramah.
+2. Jika referensi jawaban berisi sapaan formal atau nama dokter, HILANGKAN itu. Langsung ke inti jawaban.
+3. Pastikan jawaban mudah dipahami oleh orang awam.
+4. Jika pertanyaan user hanya sapaan (halo, hai, selamat pagi), jawab dengan ramah tanpa konteks medis berlebihan.
+5. Jika pertanyaan di luar konteks kesehatan (khususnya mata), sampaikan permohonan maaf bahwa Anda hanya fokus pada kesehatan mata.
 
 Generated Response:"""
             
@@ -138,20 +130,19 @@ Generated Response:"""
             best_idx = np.argmax(similarities[0])
             best_score = similarities[0][best_idx]
             
-            # Get doctor answer
-            doctor_answer = self.dataset_df.iloc[best_idx]['answer_content']
-            doctor_name = self.dataset_df.iloc[best_idx]['doctor_name']
+            # Get answer
+            semantic_answer = self.answers[best_idx]
             
             current_app.logger.info(f"Semantic match dengan confidence: {best_score:.2f}")
             
-            enhanced_response = self.generate_with_gemini(text, doctor_answer, doctor_name)
+            enhanced_response = self.generate_with_gemini(text, semantic_answer)
             
             # Format response
             response = enhanced_response
             
             return {
                 'response': response,
-                'doctor': doctor_name,
+                'doctor': 'JagaMata AI', # Generic name since specific doctor info is removed
                 'confidence': float(best_score),
                 'status': 'success'
             }
