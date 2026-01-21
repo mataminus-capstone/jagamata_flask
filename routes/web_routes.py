@@ -5,6 +5,8 @@ from functools import wraps
 from services.auth_service import email_service
 from services.jwt_service import JWTService
 from services.cloudinary_service import CloudinaryService
+from models import Feedback
+from controllers.feedback_controller import FeedbackController
 
 web_bp = Blueprint('web', __name__)
 
@@ -115,7 +117,8 @@ def get_dashboard_stats():
         'verified_count': User.query.filter_by(email_verified=True).count(),
         'admin_count': User.query.filter_by(role='admin').count(),
         'moderator_count': User.query.filter_by(role='moderator').count(),
-        'user_count': User.query.filter_by(role='user').count()
+        'user_count': User.query.filter_by(role='user').count(),
+        'total_feedbacks': Feedback.query.count()
     }
 
 @web_bp.route('/dashboard')
@@ -634,3 +637,24 @@ def delete_medicine(medicine_id):
     
     flash('Obat berhasil dihapus!', 'success')
     return redirect(url_for('web.dashboard_medicines'))
+
+
+# ================= FEEDBACK ROUTES =================
+
+@web_bp.route('/feedback', methods=['GET'])
+@login_required
+def feedback_form():
+    """Feedback form page (logged-in users only)"""
+    return render_template('feedback_form.html')
+
+@web_bp.route('/dashboard/feedback', methods=['GET'])
+@login_required
+@admin_required
+def dashboard_feedback():
+    """Admin dashboard feedback visualization page"""
+    page = request.args.get('page', 1, type=int)
+    feedbacks = Feedback.query.order_by(Feedback.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    
+    sentiment_stats = FeedbackController.get_sentiment_stats()
+    return render_template('dashboard_feedback.html', feedbacks=feedbacks, sentiment_stats=sentiment_stats, stats=get_dashboard_stats())
+

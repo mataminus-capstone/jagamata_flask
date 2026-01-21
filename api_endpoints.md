@@ -33,3 +33,8 @@
 
 - `GET /api/user/profile` - Get user profile (requires JWT token)
 - `PUT /api/user/profile` - Update user profile (requires JWT token)
+
+### Feedback (`/api/feedback`)
+
+- `POST /api/feedback/` - Submit feedback and get sentiment analysis (optional JWT token)
+- `GET /api/feedback/` - Get all feedbacks (public/admin - mostly for testing)

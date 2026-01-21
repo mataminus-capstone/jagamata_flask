@@ -12,14 +12,11 @@ gunicorn
 
 cloudinary
 
-tensorflow
-keras
+# ML libs
+joblib
 numpy
 pandas
 scikit-learn
-
-transformers
-tokenizers
 
 google-generativeai
 

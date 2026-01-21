@@ -1,0 +1,153 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<!-- Header Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="stat-card bg-white p-6 border-l-4 border-blue-500">
+        <div class="text-gray-500 text-sm font-medium">Total Feedback</div>
+        <div class="text-3xl font-bold text-gray-900 mt-2">{{ sentiment_stats.total }}</div>
+    </div>
+    <div class="stat-card bg-white p-6 border-l-4 border-green-500">
+        <div class="text-gray-500 text-sm font-medium">Positif</div>
+        <div class="text-3xl font-bold text-gray-900 mt-2">{{ sentiment_stats.positive }}</div>
+    </div>
+    <div class="stat-card bg-white p-6 border-l-4 border-red-500">
+        <div class="text-gray-500 text-sm font-medium">Negatif</div>
+        <div class="text-3xl font-bold text-gray-900 mt-2">{{ sentiment_stats.negative }}</div>
+    </div>
+</div>
+
+<!-- Visualization & List -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Chart Column -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-6">Analisis Sentimen</h3>
+            <div class="relative h-64">
+                <canvas id="sentimentChart"></canvas>
+            </div>
+            <div class="mt-6 space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                        <span class="text-gray-600">Positif</span>
+                    </div>
+                    <span class="font-semibold text-gray-900">{{ sentiment_stats.positive }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                        <span class="text-gray-600">Negatif</span>
+                    </div>
+                    <span class="font-semibold text-gray-900">{{ sentiment_stats.negative }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback List Column -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-6">Daftar Feedback Terbaru</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-600">User</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-600">Pesan</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-600">Sentimen</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-600">Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for feedback in feedbacks.items %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-3 font-medium text-gray-900">
+                                {{ feedback.user.username if feedback.user else 'Anonim' }}
+                            </td>
+                            <td class="px-4 py-3 text-gray-600 max-w-xs truncate" title="{{ feedback.content }}">
+                                {{ feedback.content }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if feedback.sentiment_label == 'POSITIVE' %}
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Positif</span>
+                                {% elif feedback.sentiment_label == 'NEGATIVE' %}
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Negatif</span>
+                                {% else %}
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">{{ feedback.sentiment_label }}</span>
+                                {% endif %}
+                                <span class="text-xs text-gray-400 ml-1">({{ "%.2f"|format(feedback.sentiment_score) }})</span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-400 text-xs">
+                                {{ feedback.created_at.strftime('%d %b %H:%M') }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                                Belum ada feedback data.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if feedbacks.pages > 1 %}
+            <div class="flex justify-center mt-6 gap-2">
+                {% if feedbacks.has_prev %}
+                <a href="{{ url_for('web.dashboard_feedback', page=feedbacks.prev_num) }}" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200">Prev</a>
+                {% endif %}
+                <span class="px-3 py-1 text-gray-600">{{ feedbacks.page }} / {{ feedbacks.pages }}</span>
+                {% if feedbacks.has_next %}
+                <a href="{{ url_for('web.dashboard_feedback', page=feedbacks.next_num) }}" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<div id="sentiment-data"
+     data-positive="{{ sentiment_stats.positive }}"
+     data-negative="{{ sentiment_stats.negative }}">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dataDiv = document.getElementById('sentiment-data');
+        const pos = Number(dataDiv.dataset.positive || 0);
+        const neg = Number(dataDiv.dataset.negative || 0);
+        
+        const ctx = document.getElementById('sentimentChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Positif', 'Negatif'],
+                datasets: [{
+                    data: [pos, neg],
+                    backgroundColor: [
+                        '#22c55e', // green-500
+                        '#ef4444'  // red-500
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

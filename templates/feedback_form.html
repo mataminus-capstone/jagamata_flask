@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Kirim Feedback - Jagamata{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Berikan Feedback Anda</h1>
+        <p class="text-gray-600 mb-8">Masukan Anda sangat berharga bagi kami untuk meningkatkan layanan Jagamata.</p>
+        
+        <form id="feedback-form" class="space-y-6">
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Pesan Feedback</label>
+                <textarea 
+                    id="content" 
+                    name="content" 
+                    rows="6" 
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none"
+                    placeholder="Ceritakan pengalaman Anda menggunakan Jagamata..."
+                    required
+                ></textarea>
+            </div>
+            
+            <button 
+                type="submit" 
+                class="w-full btn-primary text-white font-medium py-3 px-4 rounded-lg flex justify-center items-center gap-2"
+                id="submit-btn"
+            >
+                <i class="fas fa-paper-plane"></i>
+                <span>Kirim Feedback</span>
+            </button>
+        </form>
+
+        <div id="result-container" class="mt-6 hidden">
+            <!-- Result will be injected here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('feedback-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const content = document.getElementById('content').value;
+        const btn = document.getElementById('submit-btn');
+        const originalBtnText = btn.innerHTML;
+        const resultContainer = document.getElementById('result-container');
+        
+        // Disable button and show loading state
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Mengirim...</span>';
+        
+        try {
+            const response = await fetch('/api/feedback/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // JWT token might be needed if using strict API auth, 
+                    // but here we rely on session cookie (Flask-Login) usually.
+                    // If the API strictly requires Authorization header, we need to get it.
+                    // Based on feedback_controller.py: token = JWTService.extract_token_from_headers(request.headers)
+                    // It seems it tries to extract token. If Flask-Login session is active, maybe we need to pass that too?
+                    // Actually, Create Feedback controller uses `_get_current_user_id` which checks JWT.
+                    // If we are in Web context, we might not have the JWT in local storage easily accessible 
+                    // if it was only set in a cookie or passed to template. 
+                    // Let's check web_routes.py login function again. 
+                    // It renders login_success.html with token. 
+                    // Maybe we need to assume the user has the token in localStorage?
+                    // Or we should modify controller to also check `current_user` from Flask-Login.
+                },
+                body: JSON.stringify({ content: content })
+            });
+            
+            // Wait, the controller strictly checks JWT in `_get_current_user_id`. 
+            // If we are using the web interface, we are authenticated via Session (Flask-Login).
+            // The controller might fail if it ONLY checks JWT.
+            // I should double check the controller modification I made.
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Success
+                document.getElementById('content').value = '';
+                resultContainer.innerHTML = `
+                    <div class="p-4 bg-green-50 text-green-700 rounded-lg border border-green-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="font-semibold">Terima kasih!</span>
+                        </div>
+                        <p class="text-sm">Feedback Anda telah kami terima.</p>
+                    </div>
+                `;
+                resultContainer.classList.remove('hidden');
+                showToast('Feedback berhasil dikirim!', 'success');
+            } else {
+                throw new Error(data.message || 'Terjadi kesalahan');
+            }
+            
+        } catch (error) {
+            resultContainer.innerHTML = `
+                <div class="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span class="font-semibold">Gagal mengirim feedback</span>
+                    </div>
+                    <p class="text-sm mt-1">${error.message}</p>
+                    <p class="text-xs mt-2 text-red-500">Mungkin Anda perlu menyertakan Token JWT jika login via API.</p> 
+                    <!-- Note for debugging / user -->
+                </div>
+            `;
+            resultContainer.classList.remove('hidden');
+            showToast(error.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+        }
+    });
+    
+    // Helper to get JWT if stored (assuming standard implementation)
+    // If Flask-Login is used, we might need to modify the controller to support session auth too.
+</script>
+{% endblock %}

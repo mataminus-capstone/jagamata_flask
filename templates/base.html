@@ -17,17 +17,20 @@
           extend: {
             colors: {
               primary: {
-                50: "#f0fdfa",
-                100: "#ccfbf1",
-                200: "#99f6e4",
-                300: "#5eead4",
-                400: "#2dd4bf",
-                500: "#14b8a6",
-                600: "#0d9488",
-                700: "#0f766e",
-                800: "#115e59",
-                900: "#134e4a",
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#14b4ef", // Biru Muda (Main)
+                700: "#0e3f7b", // Biru Tua (Dark/Hover)
+                800: "#075985",
+                900: "#0c4a6e",
               },
+              tosca: "#a2c38e",
+              darkblue: "#0e3f7b",
+              lightblue: "#14b4ef",
             },
           },
         },
@@ -85,19 +88,19 @@
       }
 
       .gradient-text {
-        background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+        background: linear-gradient(135deg, #14b4ef 0%, #0e3f7b 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
 
       .btn-primary {
-        background-color: #0d9488;
+        background-color: #14b4ef;
         transition: all 0.2s ease;
       }
 
       .btn-primary:hover {
-        background-color: #0f766e;
+        background-color: #0e3f7b;
       }
 
       .card-hover {
@@ -172,7 +175,7 @@
       }
     </style>
   </head>
-  <body class="bg-gray-50 min-h-screen">
+  <body class="bg-white min-h-screen">
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
@@ -181,16 +184,17 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <!-- Logo & Brand -->
+          <!-- Logo & Brand -->
           <a
             href="{{ url_for('web.index') }}"
             class="flex items-center gap-2.5"
           >
-            <div
-              class="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm bg-primary-600"
-            >
-              J
-            </div>
-            <span class="text-lg font-bold text-gray-900">Jagamata</span>
+            <img
+              src="{{ url_for('static', filename='images/logo/logo-no-text.png') }}"
+              alt="Jagamata Logo"
+              class="w-9 h-9 object-contain"
+            />
+            <span class="text-lg font-bold text-gray-900">JagaMata</span>
           </a>
 
           <!-- Desktop Navigation -->
@@ -220,6 +224,11 @@
               href="{{ url_for('web.articles') }}"
               class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
               >Artikel</a
+            >
+            <a
+              href="{{ url_for('web.feedback_form') }}"
+              class="text-gray-600 hover:text-primary-600 font-medium text-sm transition"
+              >Feedback</a
             >
             {% if current_user.is_admin() %}
             <a
@@ -304,6 +313,11 @@
             class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
             >Artikel</a
           >
+          <a
+            href="{{ url_for('web.feedback_form') }}"
+            class="block px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
+            >Feedback</a
+          >
           {% if current_user.is_admin() %}
           <a
             href="{{ url_for('web.dashboard') }}"
@@ -346,13 +360,13 @@
           class="flex flex-col md:flex-row justify-between items-center gap-4"
         >
           <div class="flex items-center gap-2">
-            <div
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs bg-primary-600"
-            >
-              J
-            </div>
+            <img
+              src="{{ url_for('static', filename='images/logo/logo-no-text.png') }}"
+              alt="JagaMata Logo"
+              class="w-8 h-8 object-contain"
+            />
             <span class="text-sm text-gray-600"
-              >© 2026 Jagamata. All rights reserved.</span
+              >© 2026 JagaMata. All rights reserved.</span
             >
           </div>
           <div class="flex items-center gap-6">
