@@ -32,7 +32,7 @@ class DetectionService:
     @classmethod
     def get_client(cls):
         if cls._client is None:
-            cls._client = Client("iqbaals/jagamata_api")
+            cls._client = Client("iqbaals/jagamata_v10")
         return cls._client
 
     @classmethod
@@ -42,8 +42,8 @@ class DetectionService:
             # The API accepts url or path. Since we have image_url from Cloudinary, we can pass it.
             # Usually handle_file can take a URL.
             result = client.predict(
-                img=handle_file(image_url),
-                api_name="/predict_image"
+                image_input=handle_file(image_url),
+                api_name="/preprocess_and_predict"
             )
             
             # Result format from user: dict(label: str, confidences: list)
