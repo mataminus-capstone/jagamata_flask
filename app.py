@@ -58,7 +58,10 @@ def create_app(config_name='development'):
     app.register_blueprint(feedback_bp)
     
     from routes.web_routes import web_bp
+    from routes.drowsiness_routes import drowsiness_bp
+
     app.register_blueprint(web_bp)
+    app.register_blueprint(drowsiness_bp)
     
     # Initialize chatbot
     chatbot.init_app(app)

@@ -112,6 +112,19 @@ class DetectionHistory(db.Model):
     def __repr__(self):
         return f'<DetectionHistory {self.diagnosis}>'
 
+class FatigueHistory(db.Model):
+    __tablename__ = 'fatigue_history'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    image_url = db.Column(db.String(512), nullable=False)
+    label = db.Column(db.String(100), nullable=False)
+    confidence = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<FatigueHistory {self.label}>'
+
 class Category(db.Model):
     __tablename__ = 'categories'
     

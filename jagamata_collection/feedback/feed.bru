@@ -4,12 +4,23 @@ meta {
   seq: 1
 }
 
-get {
-  url: 
-  body: none
-  auth: inherit
+post {
+  url: https://jagamata.web.id/api/feedback
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjkxMDExNzIsImV4cCI6MTc2OTE4NzU3Mn0.TTyPR24yWe5rNG9ZKq6QD6gjw53Ly3V7AvvBDOigKTs
+}
+
+body:json {
+  {
+    "content": "aplikasinya kece habis"
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

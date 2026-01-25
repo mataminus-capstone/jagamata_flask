@@ -1,12 +1,12 @@
 meta {
-  name: post
+  name: feed copy
   type: http
-  seq: 1
+  seq: 2
 }
 
-post {
-  url: https://jagamata.web.id/api/detection/predict
-  body: multipartForm
+get {
+  url: https://jagamata.web.id/api/feedback
+  body: json
   auth: bearer
 }
 
@@ -14,8 +14,10 @@ auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjkxMDExNzIsImV4cCI6MTc2OTE4NzU3Mn0.TTyPR24yWe5rNG9ZKq6QD6gjw53Ly3V7AvvBDOigKTs
 }
 
-body:multipart-form {
-  image: @file(/home/ahmat-fauzi/Downloads/katarak.png)
+body:json {
+  {
+    "content": "aplikasinya kece habis"
+  }
 }
 
 settings {
