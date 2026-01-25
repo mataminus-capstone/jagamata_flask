@@ -470,6 +470,27 @@
     </div>
 
     <script>
+
+      // kalo error gapapa, karena error kode editor yang salah baca bahasa pemrogramannya,
+      // ini base jinja tapi kebaca js. NORMAL, jalan normal
+      // Render Flask Flashed Messages
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          document.addEventListener('DOMContentLoaded', function() {
+            {% for category, message in messages %}
+              // Map Flask categories to toast types
+              // Flask: success, error, info, warning
+              // Toast: success, error, info
+              var type = "{{ category }}";
+              if (type === 'message') type = 'info'; // Default Flask category
+              if (type === 'danger') type = 'error'; // Bootstrap/common convention
+              
+              showToast("{{ message }}", type);
+            {% endfor %}
+          });
+        {% endif %}
+      {% endwith %}
+
       // Toast Notification System
       function showToast(message, type = "info") {
         const container = document.getElementById("toast-container");

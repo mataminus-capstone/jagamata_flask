@@ -47,12 +47,12 @@ def login():
             
             jwt_token = JWTService.generate_token(user.id, user.role)
             
-            flash('Login berhasil!', 'success')
+            flash('Login Berhasil!', 'success')
             if user.is_admin():
                 return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.index'))
             return render_template('login_success.html', token=jwt_token, redirect_url=url_for('web.index'))
         else:
-            flash('Email atau password salah', 'error')
+            flash('Login Gagal! Email atau password salah.', 'error')
     
     return render_template('login.html')
 
@@ -69,11 +69,11 @@ def register():
         confirm_password = request.form.get('confirm_password')
         
         if password != confirm_password:
-            flash('Passwords do not match', 'error')
+            flash('Registrasi Gagal! Password tidak cocok.', 'error')
             return render_template('register.html')
         
         if User.query.filter_by(email=email).first():
-            flash('Email already registered', 'error')
+            flash('Registrasi Gagal! Email sudah terdaftar.', 'error')
             return render_template('register.html')
         
         # Create user
@@ -92,7 +92,7 @@ def register():
         except Exception as e:
             current_app.logger.warning(f"Email verification failed: {str(e)}")
         
-        flash('Registration successful! Please check your email to verify your account.', 'success')
+        flash('Registrasi Berhasil! Silakan cek email untuk verifikasi akun.', 'success')
         return redirect(url_for('web.login'))
     
     return render_template('register.html')
