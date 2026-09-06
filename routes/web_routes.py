@@ -24,6 +24,11 @@ def index():
     """Homepage"""
     return render_template('index.html')
 
+@web_bp.route('/policy')
+def policy():
+    """Privacy Policy page - public, required for Play Store"""
+    return render_template('policy.html')
+
 @web_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login page"""

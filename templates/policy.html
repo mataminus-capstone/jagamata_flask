@@ -1,0 +1,316 @@
+{% extends "base.html" %} {% block title %}Kebijakan Privasi - JagaMata{% endblock %} {% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Breadcrumb -->
+  <nav class="flex items-center text-sm text-gray-500 mb-8 overflow-x-auto whitespace-nowrap pb-2">
+    <a href="{{ url_for('web.index') }}" class="hover:text-primary-600 transition">Beranda</a>
+    <i class="fas fa-chevron-right text-xs mx-3 text-gray-300"></i>
+    <span class="text-gray-900 font-medium">Kebijakan Privasi</span>
+  </nav>
+
+  <!-- Header -->
+  <div class="text-center mb-10">
+    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+      <i class="fas fa-shield-alt text-primary-600"></i>
+      Kebijakan Privasi
+    </span>
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">Kebijakan Privasi JagaMata</h1>
+    <p class="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+      Halaman ini menjelaskan dengan bahasa sederhana bagaimana JagaMata menjaga data Anda saat Anda memakai website dan aplikasi kami.
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-6 text-xs">
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-white rounded-full font-medium">
+        <i class="far fa-calendar"></i> Efektif: 4 September 2026
+      </span>
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-full font-medium">
+        <i class="fas fa-sync-alt text-gray-400"></i> Diperbarui: 4 September 2026
+      </span>
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 text-gray-700 rounded-full font-medium">
+        <i class="fas fa-link text-gray-400"></i> jagamata.web.id/policy
+      </span>
+    </div>
+  </div>
+
+  <!-- Quick Nav -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-5 md:p-6 mb-8">
+    <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+      <i class="fas fa-list-ul text-primary-600"></i> Daftar Isi
+    </h2>
+    <ol class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+      <li><a href="#pendahuluan" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">1</span> Pendahuluan</a></li>
+      <li><a href="#data-kami-kumpulkan" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">2</span> Informasi yang Kami Kumpulkan</a></li>
+      <li><a href="#izin-perangkat" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">3</span> Izin di HP Anda</a></li>
+      <li><a href="#penggunaan" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">4</span> Untuk Apa Data Digunakan</a></li>
+      <li><a href="#berbagi" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">5</span> Apakah Data Dibagikan?</a></li>
+      <li><a href="#penyimpanan" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">6</span> Penyimpanan & Keamanan</a></li>
+      <li><a href="#retensi" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">7</span> Berapa Lama Data Disimpan</a></li>
+      <li><a href="#hak-anda" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">8</span> Hak Anda</a></li>
+      <li><a href="#anak" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">9</span> Privasi Anak</a></li>
+      <li><a href="#perubahan" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center text-xs font-bold">10</span> Perubahan Kebijakan</a></li>
+      <li><a href="#disclaimer" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 hover:text-primary-600 transition"><span class="w-6 h-6 rounded-full bg-orange-50 text-orange-700 flex items-center justify-center text-xs font-bold">!</span> Disclaimer Medis</a></li>
+    </ol>
+  </div>
+
+  <!-- Content -->
+  <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div class="p-6 md:p-8 lg:p-10 space-y-10 text-sm leading-relaxed">
+
+      <!-- 1 -->
+      <section id="pendahuluan" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-info-circle"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">1. Pendahuluan</h2>
+        </div>
+        <div class="space-y-3 text-gray-600">
+          <p>JagaMata adalah platform kesehatan mata yang menyediakan artikel, tanya jawab dengan chatbot, pemeriksaan mata dengan bantuan AI, info klinik, dan katalog obat. Aturan privasi ini berlaku untuk website <span class="font-semibold text-gray-900">jagamata.web.id</span> dan aplikasi Android JagaMata.</p>
+          <p>Dengan membuat akun atau memakai layanan kami, Anda setuju dengan cara kami mengelola informasi seperti yang tertulis di halaman ini. Jika tidak setuju, silakan hentikan penggunaan layanan.</p>
+          <div class="bg-primary-50 border border-primary-100 rounded-xl p-4 flex gap-3">
+            <i class="fas fa-check-circle text-primary-600 mt-0.5"></i>
+            <p class="text-primary-900"><span class="font-semibold">Janji kami:</span> Kami tidak pernah menjual data pribadi Anda. Data hanya dipakai untuk menjalankan dan menjaga layanan JagaMata tetap aman dan nyaman.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 2 -->
+      <section id="data-kami-kumpulkan" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-database"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">2. Informasi yang Kami Kumpulkan</h2>
+        </div>
+        <div class="space-y-6 text-gray-600">
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i class="fas fa-user text-primary-500 text-xs"></i> 2.1 Data Akun</h3>
+            <p class="mb-3">Saat Anda daftar atau masuk, kami menyimpan:</p>
+            <ul class="list-disc pl-5 space-y-1.5 bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <li><span class="font-medium text-gray-900">Nama pengguna dan email</span> yang Anda isi</li>
+              <li><span class="font-medium text-gray-900">Kata sandi</span> — disimpan dalam bentuk aman sehingga tidak bisa dilihat oleh siapa pun, termasuk kami</li>
+              <li><span class="font-medium text-gray-900">Foto profil</span> — hanya jika Anda masuk pakai Google</li>
+              <li><span class="font-medium text-gray-900">Alamat & nomor HP</span> — hanya jika Anda mengisinya sendiri</li>
+              <li><span class="font-medium text-gray-900">Tanggal Anda mendaftar</span> dan apakah email sudah diverifikasi</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-2">Jika masuk pakai Google, kami hanya menerima nama dan email dari Google — kami tidak pernah menerima kata sandi Google Anda.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i class="fas fa-eye text-primary-500 text-xs"></i> 2.2 Data Kesehatan & Aktivitas</h3>
+            <ul class="list-disc pl-5 space-y-1.5 bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <li><span class="font-medium text-gray-900">Foto mata</span> yang Anda ambil atau pilih dari galeri, beserta hasil pemeriksaan dari sistem AI</li>
+              <li><span class="font-medium text-gray-900">Riwayat pemeriksaan</span> — supaya Anda bisa melihat hasil sebelumnya</li>
+              <li><span class="font-medium text-gray-900">Obrolan dengan chatbot</span> — pertanyaan Anda dan jawaban dari asisten kami</li>
+              <li><span class="font-medium text-gray-900">Masukan (feedback)</span> — pendapat Anda untuk membantu kami memperbaiki layanan</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-2">Foto mata termasuk data kesehatan. Kami hanya memakainya untuk memberi hasil pemeriksaan dan tidak dipakai untuk hal lain tanpa izin Anda.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i class="fas fa-chart-line text-primary-500 text-xs"></i> 2.3 Informasi Perangkat Secara Otomatis</h3>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>Jenis HP, versi aplikasi, dan waktu Anda menggunakan layanan</li>
+              <li>Status login untuk menjaga akun tetap aman</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
+            <i class="fas fa-exclamation-triangle text-amber-600 mt-0.5"></i>
+            <p class="text-amber-900"><span class="font-semibold">Yang tidak kami minta:</span> lokasi detail Anda, daftar kontak HP, atau foto wajah lengkap. Pemeriksaan hanya melihat area mata dari foto yang Anda berikan.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 3 -->
+      <section id="izin-perangkat" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-mobile-alt"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">3. Izin di HP Anda (Aplikasi Android)</h2>
+        </div>
+        <div class="space-y-3 text-gray-600">
+          <p>Aplikasi JagaMata mungkin meminta izin ini. Anda bisa setuju atau menolak kapan pun lewat Pengaturan HP:</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border border-gray-200 rounded-xl overflow-hidden">
+              <thead class="bg-gray-50 text-gray-900">
+                <tr>
+                  <th class="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Izin</th>
+                  <th class="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Gunanya untuk apa</th>
+                  <th class="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Perlu?</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 bg-white">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-gray-900"><i class="fas fa-camera mr-2 text-gray-400"></i>Kamera</td>
+                  <td class="px-4 py-3">Untuk memotret mata saat pemeriksaan</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">Jika mau periksa</span></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-gray-900"><i class="fas fa-images mr-2 text-gray-400"></i>Galeri Foto</td>
+                  <td class="px-4 py-3">Untuk memilih foto dari galeri HP</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">Opsional</span></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-gray-900"><i class="fas fa-wifi mr-2 text-gray-400"></i>Internet</td>
+                  <td class="px-4 py-3">Supaya aplikasi bisa terhubung ke layanan kami</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-semibold">Wajib</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-gray-500">Jika menolak Kamera, Anda tetap bisa baca artikel dan ngobrol dengan chatbot, hanya fitur foto mata yang tidak bisa dipakai.</p>
+        </div>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 4 -->
+      <section id="penggunaan" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-cogs"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">4. Untuk Apa Data Digunakan</h2>
+        </div>
+        <ul class="space-y-2.5 text-gray-600 list-disc pl-5">
+          <li><span class="font-medium text-gray-900">Mengurus akun:</span> daftar, masuk, verifikasi email, dan atur ulang kata sandi.</li>
+          <li><span class="font-medium text-gray-900">Memberi layanan kesehatan:</span> menjalankan pemeriksaan mata dengan bantuan AI, menyimpan riwayat supaya bisa dilihat lagi, dan menjawab pertanyaan lewat chatbot 24 jam.</li>
+          <li><span class="font-medium text-gray-900">Menampilkan konten:</span> artikel, info klinik, dan daftar obat.</li>
+          <li><span class="font-medium text-gray-900">Menjaga keamanan:</span> mencegah penyalahgunaan dan memperbaiki layanan agar lebih akurat.</li>
+          <li><span class="font-medium text-gray-900">Menghubungi Anda jika perlu:</span> misalnya mengirim link verifikasi email — bukan untuk iklan tanpa izin.</li>
+        </ul>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 5 -->
+      <section id="berbagi" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-share-alt"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">5. Apakah Data Dibagikan ke Pihak Lain?</h2>
+        </div>
+        <div class="space-y-4 text-gray-600">
+          <p>Kami <span class="font-semibold text-gray-900">tidak pernah menjual</span> data Anda. Data hanya dibantu proses oleh layanan pendukung yang kami percaya, dan mereka wajib menjaga kerahasiaannya:</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="font-semibold text-gray-900 mb-1 flex items-center gap-2"><i class="fas fa-cloud text-primary-500"></i> Penyimpanan Foto</div>
+              <p class="text-xs">Untuk menyimpan foto artikel dan foto pemeriksaan dengan aman.</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="font-semibold text-gray-900 mb-1 flex items-center gap-2"><i class="fas fa-envelope text-primary-500"></i> Layanan Email</div>
+              <p class="text-xs">Untuk mengirim email verifikasi dan atur ulang kata sandi.</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="font-semibold text-gray-900 mb-1 flex items-center gap-2"><i class="fab fa-google text-primary-500"></i> Login Google & Asisten AI</div>
+              <p class="text-xs">Jika Anda login pakai Google atau pakai chatbot, data terkait akan diproses oleh Google sesuai aturannya.</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="font-semibold text-gray-900 mb-1 flex items-center gap-2"><i class="fas fa-server text-primary-500"></i> Penyimpanan Data</div>
+              <p class="text-xs">Untuk menyimpan data akun dan riwayat dengan aman di server kami.</p>
+            </div>
+          </div>
+          <p class="text-xs">Kami hanya akan membuka data jika memang diwajibkan oleh hukum atau untuk melindungi keamanan pengguna.</p>
+        </div>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 6 -->
+      <section id="penyimpanan" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-lock"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">6. Penyimpanan & Keamanan</h2>
+        </div>
+        <ul class="space-y-2.5 text-gray-600 list-disc pl-5">
+          <li><span class="font-medium text-gray-900">Kata sandi aman:</span> kata sandi Anda diacak sehingga tidak bisa dibaca siapa pun.</li>
+          <li><span class="font-medium text-gray-900">Koneksi aman:</span> semua data dikirim lewat koneksi terenkripsi.</li>
+          <li><span class="font-medium text-gray-900">Akses terbatas:</span> hanya staf tertentu yang berwenang yang bisa mengakses data.</li>
+          <li><span class="font-medium text-gray-900">Tidak ada sistem yang 100% aman:</span> kami sudah berusaha sebaik mungkin, tapi jika Anda merasa ada yang janggal, segera beri tahu kami.</li>
+        </ul>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 7 -->
+      <section id="retensi" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-hourglass-half"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">7. Berapa Lama Data Disimpan</h2>
+        </div>
+        <ul class="space-y-2 text-gray-600 list-disc pl-5">
+          <li>Data akun disimpan selama akun Anda masih aktif. Jika akun tidak aktif lebih dari 2 tahun, kami bisa menonaktifkannya setelah memberi tahu Anda.</li>
+          <li>Riwayat pemeriksaan dan masukan disimpan sampai Anda menghapusnya atau menghapus akun.</li>
+          <li>Kode untuk atur ulang kata sandi hanya berlaku 1 jam.</li>
+          <li>Data yang sudah Anda hapus akan benar-benar hilang dari cadangan kami dalam 1–2 bulan.</li>
+        </ul>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 8 -->
+      <section id="hak-anda" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-user-check"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">8. Hak Anda</h2>
+        </div>
+        <div class="space-y-3 text-gray-600">
+          <p>Anda berhak untuk:</p>
+          <ul class="list-disc pl-5 space-y-1.5">
+            <li><span class="font-medium text-gray-900">Melihat data Anda:</span> Anda bisa melihat data akun di dalam aplikasi.</li>
+            <li><span class="font-medium text-gray-900">Memperbaiki data:</span> ubah nama, alamat, atau nomor HP langsung di pengaturan akun.</li>
+            <li><span class="font-medium text-gray-900">Menghapus akun dan data:</span> ajukan penghapusan, kami akan proses maksimal 30 hari.</li>
+            <li><span class="font-medium text-gray-900">Menarik persetujuan:</span> Anda bisa minta kami berhenti memproses data tertentu, misalnya menghapus riwayat pemeriksaan.</li>
+          </ul>
+
+        </div>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 9 -->
+      <section id="anak" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-child"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">9. Privasi Anak</h2>
+        </div>
+        <p class="text-gray-600">Layanan JagaMata tidak ditujukan untuk anak di bawah 13 tahun. Kami tidak sengaja mengumpulkan data anak. Jika Anda orang tua dan mengetahui anak Anda memberikan data, segera hubungi kami agar bisa kami hapus.</p>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 10 -->
+      <section id="perubahan" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center text-sm"><i class="fas fa-edit"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">10. Perubahan Kebijakan</h2>
+        </div>
+        <p class="text-gray-600">Jika ada perubahan penting, kami akan memberi tahu lewat website atau aplikasi dan tanggal "Diperbarui" di atas akan kami ganti. Versi terbaru selalu bisa dilihat di halaman ini. Alamat halaman tidak akan kami ubah supaya tetap bisa dipakai untuk Play Store.</p>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- 11 -->
+      <section id="disclaimer" class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center text-sm"><i class="fas fa-exclamation"></i></div>
+          <h2 class="text-lg font-bold text-gray-900">11. Disclaimer Medis</h2>
+        </div>
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-5 text-gray-700">
+          <p class="font-semibold text-orange-900 mb-2">Penting untuk Anda tahu:</p>
+          <p>Hasil pemeriksaan AI, artikel, dan jawaban chatbot hanya untuk informasi dan belajar, <span class="font-semibold">bukan pengganti diagnosis dokter</span>. Untuk kepastian, tetap konsultasi langsung dengan dokter mata. Jika ada keluhan serius atau darurat, segera ke fasilitas kesehatan terdekat.</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer of card -->
+    <div class="bg-gray-50 border-t border-gray-100 px-6 md:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-gray-500 text-center md:text-left">© 2026 JagaMata. Semua hak dilindungi. Dokumen ini terakhir diperbarui 4 September 2026.</p>
+      <a href="{{ url_for('web.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-primary-600 font-medium text-sm transition shadow-sm">
+        <i class="fas fa-arrow-left text-xs"></i> Kembali ke Beranda
+      </a>
+    </div>
+  </div>
+
+  <!-- Extra CTA for Play Store reviewers -->
+  <div class="mt-6 text-center">
+    <p class="text-xs text-gray-400">
+      URL kebijakan untuk Google Play Console: <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded">https://jagamata.web.id/policy</span> &nbsp;•&nbsp;
+      Jika Anda reviewer Play Store, halaman ini dapat diakses tanpa login.
+    </p>
+  </div>
+</div>
+{% endblock %}
